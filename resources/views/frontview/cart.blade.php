@@ -3,147 +3,573 @@
 @section('content')
 
     @include('common.front.frontalert')
+    <style>
+        .lcart-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 320px;
+            gap: 30px;
+            align-items: start;
+        }
 
-    <!-- Shopping Cart -->
-    <div class="shopping-cart section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 ">
-                    <!-- Shopping Summery -->
-                    <table class="table shopping-summery  table-responsive bg-lp" >
-                        <thead>
-                            <tr class="main-hading">
-                                <th>PRODUCT</th>
-                                <th class="text-right">QTY</th>
-                                <th class="text-center">SIZE</th>
-                                <th class="text-left">PRICE</th>
+        .lcart-items-area {
+            min-width: 0;
+        }
 
-                                <th class="text-right">TOTAL</th>
+        .lcart-summary {
+            width: 100%;
+            position: sticky;
+            top: 20px;
+        }
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php $total = 0; ?>
-                            @foreach ($cartItems as $item)
-                                 @php 
-                                    $ProductAttribute = App\Models\ProductAttributes::orderBy('id', 'desc')
-                                        ->where(["product_id" => $item->productid, 'id' => $item->size])
-                                        ->first();
-                                @endphp   
-                                <tr>
-                                    <td class="image" data-title="No"><img
-                                            src="{{ asset('Product') . '/' . $item->attributes->image }}" alt="#">
-                                    </td>
-                                    <!--<td class="product-des" data-title="Description">-->
-                                    <!--    <p class="product-name"><a href="productlisting.php">{{ $item->name }}</a></p>-->
-                                    <!--</td>-->
-                                    <td class="qty text-right" data-title="Qty">
-                                        {{ $item->quantity }}&nbsp;&nbsp;&nbsp;
-                                    </td>
-                                    <td class="qty text-center" data-title="Qty">
-                                        {{ $ProductAttribute->product_attribute_size }}
-                                    </td>
-                                    <td class="price text-left" data-title="Price">
-                                        <span> &#x20B9; {{ $item->price }}
-                                        </span>
-                                    </td>
+        @media (max-width: 991px) {
 
-                                    <td class="total-amount text-right" data-title="Total">
-                                        <span> &#x20B9; {{ $item->price * $item->quantity }}</span>
-                                    </td>
+            .lcart-layout {
+                grid-template-columns: 1fr;
+            }
 
-                                </tr>
-                                <?php $total += $item->price * $item->quantity; ?>
-                            @endforeach
+            .lcart-summary {
+                position: static;
+                width: 100%;
+            }
 
-                            <!--<tr>-->
-                            <!--    <td class="text-right border-0 " colspan="4">Subtotal</td>-->
-                            <!--    <td class="text-right border-0">₹ {{ $total }}</td>-->
-                            <!--</tr>-->
-                            <!--<tr>-->
-                            <!--    <td class="text-right border-0" colspan="4">Shipping</td>-->
-                            <!--    <td class="text-right border-0">₹ 0.00</td>-->
-                            <!--</tr>-->
-                           
-                            <tr>
-                                <td class="text-right bold border-0 bg-white" style="margin-top:10px" colspan="4">Total Amount</td>
-                                <td class="bold text-right border-0 bg-white mt-2" style="margin-top:10px">₹ {{ $total }}</td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                    <!--/ End Shopping Summery -->
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <!-- Total Amount -->
-                    <div class="total-amount">
-                        <div class="row">
-                            <div class="col-lg-8 col-md-5 col-12">
-                                <div class="left">
-                                    <div class="coupon">
-                                        <?php $total = Cart::getTotal(); ?>
-                                        <!--<form action="{{ route('couponcodeapply') }}" method="post">-->
-                                        <!--    @csrf-->
-                                        <!--    <input type="hidden" value="{{ $total }}" name="totalAmount">-->
-                                        <!--    <input name="coupon" placeholder="Enter Your Coupon">-->
-                                        <!--    <button type="submit" class="btn">Apply</button>-->
-                                        <!--</form>-->
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-7 col-12">
-                                <div class="right">
-                                    <ul>
-                                        <!--<li>Cart Total<span>&#x20B9; {{ $total }}</span></li>-->
-
-                                       
-
-                                        <!--<li>Shipping Free<span class=""> -  &nbsp; &nbsp;</span></li>-->
-                                        <!--<li>You Save<span>&#x20B9; 200.00</span></li>-->
-                                        <!--<li class="last">You Pay<span>&#x20B9; {{ $total }}</span></li>-->
-                                    </ul>
-                                    <div class="button5 pt-5">
-                                        <a href="{{ route('checkout') }}" class="btn">Checkout</a>
-                                        <a href="{{ route('FrontProduct') }}" class="btn">Continue shopping</a></br></br></br></br>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        }
+    </style>
+    <!-- =====================================================
+                                                                         CART PAGE
+                                                                    ====================================================== -->
+    <main class="lcart-page">
+        <section class="lcart-section">
+            <div class="container">
+                <!-- =================================================
+                                                                                     PAGE TOP
+                                                                                ================================================== -->
+                <div class="lcart-page-head">
+                    <div>
+                        <span>
+                            YOUR LITTLE PICKS
+                        </span>
+                        <h2>
+                            Shopping
+                            <em>Cart</em>
+                        </h2>
+                        <p>
+                            Review your selected styles before checkout.
+                        </p>
                     </div>
-                    <!--/ End Total Amount -->
+                    <a href="{{ url()->previous() }}" class="lcart-continue">
+                        <i class="fa fa-long-arrow-left"></i>
+                        Continue Shopping
+                    </a>
+                </div>
+                <!-- =================================================
+                                                                                     CART LAYOUT
+                                                                                ================================================== -->
+                <div class="lcart-layout">
+
+                    <!-- LEFT -->
+                    <div class="lcart-items-area">
+
+                        <div class="lcart-items-head">
+                            <div>
+                                <strong>
+                                    My Cart
+                                </strong>
+
+                                <span id="lcartItemCount">
+                                    {{ $cartItems->sum('quantity') }}
+                                    {{ $cartItems->sum('quantity') === 1 ? 'Item' : 'Items' }}
+                                </span>
+                            </div>
+
+                            @if ($cartItems->isNotEmpty())
+                                <form action="{{ route('cart.clear') }}" method="POST">
+                                    @csrf
+
+                                    <button type="submit" id="lcartClearAll">
+                                        <i class="fa fa-trash-o"></i>
+                                        Clear Cart
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+
+
+                        @foreach ($cartItems as $item)
+                            <article class="lcart-item" data-price="{{ $item->price }}" data-item-id="{{ $item->id }}">
+
+                                <a href="{{ $item->categoryslug && $item->productslug
+                                    ? route('productdetail.slugs', [
+                                        'subcategory' => $item->categoryslug,
+                                        'product' => $item->productslug,
+                                    ])
+                                    : '#' }}"
+                                    class="lcart-item-image">
+
+                                    <img src="{{ asset('/Product/Thumbnail/' . ($item->attributes->image ?? '')) }}"
+                                        alt="{{ $item->name }}">
+
+                                </a>
+
+
+                                <div class="lcart-item-info">
+
+                                    <span class="lcart-item-category">
+                                        {{ $item->categoryname ?? '' }}
+                                    </span>
+
+
+                                    <a href="{{ $item->categoryslug && $item->productslug
+                                        ? route('productdetail.slugs', [
+                                            'subcategory' => $item->categoryslug,
+                                            'product' => $item->productslug,
+                                        ])
+                                        : '#' }}"
+                                        class="lcart-item-name">
+
+                                        {{ $item->name }}
+
+                                    </a>
+
+
+                                    <p>
+                                        Size:
+                                        <strong>{{ $item->size }}</strong>
+                                    </p>
+
+
+                                    <div class="lcart-mobile-price">
+                                        <strong>
+                                            ₹{{ number_format($item->price, 0) }}
+                                        </strong>
+                                    </div>
+
+
+                                    <!-- QUANTITY -->
+                                    <div class="lcart-item-bottom">
+
+                                        <form action="{{ route('cart.update') }}" method="POST" class="lcart-quantity">
+
+                                            @csrf
+
+                                            <input type="hidden" name="id" value="{{ $item->id }}">
+
+
+                                            <button type="submit" name="quantity"
+                                                value="{{ max(1, $item->quantity - 1) }}" class="lcart-minus"
+                                                aria-label="Decrease quantity">
+
+                                                <i class="fa fa-minus"></i>
+
+                                            </button>
+
+
+                                            <input type="text" value="{{ $item->quantity }}" class="lcart-qty" readonly>
+
+
+                                            <button type="submit" name="quantity" value="{{ $item->quantity + 1 }}"
+                                                class="lcart-plus" aria-label="Increase quantity">
+
+                                                <i class="fa fa-plus"></i>
+
+                                            </button>
+
+                                        </form>
+
+                                        <!-- REMOVE -->
+                                        <div class="lcart-item-actions">
+
+                                            <form action="{{ route('cart.remove') }}" method="POST">
+
+                                                @csrf
+
+                                                <input type="hidden" name="id" value="{{ $item->id }}">
+
+                                                <button type="submit" class="lcart-remove">
+
+                                                    <i class="fa fa-trash-o"></i>
+                                                    Remove
+
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </div>
+
+
+
+
+                                </div>
+
+
+                                <!-- PRODUCT TOTAL -->
+                                <div class="lcart-item-price">
+
+                                    <strong class="lcart-line-total">
+
+                                        ₹{{ number_format($item->price * $item->quantity, 0) }}
+
+                                    </strong>
+
+                                </div>
+
+                            </article>
+                        @endforeach
+
+
+                        <!-- EMPTY -->
+                        <div class="lcart-empty" id="lcartEmpty"
+                            style="{{ $cartItems->isEmpty() ? '' : 'display: none;' }}">
+
+                            <div class="lcart-empty-icon">
+                                <i class="fa fa-shopping-bag"></i>
+                            </div>
+
+                            <h3>
+                                Your cart is feeling a little empty!
+                            </h3>
+
+                            <p>
+                                Add some colourful little favourites
+                                and come back here.
+                            </p>
+
+                            <a href="product.html?gender=girls">
+                                Start Shopping
+                                <i class="fa fa-long-arrow-right"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =====================================================
+                                                     RIGHT ORDER SUMMARY
+                                ====================================================== -->
+
+                    <aside class="lcart-summary">
+
+                        <div class="lcart-summary-head">
+
+                            <span class="lcart-summary-icon">
+                                <i class="fa fa-shopping-bag"></i>
+                            </span>
+
+                            <div>
+
+                                <small>
+                                    YOUR ORDER
+                                </small>
+
+                                <h3>
+                                    Order Summary
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="lcart-price-list">
+
+                            <div>
+
+                                <span>
+                                    Subtotal
+                                </span>
+
+                                <strong id="lcartSubtotal">
+
+                                    ₹{{ number_format($cartItems->sum(fn($item) => $item->price * $item->quantity), 0) }}
+
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Product Discount
+                                </span>
+
+                                <strong class="lcart-saving" id="lcartDiscount">
+
+                                    - ₹0
+
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Shipping
+                                </span>
+
+                                <strong class="lcart-free" id="lcartShipping">
+
+                                    FREE
+
+                                </strong>
+
+                            </div>
+
+
+                            <div class="lcart-coupon-row" id="lcartCouponRow">
+
+                                <span>
+                                    Coupon Discount
+                                </span>
+
+                                <strong id="lcartCouponDiscount">
+                                    - ₹0
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="lcart-total">
+
+                            <div>
+
+                                <span>
+                                    Total Amount
+                                </span>
+
+                                <strong id="lcartGrandTotal">
+
+                                    ₹{{ number_format($cartItems->sum(fn($item) => $item->price * $item->quantity), 0) }}
+
+                                </strong>
+
+                            </div>
+
+                            <small>
+                                Inclusive of all taxes
+                            </small>
+
+                        </div>
+
+
+                        {{--  <div class="lcart-save-box">
+
+                            <span>
+                                <i class="fa fa-smile-o"></i>
+                            </span>
+
+                            <p>
+
+                                You are saving
+
+                                <strong id="lcartSaving">
+                                    ₹0
+                                </strong>
+
+                                on this order.
+
+                            </p>
+
+                        </div>  --}}
+
+
+                        <a href="{{ route('checkout') }}" class="lcart-checkout">
+
+                            <span>
+                                <i class="fa fa-lock"></i>
+                            </span>
+
+                            <strong>
+                                Proceed To Checkout
+                            </strong>
+
+                            <i class="fa fa-long-arrow-right"></i>
+
+                        </a>
+
+                    </aside>
+
                 </div>
             </div>
-        </div>
-    </div>
-    <!--/ End Shopping Cart -->
-
-   
+            </div>
+        </section>
+    </main>
 
 @endsection
 
 @section('scripts')
 
-    <script>
-        function increaseCount(a, b) {
-            var input = b.previousElementSibling;
-            var value = parseInt(input.value, 10);
-            value = isNaN(value) ? 0 : value;
-            {{--  value++;  --}}
-            input.value = value;
-        }
+@section('scripts')
 
-        function decreaseCount(a, b) {
-            var input = b.nextElementSibling;
-            var value = parseInt(input.value, 10);
-            // alert(value);
-            if (value > 1) {
-                value = isNaN(value) ? 0 : value;
-                {{--  value--;  --}}
-                input.value = value;
-            }
-        }
+    <script>
+        (() => {
+
+            const money = (value) => {
+                return `₹${Number(value).toLocaleString('en-IN', {
+            maximumFractionDigits: 0
+        })}`;
+            };
+
+            const itemCount = document.getElementById('lcartItemCount');
+            const subtotal = document.getElementById('lcartSubtotal');
+            const grandTotal = document.getElementById('lcartGrandTotal');
+
+            document.querySelectorAll('.lcart-quantity').forEach((form) => {
+
+                form.addEventListener('submit', async (event) => {
+
+                    event.preventDefault();
+
+                    const button = event.submitter;
+
+                    if (!button) {
+                        return;
+                    }
+
+                    button.disabled = true;
+
+                    try {
+
+                        const formData = new FormData(form);
+
+                        // Get the quantity from the button
+                        const newQuantity = Number(button.value);
+
+                        formData.set('quantity', newQuantity);
+
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Unable to update cart');
+                        }
+
+                        const data = await response.json();
+
+                        const item = form.closest('.lcart-item');
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Current quantity
+                        |--------------------------------------------------------------------------
+                        */
+
+                        const quantity = Number(data.quantity);
+
+                        form.querySelector('.lcart-qty').value = quantity;
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | IMPORTANT:
+                        | Update minus button value
+                        |--------------------------------------------------------------------------
+                        */
+
+                        const minusButton = form.querySelector('.lcart-minus');
+
+                        if (minusButton) {
+                            minusButton.value = Math.max(1, quantity - 1);
+                        }
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | IMPORTANT:
+                        | Update plus button value
+                        |--------------------------------------------------------------------------
+                        */
+
+                        const plusButton = form.querySelector('.lcart-plus');
+
+                        if (plusButton) {
+                            plusButton.value = quantity + 1;
+                        }
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Update product line total
+                        |--------------------------------------------------------------------------
+                        */
+
+                        const price = Number(item.dataset.price);
+
+                        item.querySelector('.lcart-line-total').textContent =
+                            money(price * quantity);
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Update subtotal
+                        |--------------------------------------------------------------------------
+                        */
+
+                        subtotal.textContent = money(data.total);
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Update grand total
+                        |--------------------------------------------------------------------------
+                        */
+
+                        grandTotal.textContent = money(data.total);
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Update cart item count
+                        |--------------------------------------------------------------------------
+                        */
+
+                        itemCount.textContent =
+                            `${data.item_count} ${data.item_count === 1 ? 'Item' : 'Items'}`;
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Update header cart count
+                        |--------------------------------------------------------------------------
+                        */
+
+                        document.querySelectorAll('.js-cart-count').forEach((badge) => {
+                            badge.textContent = data.item_count;
+                        });
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        window.alert(
+                            'Unable to update your cart. Please try again.'
+                        );
+
+                    } finally {
+
+                        button.disabled = false;
+
+                    }
+
+                });
+
+            });
+
+        })();
     </script>
+
+@endsection
+
 
 @endsection

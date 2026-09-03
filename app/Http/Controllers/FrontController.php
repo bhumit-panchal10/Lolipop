@@ -38,81 +38,126 @@ class FrontController extends Controller
 {
     public function index(Request $request)
     {
-        DB::beginTransaction();
+        // Main categories
+        $categories = DB::table('category')
+            ->select(
+                'categoryId',
+                'categoryname',
+                'photo',
+                'meta_description',
+                'slugname'
+            )
+            ->where('iStatus', 1)
+            ->where('isDelete', 0)
+            ->where('subcategoryid', 0)
+            ->orderBy('categoryId', 'asc')
+            ->get();
 
-        // try {
-        // $Banner = Banner::orderBy('banner.bannerId', 'desc')
-        //     ->where(['banner.iStatus' => 1, 'banner.isDelete' => 0])
-        //     ->get();
-        // $TrandingProduct = Product::select(
-        //     'product.productId',
-        //     'product.productname',
-        //     'product.rate',
-        //     'product.weight',
-        //     'product.description',
-        //     'product.isStock',
-        //     'product.slugname',
-        //     'product.isFeatures',
-        //     DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId ORDER BY product.productId  LIMIT 1) as photo'),
-        //     DB::raw('(SELECT MIN(product_attribute_price)  FROM product_attributes WHERE  product_attributes.product_id=product.productId ORDER BY product.productId  LIMIT 1) as product_attribute_price')
-        // )
-        //     ->orderBy('productId', 'desc')
-        //     ->where(['product.iStatus' => 1, 'product.isDelete' => 0, 'product.isFeatures' => 1])
-        //     ->join('category', 'category.categoryId', '=', 'product.categoryId')
-        //     // ->whereIn('categoryId', function ($query) {
-        //     //     $query->select('categoryId')
-        //     //         ->from('category')
-        //     //         ->where('isDelete', 0)
-        //     //         ->where('iStatus', 1);
-        //     // })
-        //     // ->whereIn('subcategoryId', function($query) {
-        //     //     $query->select('categoryId')
-        //     //         ->from('category')
-        //     //         ->where('isDelete', 0)
-        //     //         ->where('iStatus', 1);
-        //     // })
-        //     ->get();
-        // $TrandingProductCount = $TrandingProduct->count();
+        // First category
+        $firstCategory = $categories->first();
 
-        // $Product = Product::select(
-        //     'product.productId',
-        //     'product.productname',
-        //     'product.rate',
-        //     'product.weight',
-        //     'product.description',
-        //     'product.isStock',
-        //     'product.slugname',
-        //     DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId ORDER BY product.productId  LIMIT 1) as photo'),
-        //     DB::raw('(SELECT MIN(product_attribute_price)  FROM product_attributes WHERE  product_attributes.product_id=product.productId ORDER BY product.productId  LIMIT 1) as product_attribute_price')
-        // )
-        //     ->orderBy('productId', 'desc')
-        //     ->where(['product.iStatus' => 1, 'product.isDelete' => 0, 'product.isFeatures' => 0])
-        //     ->join('category', 'category.categoryId', '=', 'product.categoryId')
-        //     // ->whereIn('categoryId', function ($query) {
-        //     //     $query->select('categoryId')
-        //     //         ->from('category')
-        //     //         ->where('isDelete', 0)
-        //     //         ->where('iStatus', 1);
-        //     // })
-        //     // ->whereIn('subcategoryId', function($query) {
-        //     //     $query->select('categoryId')
-        //     //         ->from('category')
-        //     //         ->where('isDelete', 0)
-        //     //         ->where('iStatus', 1);
-        //     // })
-        //     ->get();
-        // $ProductCount = $Product->count();
+        // First category subcategories
+        $subCategories = collect();
 
-        // DB::commit();
-        // DB::disconnect();
-        //return view('frontview.index', compact('TrandingProduct', 'TrandingProductCount', 'Product', 'ProductCount', 'Banner'));
-        return view('frontview.index');
-        // } catch (\Throwable $th) {
-        //     // Rollback and return with Error
-        //     DB::rollBack();
-        //     return redirect()->back()->withInput()->with('error', $th->getMessage());
-        // }
+        if ($firstCategory) {
+            $subCategories = DB::table('category')
+                ->select(
+                    'categoryId',
+                    'subcategoryid',
+                    'categoryname',
+                    'photo',
+                    'meta_description',
+                    'slugname'
+                )
+                ->where('iStatus', 1)
+                ->where('isDelete', 0)
+                ->where('subcategoryid', $firstCategory->categoryId)
+                ->orderBy('categoryId', 'asc')
+                ->get();
+        }
+
+        return view('frontview.index', compact(
+            'categories',
+            'subCategories',
+            'firstCategory'
+        ));
     }
+
+    public function getSubCategories(Request $request)
+    {
+        $categoryId = $request->category_id;
+
+        $category = DB::table('category')
+            ->select(
+                'categoryId',
+                'categoryname',
+                'slugname',
+                'meta_description'
+            )
+            ->where('categoryId', $categoryId)
+            ->where('iStatus', 1)
+            ->where('isDelete', 0)
+            ->first();
+
+        $subCategories = DB::table('category')
+            ->select(
+                'categoryId',
+                'subcategoryid',
+                'categoryname',
+                'slugname',
+                'photo',
+                'meta_description'
+            )
+            ->where('subcategoryid', $categoryId)
+            ->where('iStatus', 1)
+            ->where('isDelete', 0)
+            ->orderBy('categoryId', 'asc')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'category' => $category,
+            'subCategories' => $subCategories
+        ]);
+    }
+
+
+    // public function getSubCategories(Request $request)
+    // {
+    //     $categoryId = $request->category_id;
+
+    //     $category = DB::table('category')
+    //         ->select(
+    //             'categoryId',
+    //             'categoryname',
+    //             'meta_description'
+    //         )
+    //         ->where('categoryId', $categoryId)
+    //         ->where('iStatus', 1)
+    //         ->where('isDelete', 0)
+    //         ->first();
+
+    //     $subCategories = DB::table('category')
+    //         ->select(
+    //             'categoryId',
+    //             'subcategoryid',
+    //             'categoryname',
+    //             'photo',
+    //             'meta_description',
+    //             'slugname'
+    //         )
+    //         ->where('subcategoryid', $categoryId)
+    //         ->where('iStatus', 1)
+    //         ->where('isDelete', 0)
+    //         ->orderBy('categoryId', 'asc')
+    //         ->get();
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'category' => $category,
+    //         'subCategories' => $subCategories
+    //     ]);
+    // }
 
     public function about(Request $request)
     {
@@ -287,174 +332,410 @@ class FrontController extends Controller
 
     public function products(Request $request, $id = null)
     {
-        DB::beginTransaction();
-        try {
+        $currentCategory = null;
+        $parentCategoryId = null;
 
-            // $sizeselect = "";
-            // if ((isset($request->sizeselect) && $request->sizeselect != null) || Session::get('sizeselect')) {
-            //     //dd("if");
-            //     if (isset($request->sizeselect) && $request->sizeselect != "") {
-            //         $sizeselect = $request->sizeselect;
-            //         //Session::put('sizeselect',$sizeselect);
-            //     } else if (Session::get('sizeselect')) {
-            //         $sizeselect = Session::get('sizeselect');
-            //     } else {
-            //         $sizeselect = $request->session()->forget('sizeselect');
-            //     }
-            //     $Product = Product::leftJoin('product_attributes', 'product.productId', '=', 'product_attributes.product_id')
-            //         ->leftJoin('ledger', function ($join) {
-            //             $join->on('product.productId', '=', 'ledger.iProductId')
-            //                 ->on('product_attributes.id', '=', 'ledger.iSize')
-            //                 ->whereRaw('ledger.ledgerId = (SELECT MAX(ledgerId) FROM ledger WHERE ledger.iProductId = product.productId AND ledger.iSize = product_attributes.id)');
-            //         })
-            //         ->leftJoin('productphotos', 'product.productId', '=', 'productphotos.productid')
-            //         ->select(
-            //             'product_attributes.id',
-            //             'product.productId',
-            //             'product.categoryId',
-            //             'product.subcategoryid',
-            //             'product.productname',
-            //             'product.rate',
-            //             'product.description',
-            //             'product.slugname',
-            //             DB::raw('(SELECT strphoto FROM productphotos WHERE productphotos.productid = product.productId LIMIT 1) as photo'),
-            //             'product_attributes.product_attribute_price',
-            //             'ledger.closingBalance',
-            //             'product_attributes.product_attribute_size'
-            //         )
-            //         ->when($sizeselect, function ($query) use ($sizeselect) {
-            //             $query->Where('product_attributes.product_attribute_size', $sizeselect);
-            //         })
-            //         //->where('product_attributes.product_attribute_size', $sizeselect)
-            //         ->where('product.iStatus', 1)
-            //         ->where('product.isDelete', 0)
-            //         ->where('ledger.closingBalance', '>', 0)
-            //         ->whereIn('product.categoryId', function ($query) {
-            //             $query->select('categoryId')
-            //                 ->from('category')
-            //                 ->where('isDelete', 0)
-            //                 ->where('iStatus', 1);
-            //         })
-            //         ->groupBy(
-            //             'product_attributes.id',
-            //             'product.productId',
-            //             'product.categoryId',
-            //             'product.subcategoryid',
-            //             'product.productname',
-            //             'product.rate',
-            //             'product.description',
-            //             'product.slugname',
-            //             'product_attributes.product_attribute_price',
-            //             'product_attributes.product_attribute_size',
-            //             'ledger.closingBalance'
-            //         )->orderBy('productId', 'desc')
-            //         ->paginate(16);
-            //     // dd($Product);
-            //     $ProductCount = $Product->count();
-            // } else if ($id == null) {
-            //     //dd("else if");
-            //     $Product = Product::select(
-            //         'product.productId',
-            //         'product.categoryId',
-            //         'product.subcategoryid',
-            //         'product.productname',
-            //         'product.rate',
-            //         'product.description',
-            //         'product.slugname',
-            //         DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId LIMIT 1) as photo'),
-            //         DB::raw('(SELECT COALESCE(MIN(product_attribute_price), 0) FROM product_attributes WHERE  product_attributes.product_id=product.productId   LIMIT 1) as product_attribute_price')
-            //         // DB::raw('(SELECT MIN(product_attribute_price)  FROM product_attributes WHERE  product_attributes.product_id=product.productId ORDER BY product.productId  LIMIT 1) as product_attribute_price'),
-            //         //DB::raw('(SELECT COUNT(*) FROM ledger WHERE ledger.ledgerId IN (SELECT MAX(ledgerId) FROM ledger WHERE ledger.iProductId=product.productId GROUP BY iSize) AND ledger.closingBalance > 0) as closingBalance')
-            //     )
-            //         ->join('category', 'category.categoryId', '=', 'product.categoryId')
-            //         ->orderBy('productId', 'desc')
-            //         ->where(['product.iStatus' => 1, 'product.isDelete' => 0])
-            //         // ->whereIn('categoryId', function ($query) {
-            //         //     $query->select('categoryId')
-            //         //         ->from('category')
-            //         //         ->where('isDelete', 0)
-            //         //         ->where('iStatus', 1);
-            //         // })
-            //         ->paginate(16);
+        if ($id) {
 
-            /*$Product = Product::select(
-                    'product.productId',
-                    'product.categoryId',
-                    'product.subcategoryid',
-                    'product.productname',
-                    'product.rate',
-                    'product.description',
-                    'product.slugname',
-                    DB::raw('productphotos.strphoto as photo'),
-                    DB::raw('COALESCE(MIN(product_attributes.product_attribute_price), 0) as product_attribute_price'),
-                    DB::raw('COUNT(DISTINCT ledger.iSize) as closingBalance')
-                )
-                ->leftJoin('productphotos', 'product.productId', '=', 'productphotos.productid')
-                ->leftJoin('product_attributes', 'product.productId', '=', 'product_attributes.product_id')
-                ->leftJoin('ledger', function ($join) {
-                    $join->on('product.productId', '=', 'ledger.iProductId')
-                        ->whereRaw('ledger.ledgerId IN (SELECT MAX(ledgerId) FROM ledger GROUP BY iSize)')
-                        ->where('ledger.closingBalance', '>', 0);
-                })
-                ->where('product.iStatus', 1)
-                ->where('product.isDelete', 0)
-                ->whereIn('product.categoryId', function ($query) {
-                    $query->select('categoryId')
-                        ->from('category')
-                        ->where('isDelete', 0)
-                        ->where('iStatus', 1);
-                })
-                ->groupBy(
-                    'product.productId',
-                    'product.categoryId',
-                    'product.subcategoryid',
-                    'product.productname',
-                    'product.rate',
-                    'product.description',
-                    'product.slugname',
-                    'productphotos.strphoto'
-                )
-                ->orderBy('product.productId', 'desc')
-                ->paginate(16);*/
-            // dd($Product);
-            //     $ProductCount = $Product->count();
-            //     DB::disconnect();
-            // } else {
-            //     //dd("else");
-            //     $Product = Product::select(
-            //         'product.productId',
-            //         'product.productname',
-            //         'product.rate',
-            //         'product.weight',
-            //         'product.description',
-            //         'product.isFeatures',
-            //         'product.isStock',
-            //         'product.slugname',
-            //         DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId  LIMIT 1) as photo'),
-            //         DB::raw('(SELECT COALESCE(MIN(product_attribute_price), 0) FROM product_attributes WHERE  product_attributes.product_id=product.productId LIMIT 1) as product_attribute_price'),
-            //         // DB::raw('(SELECT MIN(product_attribute_price)  FROM product_attributes WHERE  product_attributes.product_id=product.productId ORDER BY product.productId  LIMIT 1) as product_attribute_price'),
-            //         DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId LIMIT 1,1) as backphoto')
-            //     )
-            //         ->orderBy('productId', 'desc')
-            //         ->where(['product.iStatus' => 1, 'product.isDelete' => 0, 'category.slugname' => $id])
-            //         ->join('category', 'product.categoryId', '=', 'category.categoryId')
-            //         ->paginate(16);
-            //     $ProductCount = $Product->count();
-            //     // dd($Product);
+            $currentCategory = DB::table('category')
+                ->where('slugname', $id)
+                ->where('iStatus', 1)
+                ->where('isDelete', 0)
+                ->first();
 
-            // }
-            //$sizeselect = $request->sizeselect ?? "";
-            //$request->session()->put('sizeselect', $sizeselect);
-            // dd($Product);
-            DB::commit();
-            // return view('frontview.product', compact('Product',  'id', 'ProductCount', 'sizeselect'));
-            return view('frontview.product');
-        } catch (\Throwable $th) {
-            // Rollback and return with Error
-            DB::rollBack();
-            return redirect()->back()->withInput()->with('error', $th->getMessage());
+            if ($currentCategory) {
+
+                if ($currentCategory->subcategoryid == 0) {
+
+                    // Parent category
+                    $parentCategoryId = $currentCategory->categoryId;
+                } else {
+
+                    // Subcategory
+                    $parentCategoryId = $currentCategory->subcategoryid;
+                }
+            }
         }
+
+        $categories = DB::table('category')
+            ->where('iStatus', 1)
+            ->where('isDelete', 0)
+            ->where('subcategoryid', 0)
+            ->when($parentCategoryId, function ($query) use ($parentCategoryId) {
+
+                $query->where('categoryId', $parentCategoryId);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+
+
+
+        $subCategories = DB::table('category')
+            ->where('iStatus', 1)
+            ->where('isDelete', 0)
+            ->where('subcategoryid', '>', 0)
+            ->when($parentCategoryId, function ($query) use ($parentCategoryId) {
+
+                $query->where('subcategoryid', $parentCategoryId);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+
+        $sizes = DB::table('product_attributes')
+            ->whereNotNull('product_attribute_size')
+            ->where('product_attribute_size', '<>', '')
+            ->select('product_attribute_size')
+            ->distinct()
+            ->orderBy('product_attribute_size', 'asc')
+            ->pluck('product_attribute_size');
+
+
+        $Product = Product::select(
+            'product.productId',
+            'product.categoryId',
+            'product.subcategoryid',
+            'product.productname',
+            'product.rate',
+            'product.description',
+            'product.slugname',
+
+            DB::raw('(
+            SELECT strphoto
+            FROM productphotos
+            WHERE productphotos.productid = product.productId
+            LIMIT 1
+        ) as photo'),
+
+            DB::raw('(
+            SELECT COALESCE(
+                MIN(product_attribute_price), 0
+            )
+            FROM product_attributes
+            WHERE product_attributes.product_id = product.productId
+        ) as product_attribute_price'),
+            DB::raw('(
+            SELECT id
+            FROM product_attributes
+            WHERE product_attributes.product_id = product.productId
+            ORDER BY product_attribute_price ASC, id ASC
+            LIMIT 1
+        ) as lowest_attribute_id'),
+            DB::raw('(
+            SELECT product_attribute_size
+            FROM product_attributes
+            WHERE product_attributes.product_id = product.productId
+            ORDER BY product_attribute_price ASC, id ASC
+            LIMIT 1
+        ) as lowest_attribute_size')
+        )
+            ->join(
+                'category',
+                'category.categoryId',
+                '=',
+                'product.categoryId'
+            )
+            ->where('product.iStatus', 1)
+            ->where('product.isDelete', 0);
+
+
+        if ($currentCategory) {
+
+            // Parent category
+            if ($currentCategory->subcategoryid == 0) {
+
+                $Product->where(
+                    'product.categoryId',
+                    $currentCategory->categoryId
+                );
+            } else {
+
+                // Subcategory
+                $Product->where(
+                    'product.categoryId',
+                    $currentCategory->subcategoryid
+                );
+
+                $Product->where(
+                    'product.subcategoryid',
+                    $currentCategory->categoryId
+                );
+            }
+        }
+
+        $parentCategories = array_values(array_filter((array) $request->input('category', []), 'is_numeric'));
+        $subCategoriesFilter = array_values(array_filter((array) $request->input('subcategory', []), 'is_numeric'));
+        $priceRanges = array_filter((array) $request->input('price', []), function ($range) {
+            return is_string($range) && preg_match('/^\d+(?:-\d+)?$/', $range);
+        });
+        $selectedSizes = array_values(array_filter((array) $request->input('size', []), function ($size) {
+            return is_scalar($size) && trim((string) $size) !== '';
+        }));
+
+        if ($parentCategories || $subCategoriesFilter) {
+            $Product->where(function ($query) use ($parentCategories, $subCategoriesFilter) {
+                if ($parentCategories) {
+                    $query->whereIn('product.categoryId', $parentCategories);
+                }
+
+                if ($subCategoriesFilter) {
+                    $method = $parentCategories ? 'orWhere' : 'where';
+                    $query->{$method . 'In'}('product.subcategoryid', $subCategoriesFilter);
+                }
+            });
+        }
+
+        if ($priceRanges) {
+            $priceConditions = [];
+            $priceBindings = [];
+            foreach ($priceRanges as $range) {
+                [$minimum, $maximum] = array_pad(explode('-', $range, 2), 2, null);
+                $priceConditions[] = 'product_attribute_price between ? and ?';
+                $priceBindings[] = (int) $minimum;
+                $priceBindings[] = $maximum !== null ? (int) $maximum : PHP_INT_MAX;
+            }
+
+            $Product->whereRaw(
+                'product.productId in (select product_id from product_attributes where ' . implode(' or ', $priceConditions) . ')',
+                $priceBindings
+            );
+        }
+
+        if ($selectedSizes) {
+            $Product->whereExists(function ($query) use ($selectedSizes) {
+                $query->select(DB::raw(1))
+                    ->from('product_attributes')
+                    ->whereColumn('product_attributes.product_id', 'product.productId')
+                    ->whereIn('product_attribute_size', $selectedSizes);
+            });
+        }
+
+
+
+        switch ($request->sort) {
+
+            case 'low':
+
+                $Product->orderBy(
+                    'product_attribute_price',
+                    'asc'
+                );
+
+                break;
+
+            case 'high':
+
+                $Product->orderBy(
+                    'product_attribute_price',
+                    'desc'
+                );
+
+                break;
+
+            default:
+
+                $Product->orderBy(
+                    'product.productId',
+                    'desc'
+                );
+
+                break;
+        }
+
+
+
+        $Product = $Product
+            ->paginate(16)
+            ->withQueryString();
+
+
+        $ProductCount = $Product->total();
+
+
+
+        return view('frontview.product', compact(
+            'Product',
+            'ProductCount',
+            'categories',
+            'subCategories',
+            'sizes',
+            'id',
+            'currentCategory',
+            'parentCategoryId'
+        ));
     }
+
+    // public function products(Request $request, $id = null)
+    // {
+    //     DB::beginTransaction();
+    //     try {
+
+    //         // $sizeselect = "";
+    //         // if ((isset($request->sizeselect) && $request->sizeselect != null) || Session::get('sizeselect')) {
+    //         //     //dd("if");
+    //         //     if (isset($request->sizeselect) && $request->sizeselect != "") {
+    //         //         $sizeselect = $request->sizeselect;
+    //         //         //Session::put('sizeselect',$sizeselect);
+    //         //     } else if (Session::get('sizeselect')) {
+    //         //         $sizeselect = Session::get('sizeselect');
+    //         //     } else {
+    //         //         $sizeselect = $request->session()->forget('sizeselect');
+    //         //     }
+    //         //     $Product = Product::leftJoin('product_attributes', 'product.productId', '=', 'product_attributes.product_id')
+    //         //         ->leftJoin('ledger', function ($join) {
+    //         //             $join->on('product.productId', '=', 'ledger.iProductId')
+    //         //                 ->on('product_attributes.id', '=', 'ledger.iSize')
+    //         //                 ->whereRaw('ledger.ledgerId = (SELECT MAX(ledgerId) FROM ledger WHERE ledger.iProductId = product.productId AND ledger.iSize = product_attributes.id)');
+    //         //         })
+    //         //         ->leftJoin('productphotos', 'product.productId', '=', 'productphotos.productid')
+    //         //         ->select(
+    //         //             'product_attributes.id',
+    //         //             'product.productId',
+    //         //             'product.categoryId',
+    //         //             'product.subcategoryid',
+    //         //             'product.productname',
+    //         //             'product.rate',
+    //         //             'product.description',
+    //         //             'product.slugname',
+    //         //             DB::raw('(SELECT strphoto FROM productphotos WHERE productphotos.productid = product.productId LIMIT 1) as photo'),
+    //         //             'product_attributes.product_attribute_price',
+    //         //             'ledger.closingBalance',
+    //         //             'product_attributes.product_attribute_size'
+    //         //         )
+    //         //         ->when($sizeselect, function ($query) use ($sizeselect) {
+    //         //             $query->Where('product_attributes.product_attribute_size', $sizeselect);
+    //         //         })
+    //         //         //->where('product_attributes.product_attribute_size', $sizeselect)
+    //         //         ->where('product.iStatus', 1)
+    //         //         ->where('product.isDelete', 0)
+    //         //         ->where('ledger.closingBalance', '>', 0)
+    //         //         ->whereIn('product.categoryId', function ($query) {
+    //         //             $query->select('categoryId')
+    //         //                 ->from('category')
+    //         //                 ->where('isDelete', 0)
+    //         //                 ->where('iStatus', 1);
+    //         //         })
+    //         //         ->groupBy(
+    //         //             'product_attributes.id',
+    //         //             'product.productId',
+    //         //             'product.categoryId',
+    //         //             'product.subcategoryid',
+    //         //             'product.productname',
+    //         //             'product.rate',
+    //         //             'product.description',
+    //         //             'product.slugname',
+    //         //             'product_attributes.product_attribute_price',
+    //         //             'product_attributes.product_attribute_size',
+    //         //             'ledger.closingBalance'
+    //         //         )->orderBy('productId', 'desc')
+    //         //         ->paginate(16);
+    //         //     // dd($Product);
+    //         //     $ProductCount = $Product->count();
+    //         // } else if ($id == null) {
+    //         //     //dd("else if");
+    //         //     $Product = Product::select(
+    //         //         'product.productId',
+    //         //         'product.categoryId',
+    //         //         'product.subcategoryid',
+    //         //         'product.productname',
+    //         //         'product.rate',
+    //         //         'product.description',
+    //         //         'product.slugname',
+    //         //         DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId LIMIT 1) as photo'),
+    //         //         DB::raw('(SELECT COALESCE(MIN(product_attribute_price), 0) FROM product_attributes WHERE  product_attributes.product_id=product.productId   LIMIT 1) as product_attribute_price')
+    //         //         // DB::raw('(SELECT MIN(product_attribute_price)  FROM product_attributes WHERE  product_attributes.product_id=product.productId ORDER BY product.productId  LIMIT 1) as product_attribute_price'),
+    //         //         //DB::raw('(SELECT COUNT(*) FROM ledger WHERE ledger.ledgerId IN (SELECT MAX(ledgerId) FROM ledger WHERE ledger.iProductId=product.productId GROUP BY iSize) AND ledger.closingBalance > 0) as closingBalance')
+    //         //     )
+    //         //         ->join('category', 'category.categoryId', '=', 'product.categoryId')
+    //         //         ->orderBy('productId', 'desc')
+    //         //         ->where(['product.iStatus' => 1, 'product.isDelete' => 0])
+    //         //         // ->whereIn('categoryId', function ($query) {
+    //         //         //     $query->select('categoryId')
+    //         //         //         ->from('category')
+    //         //         //         ->where('isDelete', 0)
+    //         //         //         ->where('iStatus', 1);
+    //         //         // })
+    //         //         ->paginate(16);
+
+    //         /*$Product = Product::select(
+    //                 'product.productId',
+    //                 'product.categoryId',
+    //                 'product.subcategoryid',
+    //                 'product.productname',
+    //                 'product.rate',
+    //                 'product.description',
+    //                 'product.slugname',
+    //                 DB::raw('productphotos.strphoto as photo'),
+    //                 DB::raw('COALESCE(MIN(product_attributes.product_attribute_price), 0) as product_attribute_price'),
+    //                 DB::raw('COUNT(DISTINCT ledger.iSize) as closingBalance')
+    //             )
+    //             ->leftJoin('productphotos', 'product.productId', '=', 'productphotos.productid')
+    //             ->leftJoin('product_attributes', 'product.productId', '=', 'product_attributes.product_id')
+    //             ->leftJoin('ledger', function ($join) {
+    //                 $join->on('product.productId', '=', 'ledger.iProductId')
+    //                     ->whereRaw('ledger.ledgerId IN (SELECT MAX(ledgerId) FROM ledger GROUP BY iSize)')
+    //                     ->where('ledger.closingBalance', '>', 0);
+    //             })
+    //             ->where('product.iStatus', 1)
+    //             ->where('product.isDelete', 0)
+    //             ->whereIn('product.categoryId', function ($query) {
+    //                 $query->select('categoryId')
+    //                     ->from('category')
+    //                     ->where('isDelete', 0)
+    //                     ->where('iStatus', 1);
+    //             })
+    //             ->groupBy(
+    //                 'product.productId',
+    //                 'product.categoryId',
+    //                 'product.subcategoryid',
+    //                 'product.productname',
+    //                 'product.rate',
+    //                 'product.description',
+    //                 'product.slugname',
+    //                 'productphotos.strphoto'
+    //             )
+    //             ->orderBy('product.productId', 'desc')
+    //             ->paginate(16);*/
+    //         // dd($Product);
+    //         //     $ProductCount = $Product->count();
+    //         //     DB::disconnect();
+    //         // } else {
+    //         //     //dd("else");
+    //         //     $Product = Product::select(
+    //         //         'product.productId',
+    //         //         'product.productname',
+    //         //         'product.rate',
+    //         //         'product.weight',
+    //         //         'product.description',
+    //         //         'product.isFeatures',
+    //         //         'product.isStock',
+    //         //         'product.slugname',
+    //         //         DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId  LIMIT 1) as photo'),
+    //         //         DB::raw('(SELECT COALESCE(MIN(product_attribute_price), 0) FROM product_attributes WHERE  product_attributes.product_id=product.productId LIMIT 1) as product_attribute_price'),
+    //         //         // DB::raw('(SELECT MIN(product_attribute_price)  FROM product_attributes WHERE  product_attributes.product_id=product.productId ORDER BY product.productId  LIMIT 1) as product_attribute_price'),
+    //         //         DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId LIMIT 1,1) as backphoto')
+    //         //     )
+    //         //         ->orderBy('productId', 'desc')
+    //         //         ->where(['product.iStatus' => 1, 'product.isDelete' => 0, 'category.slugname' => $id])
+    //         //         ->join('category', 'product.categoryId', '=', 'category.categoryId')
+    //         //         ->paginate(16);
+    //         //     $ProductCount = $Product->count();
+    //         //     // dd($Product);
+
+    //         // }
+    //         //$sizeselect = $request->sizeselect ?? "";
+    //         //$request->session()->put('sizeselect', $sizeselect);
+    //         // dd($Product);
+    //         DB::commit();
+    //         // return view('frontview.product', compact('Product',  'id', 'ProductCount', 'sizeselect'));
+    //         return view('frontview.product');
+    //     } catch (\Throwable $th) {
+    //         // Rollback and return with Error
+    //         DB::rollBack();
+    //         return redirect()->back()->withInput()->with('error', $th->getMessage());
+    //     }
+    // }
 
     public function loadMoreProducts(Request $request)
     {
@@ -585,7 +866,7 @@ class FrontController extends Controller
 
             $State = State::orderBy('stateName', 'asc')->get();
 
-            return view('frontview.checkout', compact('Shipping', 'Coupon', 'State'));
+            return view('frontview.checkout', compact('Shipping', 'Coupon', 'State', 'cartItems'));
         } catch (\Throwable $th) {
             // Rollback and return with Error
             return redirect()->back()->withInput()->with('error', $th->getMessage());
@@ -594,10 +875,12 @@ class FrontController extends Controller
 
     public function checkoutstore(Request $request)
     {
+
         $request->validate([
             'billPhone' => 'required|digits:10',
             'billFirstName' => 'required',
             'billLastName' => 'required',
+            'billEmail' => 'required|email',
             'billStreetAddress1' => 'required',
             'billStreetAddress2' => 'required',
             'billState' => 'required',
@@ -609,6 +892,8 @@ class FrontController extends Controller
             'billPhone.digits' => 'Phone number must be exactly 10 digits.',
             'billFirstName.required' => 'Please enter your first name.',
             'billLastName.required' => 'Please enter your last name.',
+            'billEmail.required' => 'Please enter your email address.',
+            'billEmail.email' => 'Please enter a valid email address.',
             'billStreetAddress1.required' => 'Address Line 1 is required.',
             'billStreetAddress2.required' => 'Address Line 2 is required.',
             'billState.required' => 'Please select your state.',
@@ -617,149 +902,145 @@ class FrontController extends Controller
             'billPinCode.required' => 'Please enter your postal code.',
             'billPinCode.digits' => 'Postal code must be exactly 6 digits.',
         ]);
-
+        // dd($request->all());
         // DB::beginTransaction();
-        try {
-            $cartItems = \Cart::getContent();
-            //  dd($cartItems);
-            $amount = \Cart::getTotal();
+        // try {
+        $cartItems = \Cart::getContent();
 
-            $Mobile = Customer::where(['isDelete' => 0, 'iStatus' => 1, 'customermobile' => $request->billPhone])->first();
+        $amount = \Cart::getTotal();
 
-            // foreach ($cartItems as $cartItem) {
+        $Mobile = Customer::where(['isDelete' => 0, 'iStatus' => 1, 'customermobile' => $request->billPhone])->first();
+        // dd($Mobile);
+        // foreach ($cartItems as $cartItem) {
 
-            //      $Ledger = Ledger::orderBy('ledgerId', 'desc')->where([
-            //             'ledger.iStatus' => 1, 'ledger.isDelete' => 0, 'ledger.iProductId' => $cartItem->productid, 'iSize' => $cartItem->size
-            //         ])
-            //         ->join('product_attributes', 'ledger.iSize', '=', 'product_attributes.id')
-            //         ->first();
-            //     $closingBalance = (int)$Ledger->closingBalance;
+        //      $Ledger = Ledger::orderBy('ledgerId', 'desc')->where([
+        //             'ledger.iStatus' => 1, 'ledger.isDelete' => 0, 'ledger.iProductId' => $cartItem->productid, 'iSize' => $cartItem->size
+        //         ])
+        //         ->join('product_attributes', 'ledger.iSize', '=', 'product_attributes.id')
+        //         ->first();
+        //     $closingBalance = (int)$Ledger->closingBalance;
 
-            //     $specificId = $cartItem->id;
-            //     $count = $cartItem->filter(function ($item) use ($specificId) {
-            //         return $item->id === $specificId;
-            //     })->sum('quantity');
+        //     $specificId = $cartItem->id;
+        //     $count = $cartItem->filter(function ($item) use ($specificId) {
+        //         return $item->id === $specificId;
+        //     })->sum('quantity');
 
-            //     if (isset($Ledger) &&  ($closingBalance * 1) > ($count * 1)) {
+        //     if (isset($Ledger) &&  ($closingBalance * 1) > ($count * 1)) {
 
-            //     }
+        //     }
 
-            // }
+        // }
 
-            $status = true;
-            foreach ($cartItems as $cartItem) {
-                $Ledger = Ledger::orderBy('ledgerId', 'desc')->where([
-                    'ledger.iStatus' => 1,
-                    'ledger.isDelete' => 0,
-                    'ledger.iProductId' => $cartItem->productid,
-                    'iSize' => $cartItem->size
-                ])
-                    ->join('product_attributes', 'ledger.iSize', '=', 'product_attributes.id')
-                    ->first();
-                $specificId = $request->attributeid; // Change this to the id you want to count
-                $count = $cartItems->filter(function ($item) use ($specificId) {
-                    return $item->id === $specificId;
-                })->sum('quantity');
+        $status = $cartItems->isNotEmpty();
+        foreach ($cartItems as $cartItem) {
+            $ledger = Ledger::where([
+                'ledger.iStatus' => 1,
+                'ledger.isDelete' => 0,
+                'ledger.iProductId' => $cartItem->productid,
+                'ledger.iSize' => $cartItem->id,
+            ])
+                ->orderByDesc('ledger.ledgerId')
+                ->first();
 
-                $closingBalance = (int)$Ledger->closingBalance;
-                if (($closingBalance *  1) > ($count *  1)) {
-                } else {
-                    $status = false;
-                }
+            $closingBalance = (int) ($ledger->closingBalance ?? 0);
+            if ($closingBalance < (int) $cartItem->quantity) {
+                $status = false;
+                break;
             }
+        }
 
-            if ($status == true) {
+        if ($status == true) {
 
-                $customerid = 0;
-                $uniqueNumber = Str::random(16);
-                if ($Mobile == null) {
-                    $Order = array(
-                        'firstname' => $request->billFirstName,
-                        'lastname' =>  $request->billLastName,
-                        'customername' => $request->billFirstName . ' ' . $request->billLastName,
-                        'guid' => $uniqueNumber,
-                        'customermobile' => $request->billPhone,
-                        'customermobile1' => $request->billPhone1,
-                        'customeremail' => $request->billEmail,
-
-                        'address' => $request->billStreetAddress1,
-                        'address1' => $request->billStreetAddress2,
-                        'state' => $request->billState,
-                        'city' => $request->shipping_city,
-                        'pincode' => $request->billPinCode,
-                        'country' => $request->strCountry,
-                        'created_at' => date('Y-m-d H:i:s'),
-                        'strIP' => $request->ip()
-                    );
-                    $customerid = DB::table('customer')->insertGetId($Order);
-                } else {
-                    $customerid = $Mobile->customerid;
-                }
-
+            $customerid = 0;
+            $uniqueNumber = Str::random(16);
+            if ($Mobile == null) {
                 $Order = array(
-                    'customerid' => $customerid,
-                    'shipping_cutomerName' => $request->billFirstName . ' ' . $request->billLastName,
-                    // 'shipping_companyName' => $request->billCompanyName,
-                    'shipping_mobile' => $request->billPhone,
-                    'shipping_mobile1' => $request->billPhone1,
-                    'shipping_email' => $request->billEmail,
-                    'shiiping_address1' => $request->billStreetAddress1,
-                    'shiiping_address2' => $request->billStreetAddress2,
-                    'shipping_city' => $request->shipping_city,
-                    'shiiping_state' => $request->billState,
-                    'shipping_pincode' => $request->billPinCode,
-                    // 'orderNote' => $request->billNotes,
+                    'firstname' => $request->billFirstName,
+                    'lastname' =>  $request->billLastName,
+                    'customername' => $request->billFirstName . ' ' . $request->billLastName,
+                    'guid' => $uniqueNumber,
+                    'customermobile' => $request->billPhone,
+                    'customermobile1' => $request->billPhone1,
+                    'customeremail' => $request->billEmail,
+
+                    'address' => $request->billStreetAddress1,
+                    'address1' => $request->billStreetAddress2,
+                    'state' => $request->billState,
+                    'city' => $request->shipping_city,
+                    'pincode' => $request->billPinCode,
                     'country' => $request->strCountry,
-                    'amount' => $amount,
-                    // 'discount' => $request->discount,
-                    // 'shipping_Charges' => $request->shippingcharges,
-                    'netAmount' => $amount,
                     'created_at' => date('Y-m-d H:i:s'),
                     'strIP' => $request->ip()
                 );
-                $OrderId = DB::table('order')->insertGetId($Order);
-                // try {
-                //     DB::enableQueryLog();
-                //     $OrderId = DB::table('order')->insertGetId($Order);
-                //     Log::info('Insert Query:', DB::getQueryLog());
-                //     // Output the Order ID
-                //     dd($OrderId);
-                // } catch (\Exception $e) {
-                //     // Log the error
-                //     Log::error('Error inserting order:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-
-                //     // Output the error message
-                //     dd('Error inserting order: ' . $e->getMessage());
-                // }
-                foreach ($cartItems as $cartItem) {
-                    $OrderDetail = array(
-                        'orderID' => $OrderId,
-                        'customerid' => $customerid,
-                        'categoryId' => $cartItem->categoryId,
-                        'subcategoryid' => $cartItem->subcategoryid,
-                        'productId' => $cartItem->productid,
-                        'quantity' => $cartItem->quantity,
-                        'size' => $cartItem->size,
-                        'rate' => $cartItem->price,
-                        'info' => $cartItem->info,
-                        'amount' => $cartItem->price * $cartItem->quantity,
-                        'created_at' => date('Y-m-d H:i:s'),
-                        "strIP" => $request->ip()
-                    );
-                    $GetId = DB::table('orderdetail')->insertGetId($OrderDetail);
-                }
-                return redirect()->route('razorpay.index', $OrderId);
+                $customerid = DB::table('customer')->insertGetId($Order);
             } else {
-                session()->flash('outofstock', 'Product is Out Of Stock!');
-                return back()->with('error', 'Some Product is Out Of Stock!');
+                $customerid = $Mobile->customerid;
             }
-            //DB::commit();
-        } catch (\Throwable $th) {
 
-            // Rollback & Return Error Message
-            //DB::rollBack();
-            return redirect()->back()->with('error', $th->getMessage());
+            $Order = array(
+                'customerid' => $customerid,
+                'shipping_cutomerName' => $request->billFirstName . ' ' . $request->billLastName,
+                // 'shipping_companyName' => $request->billCompanyName,
+                'shipping_mobile' => $request->billPhone,
+                'shipping_mobile1' => $request->billPhone1,
+                'shipping_email' => $request->billEmail,
+                'shiiping_address1' => $request->billStreetAddress1,
+                'shiiping_address2' => $request->billStreetAddress2,
+                'shipping_city' => $request->shipping_city,
+                'shiiping_state' => $request->billState,
+                'shipping_pincode' => $request->billPinCode,
+                // 'orderNote' => $request->billNotes,
+                'country' => $request->strCountry,
+                'amount' => $amount,
+                // 'discount' => $request->discount,
+                // 'shipping_Charges' => $request->shippingcharges,
+                'netAmount' => $amount,
+                'created_at' => date('Y-m-d H:i:s'),
+                'strIP' => $request->ip()
+            );
+            $OrderId = DB::table('order')->insertGetId($Order);
+            // try {
+            //     DB::enableQueryLog();
+            //     $OrderId = DB::table('order')->insertGetId($Order);
+            //     Log::info('Insert Query:', DB::getQueryLog());
+            //     // Output the Order ID
+            //     dd($OrderId);
+            // } catch (\Exception $e) {
+            //     // Log the error
+            //     Log::error('Error inserting order:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
+            //     // Output the error message
+            //     dd('Error inserting order: ' . $e->getMessage());
+            // }
+            foreach ($cartItems as $cartItem) {
+                $OrderDetail = array(
+                    'orderID' => $OrderId,
+                    'customerid' => $customerid,
+                    'categoryId' => $cartItem->categoryId,
+                    'subcategoryid' => $cartItem->subcategoryid,
+                    'productId' => $cartItem->productid,
+                    'quantity' => $cartItem->quantity,
+                    'size' => $cartItem->size,
+                    'rate' => $cartItem->price,
+                    'info' => $cartItem->info,
+                    'amount' => $cartItem->price * $cartItem->quantity,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    "strIP" => $request->ip()
+                );
+                $GetId = DB::table('orderdetail')->insertGetId($OrderDetail);
+            }
+            return redirect()->route('razorpay.index', $OrderId);
+        } else {
+            session()->flash('outofstock', 'Product is Out Of Stock!');
+            return back()->with('error', 'Some Product is Out Of Stock!');
         }
+        //DB::commit();
+        // } catch (\Throwable $th) {
+
+        //     // Rollback & Return Error Message
+        //     //DB::rollBack();
+        //     return redirect()->back()->with('error', $th->getMessage());
+        // }
     }
 
     public function payment_success()
@@ -1200,46 +1481,48 @@ class FrontController extends Controller
     public function productdetail(Request $request, $category = null, $id = null)
     {
         try {
-            // $ProductDetail = Product::select(
-            //     'product.productId',
-            //     'product.productname',
-            //     'product.rate',
-            //     'product.weight',
-            //     'product.description',
-            //     'product.isStock',
-            //     'product.categoryId',
-            //     'product.subcategoryid',
-            //     'product.isFeatures',
-            //     'product.disclaimer',
-            //     'product.care',
-            //     'product.fabric',
-            //     DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId  LIMIT 1) as photo'),
-            //     DB::raw('(SELECT MIN(product_attribute_price)  FROM product_attributes WHERE  product_attributes.product_id=product.productId ORDER BY product.productId  LIMIT 1) as product_attribute_price')
-            // )
-            //     ->orderBy('productId', 'DESC')
-            //     ->where(['product.iStatus' => 1, 'product.isDelete' => 0, 'product.slugname' => $category])
-            //     ->first();
-            // // dd($ProductDetail);
-            // $Attribute = "";
-            // if ($ProductDetail) {
-            //     $Attribute = ProductAttributes::select('product_attributes.*', DB::raw('(SELECT closingBalance FROM ledger WHERE  ledger.iProductId=product_attributes.product_id and ledger.iSize=product_attributes.id order by ledgerId desc  LIMIT 1) as closingBalance'))->where(['product_attributes.product_id' => $ProductDetail->productId])
-            //         ->get();
-            // }
+            if (!$id) {
+                $legacyProduct = Product::where('slugname', $category)
+                    ->where('iStatus', 1)
+                    ->where('isDelete', 0)
+                    ->firstOrFail();
+                $id = $legacyProduct->slugname;
+                $category = Category::where('categoryId', $legacyProduct->subcategoryid)->value('slugname');
+            }
 
-            // $Category = Category::where(['slugname' => $category])->first();
+            $subcategory = Category::where('slugname', $category)
+                ->where('subcategoryid', '>', 0)
+                ->where('iStatus', 1)
+                ->where('isDelete', 0)
+                ->firstOrFail();
 
-            // $Photos = "";
-            // if ($ProductDetail) {
-            //     $Photos = Productphotos::where([
-            //         'productphotos.iStatus' => 1,
-            //         'productphotos.isDelete' => 0,
-            //         'productphotos.productid' => $ProductDetail->productId
-            //     ])
-            //         ->get();
-            // }
+            $ProductDetail = Product::where('slugname', $id)
+                ->where('subcategoryid', $subcategory->categoryId)
+                ->where('iStatus', 1)
+                ->where('isDelete', 0)
+                ->firstOrFail();
 
-            // return view('frontview.productdetail', compact('ProductDetail', 'Photos',  'Attribute', 'category', 'id'));
-            return view('frontview.productdetail');
+            $parentCategory = Category::where('categoryId', $subcategory->subcategoryid)
+                ->where('iStatus', 1)
+                ->where('isDelete', 0)
+                ->first();
+
+            $Attribute = ProductAttributes::where('product_id', $ProductDetail->productId)
+                ->orderBy('product_attribute_size')
+                ->get();
+
+            $Photos = Productphotos::where('productid', $ProductDetail->productId)
+                ->where('iStatus', 1)
+                ->where('isDelete', 0)
+                ->get();
+
+            return view('frontview.productdetail', compact(
+                'ProductDetail',
+                'Photos',
+                'Attribute',
+                'subcategory',
+                'parentCategory'
+            ));
         } catch (\Throwable $th) {
             // Rollback and return with Error
             return redirect()->back()->withInput()->with('error', $th->getMessage());

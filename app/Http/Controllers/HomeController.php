@@ -46,65 +46,65 @@ class HomeController extends Controller
         $Courier = Courier::orderBy('id', 'DESC')->where(['iStatus' => 1, 'isDelete' => 0])->count();
         $Inquiry = Inquiry::orderBy('id', 'DESC')->where(['iStatus' => 1, 'isDelete' => 0])->count();
         $TodaysOrder = Order::orderBy('order_id', 'DESC')
-                        ->where(DB::raw('DATE(created_at)'), $Today) // Filter by date
-                        // ->where(['iStatus' => 1, 'isDelete' => 0 ,'created_at'=> $Today])
-                        ->count();
+            ->where(DB::raw('DATE(created_at)'), $Today) // Filter by date
+            // ->where(['iStatus' => 1, 'isDelete' => 0 ,'created_at'=> $Today])
+            ->count();
         $PendingOrder = Order::orderBy('id', 'DESC')
-                    ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0,'dispatchCourierId'=>0,'isPayment'=>1])
-                    ->count();
+            ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0, 'dispatchCourierId' => 0, 'isPayment' => 1])
+            ->count();
         $PendingOrderTirupati = Order::orderBy('id', 'DESC')
-                    ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0,'dispatchCourierId'=>1])
-                    ->count();            
+            ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0, 'dispatchCourierId' => 1])
+            ->count();
         $PendingOrderDelivery = Order::orderBy('id', 'DESC')
-                    ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0,'dispatchCourierId'=>2])
-                    ->count(); 
+            ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0, 'dispatchCourierId' => 2])
+            ->count();
         $DispatchedOrder = Order::orderBy('id', 'DESC')
-                    ->where(DB::raw('DATE(updated_at)'), $Today)
-                    ->where(['order.iStatus' => 1, 'order.isDelete' => 0, 'order.isDispatched' => 1])
-                    ->count();    
+            ->where(DB::raw('DATE(updated_at)'), $Today)
+            ->where(['order.iStatus' => 1, 'order.isDelete' => 0, 'order.isDispatched' => 1])
+            ->count();
         $TodaysCollection = Order::orderBy('order_id', 'DESC')
-                        ->where(['iStatus' => 1, 'isDelete' => 0, 'order.isPayment'=>1])
-                        ->where(DB::raw('DATE(created_at)'), $Today)
-                        ->sum('netAmount');           
+            ->where(['iStatus' => 1, 'isDelete' => 0, 'order.isPayment' => 1])
+            ->where(DB::raw('DATE(created_at)'), $Today)
+            ->sum('netAmount');
         //  dd($Product);
-        
+
         // INNER QUERY — latest ledger row per product + size
-$inner = DB::table('ledger as l')
-    ->select([
-        'l.iProductId',
-        'l.iSize',
-        'l.closingBalance',
-        DB::raw("(SELECT MIN(pa.product_attribute_price) 
-                  FROM product_attributes pa 
-                  WHERE pa.product_id = l.iProductId) AS amount")
-    ])
-    ->join('product as p', 'p.productId', '=', 'l.iProductId')
-    ->where('p.iStatus', 1)
-    ->where('p.isDelete', 0)
-    ->whereIn('l.ledgerId', function ($q) {
-        $q->selectRaw('MAX(ledgerId)')
-          ->from('ledger')
-          ->groupBy('iProductId', 'iSize');   // important!
-    })
-    ->where('l.closingBalance', '>', 0)
-    ->where('p.productId', '!=', 34); // exclude unwanted product
+        $inner = DB::table('ledger as l')
+            ->select([
+                'l.iProductId',
+                'l.iSize',
+                'l.closingBalance',
+                DB::raw("(SELECT MIN(pa.product_attribute_price)
+                        FROM product_attributes pa
+                        WHERE pa.product_id = l.iProductId) AS amount")
+            ])
+            ->join('product as p', 'p.productId', '=', 'l.iProductId')
+            ->where('p.iStatus', 1)
+            ->where('p.isDelete', 0)
+            ->whereIn('l.ledgerId', function ($q) {
+                $q->selectRaw('MAX(ledgerId)')
+                    ->from('ledger')
+                    ->groupBy('iProductId', 'iSize');   // important!
+            })
+            ->where('l.closingBalance', '>', 0)
+            ->where('p.productId', '!=', 34); // exclude unwanted product
 
-// OUTER QUERY — sum the qty and amount
-$row = DB::table(DB::raw("({$inner->toSql()}) as tbl"))
-    ->mergeBindings($inner)
-    ->selectRaw("
-        SUM(closingBalance) AS stock,
-        SUM(closingBalance * COALESCE(CAST(amount AS DECIMAL(16,2)), 0)) AS amount
-    ")
-    ->first();
+        // OUTER QUERY — sum the qty and amount
+        $row = DB::table(DB::raw("({$inner->toSql()}) as tbl"))
+            ->mergeBindings($inner)
+            ->selectRaw("
+                SUM(closingBalance) AS stock,
+                SUM(closingBalance * COALESCE(CAST(amount AS DECIMAL(16,2)), 0)) AS amount
+            ")
+            ->first();
 
-// Final output
-$stock  = (float) ($row->stock ?? 0);
-$amount = (float) ($row->amount ?? 0);
+        // Final output
+        $stock  = (float) ($row->stock ?? 0);
+        $amount = (float) ($row->amount ?? 0);
 
-        
-        
-         // Subquery: latest ledger row per product
+
+
+        // Subquery: latest ledger row per product
         // $latestPerProduct = DB::table('ledger')
         //     ->selectRaw('MAX(ledgerId) AS maxId')
         //     ->where('isDelete', 0)
@@ -144,19 +144,19 @@ $amount = (float) ($row->amount ?? 0);
         //     ) AS amount
         // ")
         //     ->first();
-        
+
         // // Convert nulls to 0 for safety
         // $stock = (float) ($row->stock ?? 0);
         // $amount = (float) ($row->amount ?? 0);
-        
+
         $order_tracking = Order::orderBy('order_id', 'desc')
-                ->where(['order.iStatus' => 1, 'order.isDelete' => 0, 'order.isDispatched' => 1])
-                ->join('courier', 'order.courier', '=', 'courier.id')
-                ->join('state', 'order.shiiping_state', '=', 'state.stateId')    
-                ->get();
-        
-        
-        return view('home', compact('order_tracking', 'stock', 'amount',  'Category', 'TodaysCollection',  'Product', 'Banner',  'Attribute', 'Inquiry', 'Courier','TodaysOrder','PendingOrder','PendingOrderTirupati','PendingOrderDelivery','DispatchedOrder'));
+            ->where(['order.iStatus' => 1, 'order.isDelete' => 0, 'order.isDispatched' => 1])
+            ->join('courier', 'order.courier', '=', 'courier.id')
+            ->join('state', 'order.shiiping_state', '=', 'state.stateId')
+            ->get();
+
+
+        return view('home', compact('order_tracking', 'stock', 'amount',  'Category', 'TodaysCollection',  'Product', 'Banner',  'Attribute', 'Inquiry', 'Courier', 'TodaysOrder', 'PendingOrder', 'PendingOrderTirupati', 'PendingOrderDelivery', 'DispatchedOrder'));
     }
 
     /**
@@ -198,7 +198,7 @@ $amount = (float) ($row->amount ?? 0);
         ]);
 
         try {
-        
+
             #Update Profile Data
             User::whereId(auth()->user()->id)->update([
                 'first_name'    => $request->first_name,
@@ -209,7 +209,7 @@ $amount = (float) ($row->amount ?? 0);
             ]);
 
             #Commit Transaction
-        
+
             #Return To Profile page with success
             return back()->with('success', 'Profile Updated Successfully.');
         } catch (\Throwable $th) {

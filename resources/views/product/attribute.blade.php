@@ -30,11 +30,10 @@
                                         class="btn btn-sm btn-primary mx-2">
                                         <i class="fa-solid fa-plus"></i> Add New
                                     </a>
-                                    <a href="{{ route('product.index') }}"
-                                        class="btn btn-sm btn-primary mx-2">
+                                    <a href="{{ route('product.index') }}" class="btn btn-sm btn-primary mx-2">
                                         Back
                                     </a>
-                                </div>    
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -71,15 +70,17 @@
                                         <span style="color:red;">*</span>Product Size
                                         <select class="form-control" name="product_attribute_size" required>
                                             <option value="">Select Product Size</option>
-                                            <option value="S">S</option>
-                                            <option value="M">M</option>
-                                            <option value="L">L</option>
-                                            <option value="XL">XL</option>
-                                            <option value="2XL">2XL</option>
-                                            <option value="3XL">3XL</option>
-                                            <option value="4XL">4XL</option>
-                                            <option value="5XL">5XL</option>
-                                            <option value="6XL">6XL</option>
+                                            <option value="16">16</option>
+                                            <option value="18">18</option>
+                                            <option value="20">20</option>
+                                            <option value="22">22</option>
+                                            <option value="24">24</option>
+                                            <option value="26">26</option>
+                                            <option value="28">28</option>
+                                            <option value="30">30</option>
+                                            <option value="32">32</option>
+                                            <option value="34">34</option>
+                                            <option value="36">36</option>
                                         </select>
                                         <!--<input type="text" class="form-control" name="product_attribute_size"-->
                                         <!--    placeholder="Enter Product Size" maxlength="100" autocomplete="off" required>-->
@@ -121,7 +122,8 @@
                                     <div class="hstack gap-2 justify-content-end">
                                         <button type="submit" class="btn btn-primary mx-2" id="add-btn">Submit
                                         </button>
-                                        <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal">Cancel
+                                        <button type="button" class="btn btn-primary mx-2"
+                                            data-bs-dismiss="modal">Cancel
                                         </button>
                                     </div>
                                 </div>
@@ -139,8 +141,9 @@
                                 <h5 class="card-title mb-0">Product Name :- {{ $Product->productname }}</h5>
                                 <h5 class="card-title mb-0">
                                     <a href="{{ asset('Product/Thumbnail/') . '/' . $Product->photo }}" target="_blank">
-                                        <img class="img-1" height="50" width="50" src="{{ asset('Product/Thumbnail/') . '/' . $Product->photo }}">
-                                    </a>     
+                                        <img class="img-1" height="50" width="50"
+                                            src="{{ asset('Product/Thumbnail/') . '/' . $Product->photo }}">
+                                    </a>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -204,7 +207,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!--Edit Modal Start-->
                 <div class="modal fade flip" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
@@ -215,25 +218,30 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                                     id="close-modal"></button>
                             </div>
-                            <form id="EditregForm" method="POST" action="{{ route('product.product_attribute_update') }}" autocomplete="off"
+                            <form id="EditregForm" method="POST"
+                                action="{{ route('product.product_attribute_update') }}" autocomplete="off"
                                 enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="attributeid" id="attributeid" value="">
 
                                 <div class="modal-body">
-                                    
+
                                     <div class="mb-3">
                                         <span style="color:red;">*</span>Product Size
-                                        <select class="form-control" name="product_attribute_size" id="Editproduct_attribute_size" required>
+                                        <select class="form-control" name="product_attribute_size"
+                                            id="Editproduct_attribute_size" required>
                                             <option value="">Select Product Size</option>
-                                            <option value="S">S</option>
-                                            <option value="M">M</option>
-                                            <option value="L">L</option>
-                                            <option value="XL">XL</option>
-                                            <option value="2XL">2XL</option>
-                                            <option value="3XL">3XL</option>
-                                            <option value="4XL">4XL</option>
-                                            <option value="5XL">5XL</option>
+                                            <option value="16">16</option>
+                                            <option value="18">18</option>
+                                            <option value="20">20</option>
+                                            <option value="22">22</option>
+                                            <option value="24">24</option>
+                                            <option value="26">26</option>
+                                            <option value="28">28</option>
+                                            <option value="30">30</option>
+                                            <option value="32">32</option>
+                                            <option value="34">34</option>
+                                            <option value="36">36</option>
                                         </select>
                                         @error('product_attribute_size')
                                             <span class="text-danger">{{ $message }}</span>
@@ -242,9 +250,11 @@
 
                                     <div class="mb-3">
                                         <span style="color:red;">*</span>Attribute Price
-                                        <input type="text" class="form-control" name="product_attribute_price" id="Editproduct_attribute_price"
+                                        <input type="text" class="form-control" name="product_attribute_price"
+                                            id="Editproduct_attribute_price"
                                             oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*?)\..*/g, '$1');"
-                                            placeholder="Enter Attribute Price" maxlength="100" autocomplete="off" required>
+                                            placeholder="Enter Attribute Price" maxlength="100" autocomplete="off"
+                                            required>
                                         @error('product_attribute_price')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -330,16 +340,16 @@
                 '"   id="hello" width="70px" height = "70px" > ';
             $('#viewimg').html(html);
         });
-        
+
         $(document).ready(function() {
-            $('#regForm').on('submit', function () {
+            $('#regForm').on('submit', function() {
                 // Disable the submit button to prevent multiple submissions
                 $(this).find(':submit').prop('disabled', true);
             });
         });
-        
-         $(document).ready(function() {
-            $('#EditregForm').on('submit', function () {
+
+        $(document).ready(function() {
+            $('#EditregForm').on('submit', function() {
                 // Disable the submit button to prevent multiple submissions
                 $(this).find(':submit').prop('disabled', true);
             });

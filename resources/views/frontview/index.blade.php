@@ -1,6 +1,43 @@
 @extends('layouts.front')
 @section('title', 'Home')
 @section('content')
+    <style>
+        .category-tab-icon {
+            transition: all 0.3s ease;
+        }
+
+        /* Boys */
+        .boys-wear-icon {
+            --category-bg: #eaf7ff;
+            --category-color: #18a9e8;
+        }
+
+        /* Girls */
+        .girls-wear-icon {
+            --category-bg: #fff0f8;
+            --category-color: #e83e9d;
+        }
+
+        /* Discounted */
+        .discounted-outfit-icon {
+            --category-bg: #fff4e5;
+            --category-color: #c98a32;
+        }
+
+
+        /* Normal state */
+        .category-tab-icon {
+            background: var(--category-bg);
+            color: var(--category-color);
+        }
+
+
+        /* ACTIVE state */
+        .category-tab.active .category-tab-icon {
+            background: var(--category-color);
+            color: #fff;
+        }
+    </style>
     <section class="hero-slider-section">
         <div class="swiper heroSwiper">
             <div class="swiper-wrapper">
@@ -21,7 +58,7 @@
                                 Playful dresses, easy sets and everyday favourites made for
                                 school, celebrations and everything in between.
                             </p>
-                            <div class="hero-slide-actions">
+                            {{--  <div class="hero-slide-actions">
                                 <a href="#" class="hero-primary-btn">
                                     <span class="hero-btn-text">
                                         Shop Girls
@@ -34,7 +71,7 @@
                                     <span>View Collection</span>
                                     <i class="fa fa-angle-right"></i>
                                 </a>
-                            </div>
+                            </div>  --}}
                         </div>
                     </div>
                 </div>
@@ -54,7 +91,7 @@
                                 Comfortable tees, smart shirts and relaxed bottoms designed
                                 to keep up with every busy little explorer.
                             </p>
-                            <div class="hero-slide-actions">
+                            {{--  <div class="hero-slide-actions">
                                 <a href="#" class="hero-primary-btn">
                                     <span class="hero-btn-text">
                                         Shop Boys
@@ -67,7 +104,7 @@
                                     <span>View Collection</span>
                                     <i class="fa fa-angle-right"></i>
                                 </a>
-                            </div>
+                            </div>  --}}
                         </div>
                     </div>
                 </div>
@@ -87,7 +124,7 @@
                                 Soft baby sets, cosy essentials and sweet little styles
                                 created for cuddles, naps and first adventures.
                             </p>
-                            <div class="hero-slide-actions">
+                            {{--  <div class="hero-slide-actions">
                                 <a href="#" class="hero-primary-btn">
                                     <span class="hero-btn-text">
                                         Shop Baby
@@ -100,7 +137,7 @@
                                     <span>View Collection</span>
                                     <i class="fa fa-angle-right"></i>
                                 </a>
-                            </div>
+                            </div>  --}}
                         </div>
                     </div>
                 </div>
@@ -140,33 +177,115 @@
                     little personality.
                 </p>
             </div>
-            <!-- =====================================================
-                                 CATEGORY TABS
-                            ====================================================== -->
+
+
             <div class="category-tabs" role="tablist">
-                <button class="category-tab active" type="button" data-category="baby">
-                    <span class="category-tab-icon baby-icon">
-                        <i class="fa fa-child"></i>
-                    </span>
-                    <span>Baby</span>
-                </button>
-                <button class="category-tab" type="button" data-category="boys">
-                    <span class="category-tab-icon boys-icon">
-                        <i class="fa fa-male"></i>
-                    </span>
-                    <span>Boys</span>
-                </button>
-                <button class="category-tab" type="button" data-category="girls">
-                    <span class="category-tab-icon girls-icon">
-                        <i class="fa fa-female"></i>
-                    </span>
-                    <span>Girls</span>
-                </button>
+
+                @foreach ($categories as $key => $category)
+                    <button class="category-tab {{ $key == 0 ? 'active' : '' }}" type="button"
+                        data-category="{{ $category->categoryId }}">
+
+                        <span class="category-tab-icon {{ $category->slugname }}-icon">
+
+                            <i
+                                class="fa
+                    @if ($category->slugname == 'boys-wear') fa-male
+                    @elseif($category->slugname == 'girls-wear')
+                        fa-female
+                    @elseif($category->slugname == 'discounted-outfit')
+                        fa-tag @endif
+                "></i>
+
+                        </span>
+
+                        <span>{{ $category->categoryname }}</span>
+
+                    </button>
+                @endforeach
+
             </div>
             <!-- =====================================================
-                                 BABY
-                            ====================================================== -->
-            <div class="category-panel active" data-panel="baby">
+                                                                                      subcategory show
+                                                                                 ====================================================== -->
+
+            <div class="category-panel active" id="dynamic-category-panel">
+
+                <div class="category-slider-heading">
+
+                    <div>
+
+                        <span id="category-title">
+                            {{ strtoupper($firstCategory->categoryname ?? '') }} COLLECTION
+                        </span>
+
+                        <h3 id="category-description">
+                            {{ $firstCategory->meta_description ?? '' }}
+                        </h3>
+
+                    </div>
+
+                    <div class="category-slider-navigation">
+
+                        <button class="category-slider-arrow category-prev" type="button" aria-label="Previous">
+                            <i class="fa fa-angle-left"></i>
+                        </button>
+
+                        <button class="category-slider-arrow category-next" type="button" aria-label="Next">
+                            <i class="fa fa-angle-right"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="swiper subcategory-swiper">
+
+                    <div class="swiper-wrapper" id="subcategory-wrapper">
+
+                        @foreach ($subCategories as $subcategory)
+                            <div class="swiper-slide">
+
+                                <a href="{{ route('FrontProduct', ['slug' => $subcategory->slugname]) }}"
+                                    class="subcategory-card">
+
+                                    <div class="subcategory-image">
+
+                                        <img src="{{ asset('Category/' . $subcategory->photo) }}"
+                                            alt="{{ $subcategory->categoryname }}">
+
+                                        <div class="subcategory-content">
+
+                                            <div>
+
+                                                <small>
+                                                    {{ $subcategory->meta_description }}
+                                                </small>
+
+                                                <h4>
+                                                    {{ $subcategory->categoryname }}
+                                                </h4>
+
+                                            </div>
+
+                                            <span class="subcategory-card-arrow">
+                                                <i class="fa fa-long-arrow-right"></i>
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </a>
+
+                            </div>
+                        @endforeach
+
+                    </div>
+
+                </div>
+
+            </div>
+            {{--  <div class="category-panel active" data-panel="baby">
                 <div class="category-slider-heading">
                     <div>
                         <span>BABY COLLECTION</span>
@@ -189,7 +308,7 @@
                         <div class="swiper-slide">
                             <a href="#" class="subcategory-card">
                                 <div class="subcategory-image">
-                                    <img src="assets/images/baby-rompers.jpg" alt="Baby Rompers">
+                                    <img src="{{ asset('Front/assets/images/baby-rompers.jpg') }}" alt="Baby Rompers">
                                     <div class="subcategory-content">
                                         <div>
                                             <small>Soft Essentials</small>
@@ -206,7 +325,7 @@
                         <div class="swiper-slide">
                             <a href="#" class="subcategory-card">
                                 <div class="subcategory-image">
-                                    <img src="assets/images/baby-sets.jpg" alt="Baby Sets">
+                                    <img src="{{ asset('Front/assets/images/baby-sets.jpg') }}" alt="Baby Sets">
                                     <div class="subcategory-content">
                                         <div>
                                             <small>Everyday Comfort</small>
@@ -223,7 +342,7 @@
                         <div class="swiper-slide">
                             <a href="#" class="subcategory-card">
                                 <div class="subcategory-image">
-                                    <img src="assets/images/baby-sleepsuits.jpg" alt="Baby Sleepsuits">
+                                    <img src="{{ asset('Front/assets/images/baby-sleepsuits.jpg') }}" alt="Baby Sleepsuits">
                                     <div class="subcategory-content">
                                         <div>
                                             <small>Cosy Nights</small>
@@ -240,7 +359,7 @@
                         <div class="swiper-slide">
                             <a href="#" class="subcategory-card">
                                 <div class="subcategory-image">
-                                    <img src="assets/images/baby-dungarees.jpg" alt="Baby Dungarees">
+                                    <img src="{{ asset('Front/assets/images/baby-dungarees.jpg') }}" alt="Baby Dungarees">
                                     <div class="subcategory-content">
                                         <div>
                                             <small>Cute Looks</small>
@@ -257,7 +376,7 @@
                         <div class="swiper-slide">
                             <a href="#" class="subcategory-card">
                                 <div class="subcategory-image">
-                                    <img src="assets/images/baby-tshirts.jpg" alt="Baby T-Shirts">
+                                    <img src="{{ asset('Front/assets/images/baby-tshirts.jpg') }}" alt="Baby T-Shirts">
                                     <div class="subcategory-content">
                                         <div>
                                             <small>Daily Wear</small>
@@ -274,7 +393,7 @@
                         <div class="swiper-slide">
                             <a href="#" class="subcategory-card">
                                 <div class="subcategory-image">
-                                    <img src="assets/images/baby-gift-sets.jpg" alt="Baby Gift Sets">
+                                    <img src="{{ asset('Front/assets/images/baby-gift-sets.jpg') }}" alt="Baby Gift Sets">
                                     <div class="subcategory-content">
                                         <div>
                                             <small>Made For Gifting</small>
@@ -289,249 +408,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- =====================================================
-                                 BOYS
-                            ====================================================== -->
-            <div class="category-panel" data-panel="boys">
-                <div class="category-slider-heading">
-                    <div>
-                        <span>BOYS COLLECTION</span>
-                        <h3>
-                            Made to move, play and explore
-                        </h3>
-                    </div>
-                    <div class="category-slider-navigation">
-                        <button class="category-slider-arrow category-prev" type="button">
-                            <i class="fa fa-angle-left"></i>
-                        </button>
-                        <button class="category-slider-arrow category-next" type="button">
-                            <i class="fa fa-angle-right"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="swiper subcategory-swiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/boys-tshirts.jpg" alt="Boys T-Shirts">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Everyday Cool</small>
-                                            <h4>T-Shirts</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/boys-shirts.jpg" alt="Boys Shirts">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Smart Casual</small>
-                                            <h4>Shirts</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/boys-capri.jpg" alt="Boys Capri">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Playtime Ready</small>
-                                            <h4>Capri</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/boys-nightwear.jpg" alt="Boys Nightwear">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Cosy Nights</small>
-                                            <h4>Nightwear</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/boys-jeans.jpg" alt="Boys Jeans">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Everyday Style</small>
-                                            <h4>Jeans</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/boys-coord.jpg" alt="Boys Co-ord Sets">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Easy Matching</small>
-                                            <h4>Co-ord Sets</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- =====================================================
-                                 GIRLS
-                            ====================================================== -->
-            <div class="category-panel" data-panel="girls">
-                <div class="category-slider-heading">
-                    <div>
-                        <span>GIRLS COLLECTION</span>
-                        <h3>
-                            Pretty styles for every happy moment
-                        </h3>
-                    </div>
-                    <div class="category-slider-navigation">
-                        <button class="category-slider-arrow category-prev">
-                            <i class="fa fa-angle-left"></i>
-                        </button>
-                        <button class="category-slider-arrow category-next">
-                            <i class="fa fa-angle-right"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="swiper subcategory-swiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/girls-dresses.jpg" alt="Girls Dresses">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Twirl Ready</small>
-                                            <h4>Dresses</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/girls-tops.jpg" alt="Girls Tops">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Everyday Pretty</small>
-                                            <h4>Tops</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/girls-skirts.jpg" alt="Girls Skirts">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Playful Looks</small>
-                                            <h4>Skirts</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/girls-coord.jpg" alt="Girls Co-ord Sets">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Matching Edit</small>
-                                            <h4>Co-ord Sets</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/girls-nightwear.jpg" alt="Girls Nightwear">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Dreamy Comfort</small>
-                                            <h4>Nightwear</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="#" class="subcategory-card">
-                                <div class="subcategory-image">
-                                    <img src="assets/images/girls-party.jpg" alt="Girls Party Wear">
-                                    <div class="subcategory-content">
-                                        <div>
-                                            <small>Celebrate</small>
-                                            <h4>Party Wear</h4>
-                                        </div>
-                                        <span class="subcategory-card-arrow">
-                                            <i class="fa fa-long-arrow-right"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </div>  --}}
+
         </div>
     </section>
 
@@ -557,7 +435,7 @@
                     all at special prices.
                 </p>
                 <!-- CATEGORY LINKS -->
-                <div class="season-sale-categories">
+                {{--  <div class="season-sale-categories">
                     <a href="#">
                         <span class="season-cat-icon girls-cat">
                             <i class="fa fa-female"></i>
@@ -570,19 +448,8 @@
                         </span>
                         <small>Boys</small>
                     </a>
-                    <a href="#">
-                        <span class="season-cat-icon baby-cat">
-                            <i class="fa fa-child"></i>
-                        </span>
-                        <small>Baby</small>
-                    </a>
-                    <a href="#">
-                        <span class="season-cat-icon footwear-cat">
-                            <i class="fa fa-shopping-bag"></i>
-                        </span>
-                        <small>Footwear</small>
-                    </a>
-                </div>
+
+                </div>  --}}
                 <!-- BOTTOM ACTION -->
                 <div class="season-sale-action">
                     <a href="#" class="season-sale-btn">
@@ -605,13 +472,13 @@
         </div>
     </section>
     <!-- =========================================================
-                             LOLIPOP - FEATURED PRODUCT GRID
-                        ========================================================== -->
+                                                                                                                                                                                                                         LOLIPOP - FEATURED PRODUCT GRID
+                                                                                                                                                                                                                    ========================================================== -->
     <section class="lpx-products-section">
         <div class="container">
             <!-- =================================================
-                                     SECTION HEADER
-                                ================================================== -->
+                                                                                                                                                                                                                                 SECTION HEADER
+                                                                                                                                                                                                                            ================================================== -->
             <div class="lpx-section-header">
                 <div class="lpx-heading">
                     <span class="lpx-kicker">
@@ -628,19 +495,19 @@
                 </div>
             </div>
             <!-- =================================================
-                                     PRODUCT GRID
-                                ================================================== -->
+                                                                                                                                                                                                                                 PRODUCT GRID
+                                                                                                                                                                                                                            ================================================== -->
             <div class="lpx-products-grid">
                 <!-- =================================================
-                                         PRODUCT 01
-                                    ================================================== -->
+                                                                                                                                                                                                                                     PRODUCT 01
+                                                                                                                                                                                                                                ================================================== -->
                 <article class="lpx-card lpx-girls" data-category="girls">
                     <div class="lpx-image-box">
                         <a href="#" class="lpx-image-link">
-                            <img src="assets/images/girls-party.jpg" alt="Shimmer Party Dress"
+                            <img src="{{ asset('Front/assets/images/girls-party.jpg') }}" alt="Shimmer Party Dress"
                                 class="lpx-img lpx-img-main">
-                            <img src="assets/images/girls-dresses.jpg" alt="Shimmer Party Dress Alternate View"
-                                class="lpx-img lpx-img-hover">
+                            <img src="{{ asset('Front/assets/images/girls-dresses.jpg') }}"
+                                alt="Shimmer Party Dress Alternate View" class="lpx-img lpx-img-hover">
                         </a>
                         <span class="lpx-badge">
                             New
@@ -660,7 +527,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="lpx-card-content">
+                    {{--  <div class="lpx-card-content">
                         <div class="lpx-card-small-info">
                             <span class="lpx-category">
                                 Girls • Party Wear
@@ -686,18 +553,18 @@
                                 <span style="background:#b791cf;"></span>
                             </div>
                         </div>
-                    </div>
+                    </div>  --}}
                 </article>
                 <!-- =================================================
-                                         PRODUCT 02
-                                    ================================================== -->
-                <article class="lpx-card lpx-boys" data-category="boys">
+                                                                                                                                                                                                                                     PRODUCT 02
+                                                                                                                                                                                                                                ================================================== -->
+                {{--  <article class="lpx-card lpx-boys" data-category="boys">
                     <div class="lpx-image-box">
                         <a href="#" class="lpx-image-link">
-                            <img src="assets/images/boys-shirts.jpg" alt="Cool Casual Shirt"
+                            <img src="{{ asset('Front/assets/images/boys-shirts.jpg') }}" alt="Cool Casual Shirt"
                                 class="lpx-img lpx-img-main">
-                            <img src="assets/images/boys-tshirts.jpg" alt="Cool Casual Shirt Alternate View"
-                                class="lpx-img lpx-img-hover">
+                            <img src="{{ asset('Front/assets/images/boys-tshirts.jpg') }}"
+                                alt="Cool Casual Shirt Alternate View" class="lpx-img lpx-img-hover">
                         </a>
                         <span class="lpx-badge">
                             Best Seller
@@ -739,17 +606,17 @@
                             </div>
                         </div>
                     </div>
-                </article>
+                </article>  --}}
                 <!-- =================================================
-                                         PRODUCT 03
-                                    ================================================== -->
-                <article class="lpx-card lpx-baby" data-category="baby">
+                                                                                                                                                                                                                                     PRODUCT 03
+                                                                                                                                                                                                                                ================================================== -->
+                {{--  <article class="lpx-card lpx-baby" data-category="baby">
                     <div class="lpx-image-box">
                         <a href="#" class="lpx-image-link">
-                            <img src="assets/images/baby-sleepsuits.jpg" alt="Soft Cotton Sleepsuit"
+                            <img src="{{ asset('Front/assets/images/baby-sleepsuits.jpg') }}" alt="Soft Cotton Sleepsuit"
                                 class="lpx-img lpx-img-main">
-                            <img src="assets/images/baby-rompers.jpg" alt="Soft Cotton Sleepsuit Alternate View"
-                                class="lpx-img lpx-img-hover">
+                            <img src="{{ asset('Front/assets/images/baby-rompers.jpg') }}"
+                                alt="Soft Cotton Sleepsuit Alternate View" class="lpx-img lpx-img-hover">
                         </a>
                         <span class="lpx-badge">
                             Soft Pick
@@ -791,17 +658,17 @@
                             </div>
                         </div>
                     </div>
-                </article>
+                </article>  --}}
                 <!-- =================================================
-                             PRODUCT 04 - BOYS CO-ORD SET
-                        ================================================== -->
-                <article class="lpx-card lpx-boys" data-category="boys">
+                                                                                                                                                                                                                         PRODUCT 04 - BOYS CO-ORD SET
+                                                                                                                                                                                                                    ================================================== -->
+                {{--  <article class="lpx-card lpx-boys" data-category="boys">
                     <div class="lpx-image-box">
                         <a href="#" class="lpx-image-link">
-                            <img src="assets/images/boys-coord-sets.jpg" alt="Boys Casual Co-ord Set"
-                                class="lpx-img lpx-img-main">
-                            <img src="assets/images/boys-tshirts.jpg" alt="Boys Casual Co-ord Set Alternate View"
-                                class="lpx-img lpx-img-hover">
+                            <img src="{{ asset('Front/assets/images/boys-coord-sets.jpg') }}"
+                                alt="Boys Casual Co-ord Set" class="lpx-img lpx-img-main">
+                            <img src="{{ asset('Front/assets/images/boys-tshirts.jpg') }}"
+                                alt="Boys Casual Co-ord Set Alternate View" class="lpx-img lpx-img-hover">
                         </a>
                         <span class="lpx-badge">
                             Trending
@@ -843,11 +710,11 @@
                             </div>
                         </div>
                     </div>
-                </article>
+                </article>  --}}
                 <!-- =================================================
-                                         PRODUCT 05
-                                    ================================================== -->
-                <article class="lpx-card lpx-girls" data-category="girls">
+                                                                                                                                                                                                                                     PRODUCT 05
+                                                                                                                                                                                                                                ================================================== -->
+                {{--  <article class="lpx-card lpx-girls" data-category="girls">
                     <div class="lpx-image-box">
                         <a href="#" class="lpx-image-link">
                             <img src="assets/images/girls-skirts.jpg" alt="Pretty Everyday Skirt"
@@ -895,11 +762,11 @@
                             </div>
                         </div>
                     </div>
-                </article>
+                </article>  --}}
                 <!-- =================================================
-                                         PRODUCT 06
-                                    ================================================== -->
-                <article class="lpx-card lpx-baby" data-category="baby">
+                                                                                                                                                                                                                                     PRODUCT 06
+                                                                                                                                                                                                                                ================================================== -->
+                {{--  <article class="lpx-card lpx-baby" data-category="baby">
                     <div class="lpx-image-box">
                         <a href="#" class="lpx-image-link">
                             <img src="assets/images/baby-rompers.jpg" alt="Everyday Baby Romper"
@@ -947,11 +814,11 @@
                             </div>
                         </div>
                     </div>
-                </article>
+                </article>  --}}
                 <!-- =================================================
-                                         PRODUCT 07
-                                    ================================================== -->
-                <article class="lpx-card lpx-boys" data-category="boys">
+                                                                                                                                                                                                                                     PRODUCT 07
+                                                                                                                                                                                                                                ================================================== -->
+                {{--  <article class="lpx-card lpx-boys" data-category="boys">
                     <div class="lpx-image-box">
                         <a href="#" class="lpx-image-link">
                             <img src="assets/images/boys-jeans.jpg" alt="Classic Denim Jeans"
@@ -999,11 +866,11 @@
                             </div>
                         </div>
                     </div>
-                </article>
+                </article>  --}}
                 <!-- =================================================
-                             PRODUCT 08 - GIRLS CASUAL DRESS
-                        ================================================== -->
-                <article class="lpx-card lpx-girls" data-category="girls">
+                                                                                                                                                                                                                         PRODUCT 08 - GIRLS CASUAL DRESS
+                                                                                                                                                                                                                    ================================================== -->
+                {{--  <article class="lpx-card lpx-girls" data-category="girls">
                     <div class="lpx-image-box">
                         <a href="#" class="lpx-image-link">
                             <img src="assets/images/girls-dresses.jpg" alt="Girls Everyday Casual Dress"
@@ -1051,11 +918,11 @@
                             </div>
                         </div>
                     </div>
-                </article>
+                </article>  --}}
             </div>
             <!-- =================================================
-                                     BOTTOM BUTTON
-                                ================================================== -->
+                                                                                                                                                                                                                                 BOTTOM BUTTON
+                                                                                                                                                                                                                            ================================================== -->
             <div class="lpx-bottom-cta">
                 <a href="#">
                     <span>
@@ -1069,16 +936,16 @@
         </div>
     </section>
     <!-- ================================
-                             CLIENTS + TESTIMONIAL SECTION
-                        ================================= -->
+                                                                                                                                                                                                                         CLIENTS + TESTIMONIAL SECTION
+                                                                                                                                                                                                                    ================================= -->
     <section class="lc-social-proof">
         <!-- Decorative Background -->
         <div class="lc-proof-grid"></div>
         <span class="lc-proof-orb lc-orb-one"></span>
         <span class="lc-proof-orb lc-orb-two"></span>
         <!-- ===========================
-                                 CLIENT LOGO SLIDER
-                            ============================ -->
+                                                                                                                                                                                                                             CLIENT LOGO SLIDER
+                                                                                                                                                                                                                        ============================ -->
         <div class="lc-client-area">
             <div class="container">
                 <div class="lc-client-heading">
@@ -1093,7 +960,7 @@
                     <div class="lc-logo-item">
                         <img src="assets/images/logo-1.png" alt="Client">
                     </div>
-                    <div class="lc-logo-item">
+                    {{--  <div class="lc-logo-item">
                         <img src="assets/images/logo-2.png" alt="Client">
                     </div>
                     <div class="lc-logo-item">
@@ -1138,13 +1005,13 @@
                     </div>
                     <div class="lc-logo-item">
                         <img src="assets/images/logo-2.png" alt="Client">
-                    </div>
+                    </div>  --}}
                 </div>
             </div>
         </div>
         <!-- ===========================
-                                 TESTIMONIAL SECTION
-                            ============================ -->
+                                                                                                                                                                                                                             TESTIMONIAL SECTION
+                                                                                                                                                                                                                        ============================ -->
         <div class="container">
             <div class="lc-testimonial-wrap">
                 <!-- Left Content -->
@@ -1318,5 +1185,324 @@
 @endsection
 
 @section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
+            /*
+            |--------------------------------------------------------------------------
+            | CATEGORY TABS
+            |--------------------------------------------------------------------------
+            */
+
+            const categoryTabs = document.querySelectorAll('.category-tab');
+
+            const categoryPanel = document.querySelector('#dynamic-category-panel');
+
+            const swiperElement = document.querySelector(
+                '#dynamic-category-panel .subcategory-swiper'
+            );
+
+            const nextButton = document.querySelector(
+                '#dynamic-category-panel .category-next'
+            );
+
+            const prevButton = document.querySelector(
+                '#dynamic-category-panel .category-prev'
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | INITIALIZE SWIPER
+            |--------------------------------------------------------------------------
+            */
+
+            let categorySwiper = null;
+
+            if (swiperElement) {
+
+                categorySwiper = new Swiper(swiperElement, {
+
+                    slidesPerView: 1.3,
+
+                    spaceBetween: 14,
+
+                    speed: 650,
+
+                    grabCursor: true,
+
+                    watchOverflow: true,
+
+                    observer: true,
+
+                    observeParents: true,
+
+                    navigation: {
+                        nextEl: nextButton,
+                        prevEl: prevButton
+                    },
+
+                    breakpoints: {
+
+                        480: {
+                            slidesPerView: 2.1,
+                            spaceBetween: 14
+                        },
+
+                        700: {
+                            slidesPerView: 3.1,
+                            spaceBetween: 16
+                        },
+
+                        950: {
+                            slidesPerView: 4.2,
+                            spaceBetween: 17
+                        },
+
+                        1200: {
+                            slidesPerView: 5.2,
+                            spaceBetween: 18
+                        },
+
+                        1450: {
+                            slidesPerView: 6,
+                            spaceBetween: 18
+                        }
+
+                    }
+
+                });
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CATEGORY TAB CLICK
+            |--------------------------------------------------------------------------
+            */
+
+            categoryTabs.forEach(function(tab) {
+
+                tab.addEventListener('click', function(e) {
+
+                    e.preventDefault();
+
+                    const categoryId = this.getAttribute('data-category');
+
+                    console.log('Selected category:', categoryId);
+
+
+                    /*
+                    | Active tab
+                    */
+
+                    categoryTabs.forEach(function(item) {
+                        item.classList.remove('active');
+                    });
+
+                    this.classList.add('active');
+
+
+                    /*
+                    | Keep panel visible
+                    */
+
+                    if (categoryPanel) {
+                        categoryPanel.classList.add('active');
+                        categoryPanel.style.display = '';
+                    }
+
+
+                    /*
+                    | AJAX request
+                    */
+
+                    fetch(
+                            "{{ route('front.getSubCategories') }}?category_id=" +
+                            encodeURIComponent(categoryId), {
+                                method: 'GET',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                }
+                            }
+                        )
+
+                        .then(function(response) {
+
+                            if (!response.ok) {
+                                throw new Error(
+                                    'HTTP Error: ' + response.status
+                                );
+                            }
+
+                            return response.json();
+
+                        })
+
+                        .then(function(data) {
+
+                            console.log('AJAX data:', data);
+
+
+                            if (!data.status) {
+                                return;
+                            }
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | CATEGORY TITLE
+                            |--------------------------------------------------------------------------
+                            */
+
+                            const title =
+                                document.querySelector('#category-title');
+
+                            if (title && data.category) {
+
+                                title.textContent =
+                                    data.category.categoryname.toUpperCase() +
+                                    ' COLLECTION';
+
+                            }
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | CATEGORY DESCRIPTION
+                            |--------------------------------------------------------------------------
+                            */
+
+                            const description =
+                                document.querySelector('#category-description');
+
+                            if (description && data.category) {
+
+                                description.textContent =
+                                    data.category.meta_description || '';
+
+                            }
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | SUBCATEGORY
+                            |--------------------------------------------------------------------------
+                            */
+
+                            const wrapper =
+                                document.querySelector('#subcategory-wrapper');
+
+                            if (!wrapper) {
+                                return;
+                            }
+
+
+                            let slides = [];
+
+
+                            if (
+                                data.subCategories &&
+                                data.subCategories.length > 0
+                            ) {
+
+                                data.subCategories.forEach(function(item) {
+
+                                    slides.push(`
+                            <div class="swiper-slide">
+
+                                <a href="/products/${item.slugname}" class="subcategory-card">
+
+                                    <div class="subcategory-image">
+
+                                        <img
+                                            src="{{ asset('Category') }}/${item.photo}"
+                                            alt="${item.categoryname}"
+                                        >
+
+                                        <div class="subcategory-content">
+
+                                            <div>
+
+                                                <small>
+                                                    ${item.meta_description || ''}
+                                                </small>
+
+                                                <h4>
+                                                    ${item.categoryname}
+                                                </h4>
+
+                                            </div>
+
+                                            <span class="subcategory-card-arrow">
+                                                <i class="fa fa-long-arrow-right"></i>
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </a>
+
+                            </div>
+                        `);
+
+                                });
+
+                            } else {
+
+                                slides.push(`
+                        <div class="swiper-slide">
+
+                            <div style="padding:40px;text-align:center;">
+                                No subcategories found.
+                            </div>
+
+                        </div>
+                    `);
+
+                            }
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | UPDATE SWIPER
+                            |--------------------------------------------------------------------------
+                            */
+
+                            if (categorySwiper) {
+
+                                categorySwiper.removeAllSlides();
+
+                                categorySwiper.appendSlide(slides);
+
+                                categorySwiper.update();
+
+                                categorySwiper.slideTo(0);
+
+                            } else {
+
+                                wrapper.innerHTML = slides.join('');
+
+                            }
+
+                        })
+
+                        .catch(function(error) {
+
+                            console.error(
+                                'Category AJAX error:',
+                                error
+                            );
+
+                        });
+
+                });
+
+            });
+
+        });
+    </script>
 @endsection

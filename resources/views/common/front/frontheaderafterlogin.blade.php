@@ -66,8 +66,9 @@
                             <div class="search-bar">
                                 <?php
                                 $Category = App\Models\Category::where('subcategoryid', 0)
-                                    ->where(['iStatus' => 1 , 'isDelete' => 0])
-                                    ->orderBy('categoryname', 'asc')->get();
+                                    ->where(['iStatus' => 1, 'isDelete' => 0])
+                                    ->orderBy('categoryname', 'asc')
+                                    ->get();
                                 ?>
                                 <select name="categorysearch">
                                     <option value="0" selected="selected">All Category</option>
@@ -89,11 +90,11 @@
                         $cartItems = \Cart::getContent();
                     @endphp
                     <!-- Search Form -->
-                    
+
                     <div class="sinlge-bar shopping">
                         <a href="#" class="single-icon">
                             <i class="ti-bag"></i>
-                            <span class="total-count">{{ $count }}</span>
+                            <span class="total-count js-cart-count">{{ $count }}</span>
                         </a>
                         <!-- Shopping Item -->
                         <div class="shopping-item">

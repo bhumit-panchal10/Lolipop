@@ -1,10 +1,9 @@
-
 <header id="page-topbar">
     <div class="layout-width">
         <div class="navbar-header">
             <div class="d-flex w-100">
 
-                
+
 
                 <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger"
                     id="topnav-hamburger-icon">
@@ -17,7 +16,8 @@
                 <div class="navbar-brand-box horizontal-logo">
                     <a href="{{ route('home') }}" class="logo logo-dark">
                         <span class="logo-lg">
-                            <img src="{{ asset('assets/front/images/logo-2_admin.png') }}" alt="" height="90">
+                            <img src="{{ asset('assets/front/images/logo-2_admin.png') }}" alt=""
+                                height="90">
                         </span>
                     </a>
                 </div>
@@ -34,13 +34,13 @@
                             <!--    src="{{ asset('assets/images/users/undraw_profile.webp') }}" alt="Header Avatar">-->
                             <i class="fa fa-user fa-2x"></i>
                             <span class="text-start ms-xl-2">
-                                <!--<span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">-->
-                                <!--    @if(!is_null(auth()->user()->full_name))-->
-                                <!--        <span>Welcome, {{ auth()->user()->full_name }}</span>-->
-                                <!--    @else-->
-                                <!--        <span>Welcome, Guest</span>-->
-                                <!--    @endif-->
-                                <!--</span>-->
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
+                                    @if (!is_null(auth()->user()->full_name))
+                                        <span>Welcome, {{ auth()->user()->full_name }}</span>
+                                    @else
+                                        <span>Welcome, Guest</span>
+                                    @endif
+                                </span>
 
 
                                 <?php
@@ -48,7 +48,7 @@
                                 // $role = App\Models\User::select('users.id', 'roles.name')->where('users.id', $session)->join('roles', 'users.role_id', '=', 'roles.id')->first();
                                 ?>
                                 <!--<span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">-->
-                               
+
                                 <!--</span>-->
 
                             </span>
@@ -56,11 +56,12 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- item-->
-                        <h6 class="dropdown-header">Welcome @if(!is_null(auth()->user()->full_name))
-                                        {{ auth()->user()->full_name }}
-                                    @else
-                                        {{ 'Guest' }}
-                                    @endif</h6>
+                        <h6 class="dropdown-header">Welcome @if (!is_null(auth()->user()->full_name))
+                                {{ auth()->user()->full_name }}
+                            @else
+                                {{ 'Guest' }}
+                            @endif
+                        </h6>
                         <a class="dropdown-item" href="{{ route('profile.detail') }}"><i
                                 class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span
                                 class="align-middle">Profile</span></a>

@@ -30,57 +30,65 @@ class CartController extends Controller
     public function addToCart(Request $request)
     {
         //dd($request);
-        if($request->attributeid != "" || $request->product_attribute_size != ""){
+        if ($request->attributeid != "" || $request->product_attribute_size != "") {
             //dd("if");
             try {
                 $Ledger = Ledger::orderBy('ledgerId', 'desc')->where([
-                    'ledger.iStatus' => 1, 'ledger.isDelete' => 0, 'ledger.iProductId' => $request->productid, 'iSize' => $request->product_attribute_size
+                    'ledger.iStatus' => 1,
+                    'ledger.isDelete' => 0,
+                    'ledger.iProductId' => $request->productid,
+                    'iSize' => $request->attributeid
                 ])
-                ->join('product_attributes', 'ledger.iSize', '=', 'product_attributes.id')
-                ->first();
+                    ->join('product_attributes', 'ledger.iSize', '=', 'product_attributes.id')
+                    ->first();
                 // dd($Ledger);
                 $cartItems = \Cart::getContent();
-                
+
                 $specificId = $request->attributeid; // Change this to the id you want to count
                 $count = $cartItems->filter(function ($item) use ($specificId) {
                     return $item->id === $specificId;
                 })->sum('quantity');
-                
-                $closingBalance = (int)$Ledger->closingBalance;
-                
+
+                $closingBalance = (int)($Ledger->closingBalance ?? 0);
+
                 if ($request->buttonValue == "addtocart") {
-                            
-                        if (isset($Ledger) &&  ($closingBalance * 1) > ($count * 1)) {
-                            
-                            \Cart::add([
-                                // 'id' => $request->productid,
-                                'id' => $request->attributeid,
-                                'productid' => $request->productid,
-                                'categoryId' => $request->categoryId,
-                                'subcategoryid' => $request->subcategoryid,
-                                'name' => $request->productname,
-                                'price' => $request->price,
-                                'quantity' => $request->quant[1],
-                                'size' => $request->product_attribute_size,
-                                'info' => $request->info,
-                                'attributes' => array(
-                                    'image' => $request->image,
-                                )
-                            ]);
-                            // session()->flash('success', 'Product is Added to Cart Successfully !');
-                            $sizeselect = $request->sizeselect ?? "";
-                            //dd($sizeselect);
-                            Session::put('sizeselect', $sizeselect);
-                            return back()->with('success', 'Product is Added to Cart Successfully !')->with(compact('sizeselect'));
-                        } else {
-                            $sizeselect = $request->sizeselect ?? "";
-                            Session::put('sizeselect', $sizeselect);
-                            session()->flash('error', 'Product is Out Of Stock!');
-                            // session()->flash('outofstock', 'Product is Out Of Stock!');
-                        }
+
+                    if (isset($Ledger) &&  ($closingBalance * 1) > ($count * 1)) {
+
+                        \Cart::add([
+                            // 'id' => $request->productid,
+                            'id' => $request->attributeid,
+                            'productid' => $request->productid,
+                            'categoryId' => $request->categoryId,
+                            'subcategoryid' => $request->subcategoryid,
+                            'productslug' => $request->productslug,
+                            'categoryslug' => $request->categoryslug,
+                            'categoryname' => $request->categoryname,
+                            'name' => $request->productname,
+                            'price' => $request->price,
+                            'quantity' => $request->quant[1],
+                            'size' => $request->product_attribute_size,
+                            'info' => $request->info,
+                            'attributes' => array(
+                                'image' => $request->image,
+                            )
+                        ]);
+                        // session()->flash('success', 'Product is Added to Cart Successfully !');
+                        $sizeselect = $request->sizeselect ?? "";
+                        //dd($sizeselect);
+                        Session::put('sizeselect', $sizeselect);
+                        return redirect()->route('cart.list')
+                            ->with('success', 'Product is Added to Cart Successfully !')
+                            ->with(compact('sizeselect'));
+                    } else {
+                        $sizeselect = $request->sizeselect ?? "";
+                        Session::put('sizeselect', $sizeselect);
+                        session()->flash('error', 'Product is Out Of Stock!');
+                        // session()->flash('outofstock', 'Product is Out Of Stock!');
+                    }
                     $sizeselect = $request->sizeselect ?? "";
                     Session::put('sizeselect', $sizeselect);
-                    
+
                     //dd($sizeselect);
                     return back()->with(compact('sizeselect'));
                 } else {
@@ -91,6 +99,9 @@ class CartController extends Controller
                             'productid' => $request->productid,
                             'categoryId' => $request->categoryId,
                             'subcategoryid' => $request->subcategoryid,
+                            'productslug' => $request->productslug,
+                            'categoryslug' => $request->categoryslug,
+                            'categoryname' => $request->categoryname,
                             'name' => $request->productname,
                             'price' => $request->price,
                             'quantity' => 1,
@@ -107,15 +118,14 @@ class CartController extends Controller
                     return redirect()->route('checkout');
                 }
             } catch (\Throwable $th) {
-    
+
                 // Rollback & Return Error Message
                 return redirect()->back()->with('error', $th->getMessage());
-            }   
+            }
         } else {
             session()->flash('error', 'Please select size!');
             return back()->with('error', 'Please select size!');
         }
-        
     }
 
 
@@ -144,7 +154,11 @@ class CartController extends Controller
 
     public function updateCart(Request $request)
     {
-        // dd($request);
+        $request->validate([
+            'id' => 'required',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
         \Cart::update(
             $request->id,
             [
@@ -156,6 +170,17 @@ class CartController extends Controller
         );
 
         session()->flash('success', 'Item Cart is Updated Successfully !');
+
+        if ($request->expectsJson()) {
+            $cartItems = \Cart::getContent();
+
+            return response()->json([
+                'quantity' => $cartItems->get($request->id)->quantity,
+                'line_total' => $cartItems->get($request->id)->price * $cartItems->get($request->id)->quantity,
+                'total' => \Cart::getTotal(),
+                'item_count' => $cartItems->count(),
+            ]);
+        }
 
         return back();
         // return redirect()->route('cart.list');

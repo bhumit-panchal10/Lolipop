@@ -19,137 +19,101 @@
 
     <main class="pdx-page">
         <!-- =================================================
-             PRODUCT MAIN
-        ================================================== -->
+                                             PRODUCT MAIN
+                                        ================================================== -->
         <section class="pdx-product-section">
             <div class="container">
                 <div class="pdx-product-layout">
                     <!-- =========================================
-                         LEFT PRODUCT GALLERY
-                    ========================================== -->
+                                                         LEFT PRODUCT GALLERY
+                                                    ========================================== -->
                     <div class="pdx-gallery">
                         <!-- THUMBNAILS -->
                         <div class="pdx-thumbnails">
-                            <button type="button" class="pdx-thumb active" data-image="assets/images/girls-dresses.jpg">
-                                <img src="assets/images/girls-dresses.jpg" alt="Floral Summer Dress">
-                            </button>
-                            <button type="button" class="pdx-thumb" data-image="assets/images/girls-party.jpg">
-                                <img src="assets/images/girls-party.jpg" alt="Floral Summer Dress alternate">
-                            </button>
-                            <button type="button" class="pdx-thumb" data-image="assets/images/girls-skirts.jpg">
-                                <img src="assets/images/girls-skirts.jpg" alt="Floral Summer Dress detail">
-                            </button>
-                            <button type="button" class="pdx-thumb" data-image="assets/images/girls-dresses.jpg">
-                                <img src="assets/images/girls-dresses.jpg" alt="Floral Summer Dress back">
-                            </button>
+                            @foreach ($Photos as $photo)
+                                <button type="button" class="pdx-thumb {{ $loop->first ? 'active' : '' }}"
+                                    data-image="{{ asset('/Product/Thumbnail/' . $photo->strphoto) }}">
+                                    <img src="{{ asset('/Product/Thumbnail/' . $photo->strphoto) }}"
+                                        alt="{{ $ProductDetail->productname }}">
+                                </button>
+                            @endforeach
                         </div>
                         <!-- MAIN PRODUCT IMAGE -->
                         <div class="pdx-main-image">
                             <div class="pdx-image-top">
-                                <span class="pdx-product-badge">
-                                    NEW STYLE
-                                </span>
-                                <button type="button" class="pdx-image-wishlist" id="pdxImageWishlist">
-                                    <i class="fa fa-heart-o"></i>
-                                </button>
+                                @if ($ProductDetail->isFeatures)
+                                    <span class="pdx-product-badge">FEATURED</span>
+                                @endif
+
                             </div>
-                            <img src="assets/images/girls-dresses.jpg" alt="Floral Summer Dress" id="pdxMainImage">
+                            <img src="{{ $Photos->first() ? asset('/Product/Thumbnail/' . $Photos->first()->strphoto) : asset('assets/images/no-image.jpg') }}"
+                                alt="{{ $ProductDetail->productname }}" id="pdxMainImage">
                         </div>
                     </div>
                     <!-- =========================================
-                         RIGHT PRODUCT INFORMATION
-                    ========================================== -->
+                                                         RIGHT PRODUCT INFORMATION
+                                                    ========================================== -->
                     <div class="pdx-info">
                         <!-- CATEGORY -->
                         <span class="pdx-category">
-                            GIRLS • DRESSES
+                            {{ $parentCategory->categoryname ?? '' }} • {{ $subcategory->categoryname }}
                         </span>
                         <!-- TITLE -->
                         <h1>
-                            Floral Summer Dress
+                            {{ $ProductDetail->productname }}
                         </h1>
                         <!-- SHORT INTRO -->
                         <p class="pdx-intro">
-                            Soft, playful and comfortable everyday style
-                            designed for happy little adventures.
+                            {{ strip_tags($ProductDetail->description ?? '') }}
                         </p>
                         <!-- =====================================
-                             RATING
-                        ====================================== -->
+                                                             RATING
+                                                        ====================================== -->
                         <div class="pdx-rating-row">
-                            <div class="pdx-rating">
-                                <strong>4.8</strong>
+                            {{--  <div class="pdx-rating">
+                                <strong>--</strong>
                                 <i class="fa fa-star"></i>
                             </div>
                             <a href="#pdxReviews">
-                                126 Reviews
-                            </a>
+                                Product information
+                            </a>  --}}
                             <span class="pdx-divider"></span>
                             <span class="pdx-stock">
                                 <i class="fa fa-check-circle"></i>
-                                In Stock
+                                {{ $Attribute->sum('product_attribute_qty') > 0 ? 'In Stock' : 'Out of Stock' }}
                             </span>
                         </div>
                         <!-- =====================================
-                             PRICE
-                        ====================================== -->
+                                                             PRICE
+                                                        ====================================== -->
                         <div class="pdx-price-block">
                             <div class="pdx-price">
-                                <strong>
-                                    ₹1,099
-                                </strong>
-                                <del>
-                                    ₹1,499
-                                </del>
-                                <span>
-                                    27% OFF
-                                </span>
+                                <strong
+                                    id="pdxCurrentPrice">₹{{ number_format($Attribute->min('product_attribute_price') ?: $ProductDetail->rate ?? 0, 0) }}</strong>
+                                @if ($ProductDetail->rate && $ProductDetail->rate > $Attribute->min('product_attribute_price'))
+                                    <del>₹{{ number_format($ProductDetail->rate, 0) }}</del>
+                                    <span>{{ round((($ProductDetail->rate - $Attribute->min('product_attribute_price')) / $ProductDetail->rate) * 100) }}%
+                                        OFF</span>
+                                @endif
                             </div>
                         </div>
                         <!-- =====================================
-                             DESCRIPTION
-                        ====================================== -->
+                                                             DESCRIPTION
+                                                        ====================================== -->
                         <div class="pdx-description">
                             <p>
-                                A cheerful floral dress made with a soft,
-                                breathable fabric and an easy everyday fit.
-                                Perfect for play days, family outings and
-                                little celebrations.
+                                {!! $ProductDetail->description !!}
                             </p>
                         </div>
                         <!-- =====================================
-                             COLOUR
-                        ====================================== -->
-                        <div class="pdx-option-block">
-                            <div class="pdx-option-head">
-                                <div>
-                                    <span>Colour</span>
-                                    <strong id="pdxSelectedColour">
-                                        Pink
-                                    </strong>
-                                </div>
-                            </div>
-                            <div class="pdx-colour-list">
-                                <button type="button" class="pdx-colour active" data-colour="Pink"
-                                    style="--pdx-colour:#e88bad" aria-label="Pink"></button>
-                                <button type="button" class="pdx-colour" data-colour="Purple" style="--pdx-colour:#b49bd1"
-                                    aria-label="Purple"></button>
-                                <button type="button" class="pdx-colour" data-colour="Yellow" style="--pdx-colour:#f0cb65"
-                                    aria-label="Yellow"></button>
-                                <button type="button" class="pdx-colour" data-colour="Sky Blue"
-                                    style="--pdx-colour:#84c8e8" aria-label="Sky Blue"></button>
-                            </div>
-                        </div>
-                        <!-- =====================================
-                             SIZE
-                        ====================================== -->
+                                                             SIZE
+                                                        ====================================== -->
                         <div class="pdx-option-block">
                             <div class="pdx-option-head">
                                 <div>
                                     <span>Select Size</span>
-                                    <strong id="pdxSelectedSize">
-                                        M
-                                    </strong>
+                                    <strong
+                                        id="pdxSelectedSize">{{ $Attribute->first()->product_attribute_size ?? 'N/A' }}</strong>
                                 </div>
                                 <button type="button" class="pdx-size-guide">
                                     <i class="fa fa-arrows-h"></i>
@@ -157,26 +121,20 @@
                                 </button>
                             </div>
                             <div class="pdx-size-list">
-                                <button type="button" data-size="XS">
-                                    XS
-                                </button>
-                                <button type="button" data-size="S">
-                                    S
-                                </button>
-                                <button type="button" class="active" data-size="M">
-                                    M
-                                </button>
-                                <button type="button" data-size="L">
-                                    L
-                                </button>
-                                <button type="button" data-size="XL">
-                                    XL
-                                </button>
+                                @foreach ($Attribute as $attribute)
+                                    <button type="button" class="{{ $loop->first ? 'active' : '' }}"
+                                        data-attribute-id="{{ $attribute->id }}"
+                                        data-size="{{ $attribute->product_attribute_size }}"
+                                        data-price="{{ $attribute->product_attribute_price }}"
+                                        data-quantity="{{ $attribute->product_attribute_qty }}">
+                                        {{ $attribute->product_attribute_size }}
+                                    </button>
+                                @endforeach
                             </div>
                         </div>
                         <!-- =====================================
-                             QUANTITY
-                        ====================================== -->
+                                                             QUANTITY
+                                                        ====================================== -->
                         <div class="pdx-quantity-row">
                             <span>
                                 Quantity
@@ -192,26 +150,42 @@
                             </div>
                         </div>
                         <!-- =====================================
-                             ACTION BUTTONS
-                        ====================================== -->
+                                                             ACTION BUTTONS
+                                                        ====================================== -->
                         <div class="pdx-actions">
-                            <a href="cart.html" class="pdx-add-cart" id="pdxAddCart">
-                                <span>
-                                    <i class="fa fa-shopping-bag"></i>
-                                </span>
-                                <strong id="pdxCartText">
-                                    Add To Cart
-                                </strong>
-                                <i class="fa fa-long-arrow-right"></i>
-                            </a>
+                            <form action="{{ route('cart.store') }}" method="POST" id="pdxCartForm">
+                                @csrf
+                                <input type="hidden" name="attributeid" id="pdxAttributeId">
+                                <input type="hidden" name="product_attribute_size" id="pdxCartSize">
+                                <input type="hidden" name="productid" value="{{ $ProductDetail->productId }}">
+                                <input type="hidden" name="categoryId" value="{{ $ProductDetail->categoryId }}">
+                                <input type="hidden" name="subcategoryid" value="{{ $ProductDetail->subcategoryid }}">
+                                <input type="hidden" name="productslug" value="{{ $ProductDetail->slugname }}">
+                                <input type="hidden" name="categoryslug" value="{{ $subcategory->slugname ?? '' }}">
+                                <input type="hidden" name="categoryname" value="{{ $subcategory->categoryname ?? '' }}">
+                                <input type="hidden" name="productname" value="{{ $ProductDetail->productname }}">
+                                <input type="hidden" name="price" id="pdxCartPrice">
+                                <input type="hidden" name="image" value="{{ $Photos->first()->strphoto ?? '' }}">
+                                <input type="hidden" name="buttonValue" value="addtocart">
+                                <input type="hidden" name="quant[1]" id="pdxCartQuantity" value="1">
+                                <button type="submit" class="pdx-add-cart" id="pdxAddCart">
+                                    <span>
+                                        <i class="fa fa-shopping-bag"></i>
+                                    </span>
+                                    <strong id="pdxCartText">
+                                        Add To Cart
+                                    </strong>
+                                    <i class="fa fa-long-arrow-right"></i>
+                                </button>
+                            </form>
                             <!-- =====================================
-                             WISHLIST / SHARE
-                        ====================================== -->
+                                                             WISHLIST / SHARE
+                                                        ====================================== -->
                             <div class="pdx-secondary-actions">
-                                <button type="button" id="pdxWishlist" class="pdx-wishlist">
+                                {{--  <button type="button" id="pdxWishlist" class="pdx-wishlist">
                                     <i class="fa fa-heart-o"></i>
                                     Add to Wishlist
-                                </button>
+                                </button>  --}}
                                 <button type="button">
                                     <i class="fa fa-share-alt"></i>
                                     Share
@@ -219,8 +193,8 @@
                             </div>
                         </div>
                         <!-- =====================================
-                             BENEFITS
-                        ====================================== -->
+                                                             BENEFITS
+                                                        ====================================== -->
                         <div class="pdx-benefits">
                             <div class="pdx-benefit">
                                 <span class="pdx-benefit-icon pdx-blue">
@@ -267,8 +241,8 @@
             </div>
         </section>
         <!-- =================================================
-             PRODUCT INFORMATION
-        ================================================== -->
+                                             PRODUCT INFORMATION
+                                        ================================================== -->
         <section class="pdx-detail-section">
             <div class="container">
                 <div class="pdx-detail-layout">
@@ -299,11 +273,18 @@
                             </button>
                             <div class="pdx-accordion-body">
                                 <ul>
-                                    <li>Soft cotton-rich fabric</li>
-                                    <li>Comfortable everyday fit</li>
-                                    <li>Round neckline</li>
-                                    <li>Lightweight and breathable</li>
-                                    <li>Perfect for outings and celebrations</li>
+                                    @if ($ProductDetail->fabric)
+                                        <li>Fabric: {{ $ProductDetail->fabric }}</li>
+                                    @endif
+                                    @if ($ProductDetail->care)
+                                        <li>Care: {{ $ProductDetail->care }}</li>
+                                    @endif
+                                    @if ($ProductDetail->weight)
+                                        <li>Weight: {{ $ProductDetail->weight }}</li>
+                                    @endif
+                                    @if (!$ProductDetail->fabric && !$ProductDetail->care && !$ProductDetail->weight)
+                                        <li>No additional product details available.</li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
@@ -318,9 +299,7 @@
                             </button>
                             <div class="pdx-accordion-body">
                                 <p>
-                                    Cotton-rich fabric. Machine wash separately
-                                    in cold water. Use mild detergent. Dry in shade
-                                    and iron at a low temperature.
+                                    {{ $ProductDetail->care ?: 'Care information is not available.' }}
                                 </p>
                             </div>
                         </div>
@@ -335,9 +314,7 @@
                             </button>
                             <div class="pdx-accordion-body">
                                 <p>
-                                    Standard delivery time depends on location.
-                                    Eligible products can be exchanged or returned
-                                    within 7 days as per store policy.
+                                    {{ $ProductDetail->disclaimer ?: 'Shipping and return information is not available.' }}
                                 </p>
                             </div>
                         </div>
@@ -346,8 +323,8 @@
             </div>
         </section>
         <!-- =================================================
-             RELATED PRODUCTS
-        ================================================== -->
+                                             RELATED PRODUCTS
+                                        ================================================== -->
         <section class="pdx-related">
             <div class="container">
                 <div class="pdx-related-head">
@@ -469,4 +446,60 @@
 
 
 @section('scripts')
+    <script>
+        (() => {
+            const thumbnails = document.querySelectorAll('.pdx-thumb');
+            const mainImage = document.getElementById('pdxMainImage');
+            const sizeButtons = document.querySelectorAll('.pdx-size-list button');
+            const selectedSize = document.getElementById('pdxSelectedSize');
+            const currentPrice = document.getElementById('pdxCurrentPrice');
+            const cartForm = document.getElementById('pdxCartForm');
+            const cartPrice = document.getElementById('pdxCartPrice');
+            const cartSize = document.getElementById('pdxCartSize');
+            const attributeId = document.getElementById('pdxAttributeId');
+            const cartQuantity = document.getElementById('pdxCartQuantity');
+            const quantityInput = document.getElementById('pdxQty');
+
+            thumbnails.forEach((thumbnail) => {
+                thumbnail.addEventListener('click', () => {
+                    thumbnails.forEach((item) => item.classList.remove('active'));
+                    thumbnail.classList.add('active');
+                    mainImage.src = thumbnail.dataset.image;
+                });
+            });
+
+            const updateSelectedAttribute = (button) => {
+                sizeButtons.forEach((item) => item.classList.remove('active'));
+                button.classList.add('active');
+                selectedSize.textContent = button.dataset.size;
+                currentPrice.textContent = `₹${Number(button.dataset.price).toLocaleString('en-IN')}`;
+                cartPrice.value = button.dataset.price;
+                cartSize.value = button.dataset.size;
+                attributeId.value = button.dataset.attributeId;
+            };
+
+            sizeButtons.forEach((button) => {
+                button.addEventListener('click', () => updateSelectedAttribute(button));
+            });
+
+            const initialSize = document.querySelector('.pdx-size-list button.active');
+            if (initialSize) updateSelectedAttribute(initialSize);
+
+            document.getElementById('pdxQtyMinus')?.addEventListener('click', () => {
+                quantityInput.value = Math.max(1, Number(quantityInput.value) - 1);
+                cartQuantity.value = quantityInput.value;
+            });
+            document.getElementById('pdxQtyPlus')?.addEventListener('click', () => {
+                quantityInput.value = Number(quantityInput.value) + 1;
+                cartQuantity.value = quantityInput.value;
+            });
+
+            cartForm?.addEventListener('submit', (event) => {
+                if (!attributeId.value) {
+                    event.preventDefault();
+                    alert('Please select a size.');
+                }
+            });
+        })();
+    </script>
 @endsection

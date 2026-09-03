@@ -1,277 +1,278 @@
 document.addEventListener("DOMContentLoaded", () => {
-  /* =====================================================
-     SEARCH PANEL
-  ===================================================== */
-  const searchTrigger = document.querySelector(".search-trigger");
-  const searchPanel = document.getElementById("searchPanel");
-  const searchClose = document.getElementById("searchClose");
-  if (searchTrigger && searchPanel) {
-    searchTrigger.addEventListener("click", () => {
-      searchPanel.classList.toggle("open");
-    });
-  }
-  if (searchClose && searchPanel) {
-    searchClose.addEventListener("click", () => {
-      searchPanel.classList.remove("open");
-    });
-  }
-  /* =====================================================
-     MOBILE MENU
-  ===================================================== */
-  const mobileToggle = document.getElementById("mobileToggle");
-  const mobileMenu = document.getElementById("mobileMenu");
-  if (mobileToggle && mobileMenu) {
-    mobileToggle.addEventListener("click", (event) => {
-      event.stopPropagation();
-      mobileMenu.classList.toggle("open");
-    });
     /* =====================================================
-       MOBILE ACCORDION
+       SEARCH PANEL
     ===================================================== */
-    const mobileParents = document.querySelectorAll(".mobile-parent");
-    mobileParents.forEach((button) => {
-      button.addEventListener("click", () => {
-        const currentGroup = button.closest(".mobile-group");
-        document.querySelectorAll(".mobile-group").forEach((group) => {
-          if (group !== currentGroup) {
-            group.classList.remove("open");
-          }
+    const searchTrigger = document.querySelector(".search-trigger");
+    const searchPanel = document.getElementById("searchPanel");
+    const searchClose = document.getElementById("searchClose");
+    if (searchTrigger && searchPanel) {
+        searchTrigger.addEventListener("click", () => {
+            searchPanel.classList.toggle("open");
         });
-        if (currentGroup) {
-          currentGroup.classList.toggle("open");
-        }
-      });
-    });
-    /* =====================================================
-       CLOSE MOBILE MENU AFTER LINK CLICK
-    ===================================================== */
-    const mobileLinks = document.querySelectorAll(
-      ".mobile-link, .mobile-sub a"
-    );
-    mobileLinks.forEach((link) => {
-      link.addEventListener("click", () => {
-        mobileMenu.classList.remove("open");
-      });
-    });
-    /* =====================================================
-       CLOSE MOBILE MENU ON OUTSIDE CLICK
-    ===================================================== */
-    document.addEventListener("click", (event) => {
-      if (
-        window.innerWidth <= 1080 &&
-        !event.target.closest("#mobileMenu") &&
-        !event.target.closest("#mobileToggle")
-      ) {
-        mobileMenu.classList.remove("open");
-      }
-    });
-    /* =====================================================
-       RESET MOBILE MENU ON DESKTOP
-    ===================================================== */
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 1080) {
-        mobileMenu.classList.remove("open");
-        document
-          .querySelectorAll(".mobile-group")
-          .forEach((group) => {
-            group.classList.remove("open");
-          });
-      }
-    });
-  }
-  /* =====================================================
-     SWIPER HERO SLIDER
-  ===================================================== */
-  const heroSliderElement = document.querySelector(".heroSwiper");
-  if (
-    heroSliderElement &&
-    typeof Swiper !== "undefined"
-  ) {
-    const currentSlide =
-      document.querySelector(".hero-current-slide");
-    const totalSlides =
-      document.querySelector(".hero-total-slides");
-    const heroSwiper = new Swiper(".heroSwiper", {
-      /* -----------------------------------------
-         BASIC
-      ----------------------------------------- */
-      slidesPerView: 1,
-      spaceBetween: 0,
-      loop: true,
-      speed: 900,
-      /* -----------------------------------------
-         EFFECT
-      ----------------------------------------- */
-      effect: "fade",
-      fadeEffect: {
-        crossFade: true
-      },
-      /* -----------------------------------------
-         AUTOPLAY
-      ----------------------------------------- */
-      autoplay: {
-        delay: 5000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true
-      },
-      /* -----------------------------------------
-         PAGINATION
-      ----------------------------------------- */
-      pagination: {
-        el: ".hero-swiper-pagination",
-        clickable: true
-      },
-      /* -----------------------------------------
-         PREVIOUS / NEXT
-      ----------------------------------------- */
-      navigation: {
-        nextEl: ".hero-swiper-next",
-        prevEl: ".hero-swiper-prev"
-      },
-      /* -----------------------------------------
-         KEYBOARD
-      ----------------------------------------- */
-      keyboard: {
-        enabled: true
-      },
-      /* -----------------------------------------
-         ACCESSIBILITY
-      ----------------------------------------- */
-      a11y: {
-        enabled: true,
-        prevSlideMessage: "Previous banner",
-        nextSlideMessage: "Next banner",
-        firstSlideMessage: "This is the first banner",
-        lastSlideMessage: "This is the last banner"
-      },
-      /* -----------------------------------------
-         EVENTS
-      ----------------------------------------- */
-      on: {
-        init(swiper) {
-          updateSlideCounter(swiper);
-        },
-        slideChange(swiper) {
-          updateSlideCounter(swiper);
-        }
-      }
-    });
-    /* =====================================================
-       UPDATE 01 / 03 SLIDE COUNTER
-    ===================================================== */
-    function updateSlideCounter(swiper) {
-      const total = swiper.slides.length;
-      const active = swiper.realIndex + 1;
-      if (currentSlide) {
-        currentSlide.textContent =
-          String(active).padStart(2, "0");
-      }
-      if (totalSlides) {
-        totalSlides.textContent =
-          String(total).padStart(2, "0");
-      }
     }
-  }
-  /* =====================================================
-   SHOP BY CATEGORY
-===================================================== */
-const categoryTabs =
-  document.querySelectorAll(".category-tab");
-const categoryPanels =
-  document.querySelectorAll(".category-panel");
-/* Store Swiper instances */
-const categorySwipers = [];
-/* =====================================================
-   INITIALIZE EACH CATEGORY SWIPER
-===================================================== */
-categoryPanels.forEach((panel) => {
-  const swiperElement =
-    panel.querySelector(".subcategory-swiper");
-  const nextButton =
-    panel.querySelector(".category-next");
-  const prevButton =
-    panel.querySelector(".category-prev");
-  if (!swiperElement) {
-    return;
-  }
-  const swiper = new Swiper(swiperElement, {
-    slidesPerView:1.3,
-    spaceBetween:14,
-    speed:650,
-    grabCursor:true,
-    watchOverflow:true,
-    observer:true,
-    observeParents:true,
-    navigation:{
-      nextEl:nextButton,
-      prevEl:prevButton
-    },
-    breakpoints:{
-      480:{
-        slidesPerView:2.1,
-        spaceBetween:14
-      },
-      700:{
-        slidesPerView:3.1,
-        spaceBetween:16
-      },
-      950:{
-        slidesPerView:4.2,
-        spaceBetween:17
-      },
-      1200:{
-        slidesPerView:5.2,
-        spaceBetween:18
-      },
-      1450:{
-        slidesPerView:6,
-        spaceBetween:18
-      }
+    if (searchClose && searchPanel) {
+        searchClose.addEventListener("click", () => {
+            searchPanel.classList.remove("open");
+        });
     }
-  });
-  categorySwipers.push({
-    panel:panel,
-    swiper:swiper
-  });
-});
-/* =====================================================
-   CATEGORY TAB CLICK
-===================================================== */
-categoryTabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    const selectedCategory =
-      tab.dataset.category;
-    /* Remove active from tabs */
-    categoryTabs.forEach((item) => {
-      item.classList.remove("active");
-    });
-    /* Add active tab */
-    tab.classList.add("active");
-    /* Hide all panels */
-    categoryPanels.forEach((panel) => {
-      panel.classList.remove("active");
-    });
-    /* Show selected panel */
-    const selectedPanel =
-      document.querySelector(
-        `.category-panel[data-panel="${selectedCategory}"]`
-      );
-    if (selectedPanel) {
-      selectedPanel.classList.add("active");
-      /* Update Swiper after panel becomes visible */
-      const selectedSwiper =
-        categorySwipers.find(
-          (item) => item.panel === selectedPanel
+    /* =====================================================
+       MOBILE MENU
+    ===================================================== */
+    const mobileToggle = document.getElementById("mobileToggle");
+    const mobileMenu = document.getElementById("mobileMenu");
+    if (mobileToggle && mobileMenu) {
+        mobileToggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            mobileMenu.classList.toggle("open");
+        });
+        /* =====================================================
+           MOBILE ACCORDION
+        ===================================================== */
+        const mobileParents = document.querySelectorAll(".mobile-parent");
+        mobileParents.forEach((button) => {
+            button.addEventListener("click", () => {
+                const currentGroup = button.closest(".mobile-group");
+                document.querySelectorAll(".mobile-group").forEach((group) => {
+                    if (group !== currentGroup) {
+                        group.classList.remove("open");
+                    }
+                });
+                if (currentGroup) {
+                    currentGroup.classList.toggle("open");
+                }
+            });
+        });
+        /* =====================================================
+           CLOSE MOBILE MENU AFTER LINK CLICK
+        ===================================================== */
+        const mobileLinks = document.querySelectorAll(
+            ".mobile-link, .mobile-sub a"
         );
-      if (selectedSwiper) {
-        setTimeout(() => {
-          selectedSwiper.swiper.update();
-          selectedSwiper.swiper.slideTo(0);
-        },50);
-      }
+        mobileLinks.forEach((link) => {
+            link.addEventListener("click", () => {
+                mobileMenu.classList.remove("open");
+            });
+        });
+        /* =====================================================
+           CLOSE MOBILE MENU ON OUTSIDE CLICK
+        ===================================================== */
+        document.addEventListener("click", (event) => {
+            if (
+                window.innerWidth <= 1080 &&
+                !event.target.closest("#mobileMenu") &&
+                !event.target.closest("#mobileToggle")
+            ) {
+                mobileMenu.classList.remove("open");
+            }
+        });
+        /* =====================================================
+           RESET MOBILE MENU ON DESKTOP
+        ===================================================== */
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 1080) {
+                mobileMenu.classList.remove("open");
+                document
+                    .querySelectorAll(".mobile-group")
+                    .forEach((group) => {
+                        group.classList.remove("open");
+                    });
+            }
+        });
     }
-  });
-});
+    /* =====================================================
+       SWIPER HERO SLIDER
+    ===================================================== */
+    const heroSliderElement = document.querySelector(".heroSwiper");
+    if (
+        heroSliderElement &&
+        typeof Swiper !== "undefined"
+    ) {
+        const currentSlide =
+            document.querySelector(".hero-current-slide");
+        const totalSlides =
+            document.querySelector(".hero-total-slides");
+        const heroSwiper = new Swiper(".heroSwiper", {
+            /* -----------------------------------------
+               BASIC
+            ----------------------------------------- */
+            slidesPerView: 1,
+            spaceBetween: 0,
+            loop: true,
+            speed: 900,
+            /* -----------------------------------------
+               EFFECT
+            ----------------------------------------- */
+            effect: "fade",
+            fadeEffect: {
+                crossFade: true
+            },
+            /* -----------------------------------------
+               AUTOPLAY
+            ----------------------------------------- */
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true
+            },
+            /* -----------------------------------------
+               PAGINATION
+            ----------------------------------------- */
+            pagination: {
+                el: ".hero-swiper-pagination",
+                clickable: true
+            },
+            /* -----------------------------------------
+               PREVIOUS / NEXT
+            ----------------------------------------- */
+            navigation: {
+                nextEl: ".hero-swiper-next",
+                prevEl: ".hero-swiper-prev"
+            },
+            /* -----------------------------------------
+               KEYBOARD
+            ----------------------------------------- */
+            keyboard: {
+                enabled: true
+            },
+            /* -----------------------------------------
+               ACCESSIBILITY
+            ----------------------------------------- */
+            a11y: {
+                enabled: true,
+                prevSlideMessage: "Previous banner",
+                nextSlideMessage: "Next banner",
+                firstSlideMessage: "This is the first banner",
+                lastSlideMessage: "This is the last banner"
+            },
+            /* -----------------------------------------
+               EVENTS
+            ----------------------------------------- */
+            on: {
+                init(swiper) {
+                    updateSlideCounter(swiper);
+                },
+                slideChange(swiper) {
+                    updateSlideCounter(swiper);
+                }
+            }
+        });
+        /* =====================================================
+           UPDATE 01 / 03 SLIDE COUNTER
+        ===================================================== */
+        function updateSlideCounter(swiper) {
+            const total = swiper.slides.length;
+            const active = swiper.realIndex + 1;
+            if (currentSlide) {
+                currentSlide.textContent =
+                    String(active).padStart(2, "0");
+            }
+            if (totalSlides) {
+                totalSlides.textContent =
+                    String(total).padStart(2, "0");
+            }
+        }
+    }
+    /* =====================================================
+     SHOP BY CATEGORY
+  ===================================================== */
+
+    // const categoryTabs =
+    //     document.querySelectorAll(".category-tab");
+    // const categoryPanels =
+    //     document.querySelectorAll(".category-panel");
+    // /* Store Swiper instances */
+    // const categorySwipers = [];
+    // /* =====================================================
+    //    INITIALIZE EACH CATEGORY SWIPER
+    // ===================================================== */
+    // categoryPanels.forEach((panel) => {
+    //     const swiperElement =
+    //         panel.querySelector(".subcategory-swiper");
+    //     const nextButton =
+    //         panel.querySelector(".category-next");
+    //     const prevButton =
+    //         panel.querySelector(".category-prev");
+    //     if (!swiperElement) {
+    //         return;
+    //     }
+    //     const swiper = new Swiper(swiperElement, {
+    //         slidesPerView: 1.3,
+    //         spaceBetween: 14,
+    //         speed: 650,
+    //         grabCursor: true,
+    //         watchOverflow: true,
+    //         observer: true,
+    //         observeParents: true,
+    //         navigation: {
+    //             nextEl: nextButton,
+    //             prevEl: prevButton
+    //         },
+    //         breakpoints: {
+    //             480: {
+    //                 slidesPerView: 2.1,
+    //                 spaceBetween: 14
+    //             },
+    //             700: {
+    //                 slidesPerView: 3.1,
+    //                 spaceBetween: 16
+    //             },
+    //             950: {
+    //                 slidesPerView: 4.2,
+    //                 spaceBetween: 17
+    //             },
+    //             1200: {
+    //                 slidesPerView: 5.2,
+    //                 spaceBetween: 18
+    //             },
+    //             1450: {
+    //                 slidesPerView: 6,
+    //                 spaceBetween: 18
+    //             }
+    //         }
+    //     });
+    //     categorySwipers.push({
+    //         panel: panel,
+    //         swiper: swiper
+    //     });
+    // });
+    /* =====================================================
+       CATEGORY TAB CLICK
+    ===================================================== */
+    categoryTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+            const selectedCategory =
+                tab.dataset.category;
+            /* Remove active from tabs */
+            categoryTabs.forEach((item) => {
+                item.classList.remove("active");
+            });
+            /* Add active tab */
+            tab.classList.add("active");
+            /* Hide all panels */
+            categoryPanels.forEach((panel) => {
+                panel.classList.remove("active");
+            });
+            /* Show selected panel */
+            const selectedPanel =
+                document.querySelector(
+                    `.category-panel[data-panel="${selectedCategory}"]`
+                );
+            if (selectedPanel) {
+                selectedPanel.classList.add("active");
+                /* Update Swiper after panel becomes visible */
+                const selectedSwiper =
+                    categorySwipers.find(
+                        (item) => item.panel === selectedPanel
+                    );
+                if (selectedSwiper) {
+                    setTimeout(() => {
+                        selectedSwiper.swiper.update();
+                        selectedSwiper.swiper.slideTo(0);
+                    }, 50);
+                }
+            }
+        });
+    });
 });
 /* ============================================
    TESTIMONIAL SLIDER
@@ -312,7 +313,7 @@ document.addEventListener("DOMContentLoaded", function () {
             `translateX(-${move}px)`;
         currentNumber.textContent =
             String(currentSlide + 1)
-            .padStart(2, "0");
+                .padStart(2, "0");
         const progress =
             ((currentSlide + 1) / totalSlides) * 100;
         progressBar.style.width =
@@ -691,8 +692,8 @@ document.addEventListener("DOMContentLoaded", function () {
                             ".lcheckout-field"
                         )
                         ?.scrollIntoView({
-                            behavior:"smooth",
-                            block:"center"
+                            behavior: "smooth",
+                            block: "center"
                         });
                     return;
                 }

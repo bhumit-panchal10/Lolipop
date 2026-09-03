@@ -2,317 +2,357 @@
 @section('title', 'Checkout')
 @section('content')
 
-<style>
-    .is-invalid {
-        border: 1px solid #dc3545 !important;
-        background-color: #fff5f5;
-    }
-
-    .invalid-feedback {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 4px;
-        display: block;
-    }
-</style>
-    
-<form></form>
-<form class="form" method="post" action="{{ route('checkoutstore') }}">
-    @csrf
-    
-    <section class="order-summery1 bg-lp p-8">
-        <div class="container">
-            
-                
-               
-                
-           <div class="col-lg-12 p-2"> <h6 class="title showorder">Order Summary &nbsp; &nbsp; <i class="ti-angle-down"></i></h6></div>
-            <div class="row">
-                
-                <div class="col-lg-12 ">
-                    <!-- Shopping Summery -->
-                    <table class="table order-table" style='<?= Session::has('error') ? "display: table" : "display: none" ?>'>
-                        <thead>
-                            <tr class="main-hading">
-                                <th class="text-left">PRODUCT</th>
-                                <th class="text-right">QTY</th>
-                                <th class="text-center">SIZE</th>
-                                <th class="text-left">PRICE</th>
-
-                                <th class="text-right">TOTAL</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                                $cartItems = \Cart::getContent();
-                                $total = 0; 
-                            ?>
-                            @foreach ($cartItems as $item)
-                                 @php 
-                                    $ProductAttribute = App\Models\ProductAttributes::orderBy('id', 'desc')
-                                        ->where(["product_id" => $item->productid, 'id' => $item->size])
-                                        ->first();
-                                    $Ledger = App\Models\Ledger::orderBy('ledgerId', 'desc')->where([
-                                            'ledger.iStatus' => 1, 'ledger.isDelete' => 0, 'ledger.iProductId' => $item->productid, 'iSize' => $item->size
-                                        ])
-                                        ->join('product_attributes', 'ledger.iSize', '=', 'product_attributes.id')
-                                        ->first();
-                                    $closingBalance = (int)$Ledger->closingBalance;
-                                @endphp   
-                                <tr>
-                                    <td class=" text-left" data-title="No"><img
-                                            src="{{ asset('Product') . '/' . $item->attributes->image }}" alt="#">
-                                            @if($closingBalance <= 0)
-                                                <br /><span style="color: red;font-size: xx-small;">Product out of stock</span>
-                                            @endif
-                                    </td>
-                                    <!--<td class="product-des" data-title="Description">-->
-                                    <!--    <p class="product-name"><a href="productlisting.php">{{ $item->name }}</a></p>-->
-                                    <!--</td>-->
-                                    <td class=" text-right" data-title="Qty">
-                                        {{ $item->quantity }}&nbsp;&nbsp;&nbsp;
-                                    </td>
-                                    <td class=" text-center" data-title="Qty">
-                                        {{ $ProductAttribute->product_attribute_size }}
-                                    </td>
-                                    <td class="price text-left" data-title="Price">
-                                        <span> &#x20B9; {{ $item->price }}
-                                        </span>
-                                    </td>
-
-                                    <td class="total-amount text-right" data-title="Total">
-                                        <span> &#x20B9; {{ $item->price * $item->quantity }}</span>
-                                    </td>
-
-                                </tr>
-                                <?php $total += $item->price * $item->quantity; ?>
-                            @endforeach
-
-                            <!--<tr>-->
-                            <!--    <td class="text-right border-0 " colspan="4">Subtotal</td>-->
-                            <!--    <td class="text-right border-0">₹ {{ $total }}</td>-->
-                            <!--</tr>-->
-                            <!--<tr>-->
-                            <!--    <td class="text-right border-0" colspan="4">Shipping</td>-->
-                            <!--    <td class="text-right border-0">₹ 0.00</td>-->
-                            <!--</tr>-->
-                            <tr>
-                                <td class="text-right bold border-0" colspan="4">Total Amount</td>
-                                <td class="bold text-right border-0">₹ {{ $total }}</td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                    <!--/ End Shopping Summery -->
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="shop checkout order-summery1 p-2 border contact-box">
-    
-    
-        <div class="container">
-            @include('common.alert')
-         <div class="row">
-             
-             <div class="col-lg-4">
-                  <div class="row">
-                                     <h6 class="mb-2">Contact</h6>
-                                     </div>
-            </div>
-                <div class="form-group col-lg-4">
-                     <div class="row position-relative">
-                        <span style=" position: absolute; left: 7px; top: 0px; padding: 10px 30px 9px 9px;"> +91 </span>
-                        <input class="@error('billPhone') is-invalid @enderror d-inline" type="text" name="billPhone" id="billPhone" onkeydown="checkcustomer();"
-                            onkeyup="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')"
-                            maxlength="10" minlength="10" placeholder="Phone Number *" required="required"
-                            autocomplete="off" value="{{ old('billPhone') }}" style="margin:0 7px;padding-left:45px">
-                        @error('billPhone')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                     </div>       
-                     <div class="row mt-2  position-relative">
-                        <span style=" position: absolute; left: 7px; top: 0px; padding: 10px 30px 9px 9px;"> +91 </span>
-                        <input type="text" name="billPhone1" id="billPhone1" 
-                            onkeyup="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')"
-                            maxlength="10" minlength="10" placeholder="Phone Number Additional" 
-                            autocomplete="off" value="{{ old('billPhone1') }}" style="margin:0 7px;padding-left:45px">    
-                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section class="shop checkout section">
-        <div class="container">
-            
-            <div class="row">
-                <div class="col-lg-8 col-12">
-                   
-                    
-                    <div class="checkout-form">
-                        <h2>Shipping Information</h2>
-
-                        <div class="row">
-                            
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <!--<label>First Name<span>*</span></label>-->
-                                    <input class="@error('billFirstName') is-invalid @enderror" type="text" name="billFirstName" id="billFirstName" placeholder="First Name *"
-                                        required="required" autocomplete="off" value="{{ old('billFirstName') }}">
-                                    @error('billFirstName')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror    
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <!--<label>Last Name<span>*</span></label>-->
-                                    <input type="text" class="@error('billLastName') is-invalid @enderror" name="billLastName" id="billLastName" placeholder="Last Name *"
-                                        required="required" autocomplete="off" value="{{ old('billLastName') }}">
-                                    @error('billLastName')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror    
-                                </div>
-                            </div>
-                            
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <!--<label>Email Address<span>*</span></label>-->
-                                    <input type="email" name="billEmail" id="billEmail" placeholder="Email Address *"
-                                         autocomplete="off" value="{{ old('billEmail') }}">
-                                </div>
-                            </div>
-                            
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <!--<label>Address Line 1<span>*</span></label>-->
-                                    <input class="@error('billStreetAddress1') is-invalid @enderror" type="text" name="billStreetAddress1" id="billStreetAddress1" placeholder="Address Line 1 *"
-                                        required="required" autocomplete="off" value="{{ old('billStreetAddress1') }}">
-                                    @error('billStreetAddress1')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror    
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <!--<label>Address Line 2<span>*</span></label>-->
-                                    <input class="@error('billStreetAddress2') is-invalid @enderror" type="text" name="billStreetAddress2" id="billStreetAddress2" placeholder="Address Line 2 *"
-                                        required="required" autocomplete="off" value="{{ old('billStreetAddress2') }}">
-                                    @error('billStreetAddress2')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror    
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <!--<label>State <span>*</span></label>-->
-                                    <select class="@error('billState') is-invalid @enderror" name="billState" id="state_province" autocomplete="off">
-                                        <option value="">Select state</option>
-                                        @foreach ($State as $state)
-                                        <option value="{{ $state->stateId }}" {{ old('billState')==$state->stateId ?
-                                            'selected' : '' }}>
-                                            {{ $state->stateName }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('billState')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-
-                                </div>
-                            </div>
-                            
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <!--<label>Country<span>*</span></label>-->
-                                    <input class="@error('shipping_city') is-invalid @enderror" type="text" name="shipping_city" id="shipping_city"
-                                         placeholder="Enter City *" required="required"  value="{{ old('shipping_city') }}">
-                                    @error('shipping_city')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror    
-                                </div>
-                            </div>
-                            
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <!--<label>Country<span>*</span></label>-->
-                                    <input class="@error('strCountry') is-invalid @enderror" type="text" name="strCountry" id="strCountry"
-                                         placeholder="Country *" required="required" readonly
-                                        value="India">
-                                    @error('strCountry')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror    
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <!--<label>Postal Code<span>*</span></label>-->
-                                    <input class="@error('billPinCode') is-invalid @enderror" type="text" name="billPinCode" id="billPinCode"
-                                        onkeyup="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')"
-                                        minlength="6" maxlength="6" placeholder="Postal Code *" required="required"
-                                        value="{{ old('billPinCode') }}">
-                                    @error('billPinCode')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror    
-                                </div>
-                            </div>
-
-
-                        </div>
-
+    <!-- =====================================================
+                         CHECKOUT PAGE
+                    ====================================================== -->
+    <main class="lcheckout-page">
+        <section class="lcheckout-section">
+            <div class="container">
+                <!-- =================================================
+                                     CHECKOUT TOP
+                                ================================================== -->
+                <div class="lcheckout-top">
+                    <div>
+                        <span class="lcheckout-kicker">
+                            ALMOST THERE
+                        </span>
+                        <h2>
+                            Complete Your
+                            <em>Order</em>
+                        </h2>
+                        <p>
+                            Add your delivery details and choose a payment method.
+                        </p>
                     </div>
+                    <a href="{{ route('cart.list') }}" class="lcheckout-back">
+                        <i class="fa fa-long-arrow-left"></i>
+                        Back To Cart
+                    </a>
                 </div>
-                <div class="col-lg-4 col-12">
-                    <div class="order-details">
-                        <!-- Order Widget -->
-                        <div class="single-widget">
-                            <h2 class="text-center">CART TOTAL</h2>
-                            <div class="content">
-                                <ul>
-                                    @php
-                                    $Total = \Cart::getTotal();
-                                    @endphp
-                                    <li>Sub Total<span>&#x20B9; {{ $Total }}</span></li>
-                                    <li>Shipping Free<span> - &nbsp; &nbsp;</span></li>
-                                    <li class="last bold">Total<span>&#x20B9; {{ $Total }}</span></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="single-widget payement">
-                            <div class="content">
-                                <img src="{{ asset('assets/front/images/payment-method.png') }}" alt="#">
-                            </div>
-                        </div>
-
-                        <div class="single-widget get-button">
-                            <div class="content">
-                                <div class="button">
-                                    <a href="#">
-                                        <button class="btn" type="submit">
-                                            Pay Now
-                                        </button>
-                                    </a>
+                <!-- =================================================
+                                     MAIN LAYOUT
+                                ================================================== -->
+                <form action="{{ route('checkoutstore') }}" method="POST" id="checkoutForm">
+                    @csrf
+                    <div class="lcheckout-layout">
+                        <!-- =========================================
+                                         LEFT
+                                    ========================================== -->
+                        <div class="lcheckout-left">
+                            <!-- =====================================
+                                             CONTACT DETAILS
+                                        ====================================== -->
+                            <div class="lcheckout-card">
+                                <div class="lcheckout-card-head">
+                                    <span class="lcheckout-card-icon pink">
+                                        <i class="fa fa-user-o"></i>
+                                    </span>
+                                    <div>
+                                        <small>YOUR DETAILS</small>
+                                        <h3>Contact Information</h3>
+                                    </div>
+                                </div>
+                                <div class="lcheckout-form-grid">
+                                    <div class="lcheckout-field">
+                                        <label>
+                                            Mobile Number
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-phone"></i>
+                                            <input type="tel" name="billPhone" id="checkoutMobile" maxlength="10"
+                                                value="{{ old('billPhone') }}" placeholder="Enter mobile number">
+                                        </div>
+                                        <small class="lcheckout-error"></small>
+                                    </div>
+                                    <div class="lcheckout-field">
+                                        <label>
+                                            Full Name
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-user-o"></i>
+                                            <input type="text" name="billFirstName" id="checkoutName"
+                                                value="{{ old('billFirstName') }}" placeholder="First name">
+                                        </div>
+                                        <small class="lcheckout-error"></small>
+                                    </div>
+                                    <div class="lcheckout-field">
+                                        <label>
+                                            Last Name
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-user-o"></i>
+                                            <input type="text" name="billLastName" value="{{ old('billLastName') }}"
+                                                placeholder="Last name">
+                                        </div>
+                                        <small class="lcheckout-error"></small>
+                                    </div>
+                                    <div class="lcheckout-field">
+                                        <label>
+                                            Email Address
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-envelope-o"></i>
+                                            <input type="email" name="billEmail" id="checkoutEmail"
+                                                value="{{ old('billEmail') }}" placeholder="Enter email address">
+                                        </div>
+                                        <small class="lcheckout-error"></small>
+                                    </div>
                                 </div>
                             </div>
+                            <!-- =====================================
+                                             DELIVERY ADDRESS
+                                        ====================================== -->
+                            <div class="lcheckout-card">
+                                <div class="lcheckout-card-head">
+                                    <span class="lcheckout-card-icon blue">
+                                        <i class="fa fa-map-marker"></i>
+                                    </span>
+                                    <div>
+                                        <small>DELIVER TO</small>
+                                        <h3>Delivery Address</h3>
+                                    </div>
+                                </div>
+                                <div class="lcheckout-form-grid-add">
+                                    <div class="lcheckout-field ">
+                                        <label>
+                                            Address
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-home"></i>
+                                            <input type="text" name="billStreetAddress1" id="checkoutAddress"
+                                                value="{{ old('billStreetAddress1') }}"
+                                                placeholder="House no., building, street">
+                                        </div>
+                                        <small class="lcheckout-error"></small>
+                                    </div>
+                                    <div class="lcheckout-field ">
+                                        <label>
+                                            Apartment / Landmark
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-building-o"></i>
+                                            <input type="text" name="billStreetAddress2" id="checkoutLandmark"
+                                                value="{{ old('billStreetAddress2') }}"
+                                                placeholder="Apartment, landmark (optional)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="lcheckout-form-grid">
+                                    <div class="lcheckout-field">
+                                        <label>
+                                            City
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-map"></i>
+                                            <input type="text" name="shipping_city" id="checkoutCity"
+                                                value="{{ old('shipping_city') }}" placeholder="City">
+                                        </div>
+                                        <small class="lcheckout-error"></small>
+                                    </div>
+                                    <div class="lcheckout-field">
+                                        <label>
+                                            State
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-map-o"></i>
+                                            <select name="billState" id="checkoutState">
+                                                <option value="">
+                                                    Select state
+                                                </option>
+                                                @foreach ($State as $state)
+                                                    <option value="{{ $state->stateName }}" @selected(old('billState') === $state->stateName)>
+                                                        {{ $state->stateName }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <i class="fa fa-angle-down lcheckout-select-icon"></i>
+                                        </div>
+                                        <small class="lcheckout-error"></small>
+                                    </div>
+                                    <div class="lcheckout-field">
+                                        <label>
+                                            Pincode
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-map-pin"></i>
+                                            <input type="text" name="billPinCode" id="checkoutPincode" maxlength="6"
+                                                value="{{ old('billPinCode') }}" placeholder="6-digit pincode">
+                                        </div>
+                                        <small class="lcheckout-error"></small>
+                                    </div>
+                                    <div class="lcheckout-field">
+                                        <label>
+                                            Country
+                                            <span>*</span>
+                                        </label>
+                                        <div class="lcheckout-input">
+                                            <i class="fa fa-globe"></i>
+                                            <input type="text" name="strCountry"
+                                                value="{{ old('strCountry', 'India') }}" placeholder="Country">
+                                        </div>
+                                        <small class="lcheckout-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- =====================================
+                                             PAYMENT
+                                        ====================================== -->
+                            <!-- <div class="lcheckout-card">
+                                            <div class="lcheckout-card-head">
+                                                <span class="lcheckout-card-icon green">
+                                                    <i class="fa fa-credit-card"></i>
+                                                </span>
+                                                <div>
+                                                    <small>PAY SECURELY</small>
+                                                    <h3>Payment Method</h3>
+                                                </div>
+                                            </div>
+                                            <div class="lcheckout-payment-list">
+                                                <label class="lcheckout-payment active">
+                                                    <input
+                                                        type="radio"
+                                                        name="payment"
+                                                        value="upi"
+                                                        checked
+                                                    >
+                                                    <span class="lcheckout-payment-radio"></span>
+                                                    <span class="lcheckout-payment-icon">
+                                                        <i class="fa fa-mobile"></i>
+                                                    </span>
+                                                    <span class="lcheckout-payment-copy">
+                                                        <strong>
+                                                            Online Payment
+                                                        </strong>
+                                                        <small>
+                                                            Google Pay, PhonePe, Paytm & more
+                                                        </small>
+                                                    </span>
+                                                </label>
+                                                <label class="lcheckout-payment">
+                                                    <input
+                                                        type="radio"
+                                                        name="payment"
+                                                        value="cod"
+                                                    >
+                                                    <span class="lcheckout-payment-radio"></span>
+                                                    <span class="lcheckout-payment-icon">
+                                                        <i class="fa fa-money"></i>
+                                                    </span>
+                                                    <span class="lcheckout-payment-copy">
+                                                        <strong>
+                                                            Cash On Delivery
+                                                        </strong>
+                                                        <small>
+                                                            Pay when your order arrives
+                                                        </small>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div> -->
                         </div>
-                        <!--/ End Button Widget -->
+                        <!-- =========================================
+                                         RIGHT ORDER SUMMARY
+                                    ========================================== -->
+                        <aside class="lcheckout-summary">
+                            <div class="lcheckout-summary-head">
+                                <span>
+                                    <i class="fa fa-shopping-bag"></i>
+                                </span>
+                                <div>
+                                    <small>YOUR ORDER</small>
+                                    <h3>Order Summary</h3>
+                                </div>
+                            </div>
+                            <!-- PRODUCTS -->
+                            <div class="lcheckout-products">
+                                @foreach ($cartItems as $item)
+                                    <div class="lcheckout-product">
+                                        <div class="lcheckout-product-image">
+                                            <img src="{{ asset('/Product/Thumbnail/' . ($item->attributes->image ?? '')) }}"
+                                                alt="{{ $item->name }}">
+                                            <span>{{ $item->quantity }}</span>
+                                        </div>
+                                        <div class="lcheckout-product-copy">
+                                            <small>
+                                                {{ $item->categoryname ?? '' }}
+                                            </small>
+                                            <strong>
+                                                {{ $item->name }}
+                                            </strong>
+                                            <p>
+                                                Size: {{ $item->size }}
+                                            </p>
+                                        </div>
+                                        <strong class="lcheckout-product-price">
+                                            ₹{{ number_format($item->price * $item->quantity, 0) }}
+                                        </strong>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <!-- PRICE -->
+                            <div class="lcheckout-price-list">
+                                <div>
+                                    <span>Subtotal</span>
+                                    <strong>₹{{ number_format($cartItems->sum(fn($item) => $item->price * $item->quantity), 0) }}</strong>
+                                </div>
+                                <div>
+                                    <span>Product Discount</span>
+                                    <strong class="green">
+                                        - ₹0
+                                    </strong>
+                                </div>
+                                <div>
+                                    <span>Shipping</span>
+                                    <strong class="green">
+                                        FREE
+                                    </strong>
+                                </div>
+                            </div>
+                            <!-- TOTAL -->
+                            <div class="lcheckout-total">
+                                <div>
+                                    <span>
+                                        Total Amount
+                                    </span>
+                                    <strong>
+                                        ₹{{ number_format($cartItems->sum(fn($item) => $item->price * $item->quantity), 0) }}
+                                    </strong>
+                                </div>
+                            </div>
+                            <!-- SAVING -->
+                            <div class="lcheckout-saving">
+                                <i class="fa fa-smile-o"></i>
+                                <span>
+                                    You saved
+                                    <strong>₹0</strong>
+                                    on this order
+                                </span>
+                            </div>
+                            <!-- PLACE ORDER -->
+                            <button type="submit" class="lcheckout-place-order" id="checkoutPlaceOrder">
+                                <span>
+                                    <i class="fa fa-lock"></i>
+                                </span>
+                                <strong>
+                                    Place Order
+                                </strong>
+                                <i class="fa fa-long-arrow-right"></i>
+                            </button>
+                        </aside>
                     </div>
-                </div>
+                </form>
             </div>
-        </div>
-    </section>
-    <!--/ End Checkout -->
-</form>
+        </section>
+    </main>
 
 
 
@@ -321,46 +361,6 @@
 
 @section('scripts')
 
-<script>
-function checkcustomer(){
 
-    var phone = $('#billPhone').val();
-    var url = "{{ route('checkmobile') }}";
-    
-    if(phone.length == 10){
-        $.ajax({
-            url: url,
-            type: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                phone: phone,
-            },
-            success: function(data) {
-                console.log(data);
-                var obj = JSON.parse(data);
-                $('#billFirstName').val(obj.firstname);
-                $('#billLastName').val(obj.lastname);
-                $('#billEmail').val(obj.customeremail);
-                $('#billStreetAddress1').val(obj.address);
-                $('#billStreetAddress2').val(obj.address1);
-                
-                $('#state_province').val(obj.state);
-                
-                $('#shipping_city').val(obj.city);
-                // $('#strCountry').val(obj.country);
-                $('#billPinCode').val(obj.pincode);
-            }
-        });
-    }
-}
-</script>
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script>
-    $(".showorder").click(function(){
-  $(".order-table").toggle();
-});</script>
 
 @endsection

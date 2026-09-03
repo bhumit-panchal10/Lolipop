@@ -3,13 +3,13 @@
 @section('content')
     <main class="lshop-page" id="lshopPage">
         <!-- =================================================
-             PRODUCT LISTING
-        ================================================== -->
+                                                                                                 PRODUCT LISTING
+                                                                                            ================================================== -->
         <section class="lshop-section">
             <div class="container">
                 <!-- =============================================
-                     TOOLBAR
-                ============================================== -->
+                                                                                                         TOOLBAR
+                                                                                                    ============================================== -->
                 <div class="lshop-toolbar">
                     <div class="lshop-toolbar-left">
                         <button class="lshop-mobile-filter" id="lshopFilterOpen" type="button">
@@ -20,23 +20,23 @@
                     <div class="lshop-toolbar-right">
                         <span>Sort By</span>
                         <div class="lshop-sort-box">
-                            <select id="lshopSort">
-                                <option value="featured">Featured</option>
-                                <option value="low">Price: Low to High</option>
-                                <option value="high">Price: High to Low</option>
-                                <option value="discount">Highest Discount</option>
+                            <select id="lshopSort" name="sort">
+                                <option value="featured" @selected(request('sort', 'featured') === 'featured')>Featured</option>
+                                <option value="low" @selected(request('sort') === 'low')>Price: Low to High</option>
+                                <option value="high" @selected(request('sort') === 'high')>Price: High to Low</option>
+                                <option value="discount" @selected(request('sort') === 'discount')>Highest Discount</option>
                             </select>
                             <i class="fa fa-angle-down"></i>
                         </div>
                     </div>
                 </div>
                 <!-- =============================================
-                     MAIN LAYOUT
-                ============================================== -->
+                                                                                                         MAIN LAYOUT
+                                                                                                    ============================================== -->
                 <div class="lshop-layout">
                     <!-- =========================================
-         REDESIGNED LEFT FILTER
-    ========================================== -->
+                                                                                             REDESIGNED LEFT FILTER
+                                                                                        ========================================== -->
                     <aside class="lshop-filter" id="lshopFilter">
                         <!-- MOBILE HEADER -->
                         <div class="lshop-filter-mobile-head">
@@ -49,8 +49,8 @@
                             </button>
                         </div>
                         <!-- =====================================
-             FILTER TOP
-        ====================================== -->
+                                                                                                 FILTER TOP
+                                                                                            ====================================== -->
                         <div class="lshop-filter-head">
                             <div class="lshop-filter-head-icon">
                                 <i class="fa fa-sliders"></i>
@@ -66,9 +66,9 @@
                             </button>
                         </div>
                         <!-- =====================================
-             CATEGORY
-        ====================================== -->
-                        <div class="lshop-filter-group lshop-filter-category">
+                                                                                                 CATEGORY
+                                                                                            ====================================== -->
+                        {{--  <div class="lshop-filter-group lshop-filter-category">
                             <button type="button" class="lshop-filter-title">
                                 <span class="lshop-filter-title-left">
                                     <span class="lshop-filter-title-icon">
@@ -84,52 +84,62 @@
                             </button>
                             <div class="lshop-filter-body">
                                 <div id="lshopCategoryFilters" class="lshop-category-list">
-                                    <label class="lshop-check-row">
-                                        <input type="checkbox" class="lshop-category-filter" value="dresses">
-                                        <span class="lshop-check-box"></span>
-                                        <span class="lshop-check-label">
-                                            Dresses
-                                        </span>
-                                        <small>02</small>
-                                    </label>
-                                    <label class="lshop-check-row">
-                                        <input type="checkbox" class="lshop-category-filter" value="tops">
-                                        <span class="lshop-check-box"></span>
-                                        <span class="lshop-check-label">
-                                            Tops & T-Shirts
-                                        </span>
-                                        <small>01</small>
-                                    </label>
-                                    <label class="lshop-check-row">
-                                        <input type="checkbox" class="lshop-category-filter" value="bottom-wear">
-                                        <span class="lshop-check-box"></span>
-                                        <span class="lshop-check-label">
-                                            Bottom Wear
-                                        </span>
-                                        <small>01</small>
-                                    </label>
-                                    <label class="lshop-check-row">
-                                        <input type="checkbox" class="lshop-category-filter" value="coord-sets">
-                                        <span class="lshop-check-box"></span>
-                                        <span class="lshop-check-label">
-                                            Co-ord Sets
-                                        </span>
-                                        <small>01</small>
-                                    </label>
-                                    <label class="lshop-check-row">
-                                        <input type="checkbox" class="lshop-category-filter" value="party-wear">
-                                        <span class="lshop-check-box"></span>
-                                        <span class="lshop-check-label">
-                                            Party Wear
-                                        </span>
-                                        <small>01</small>
-                                    </label>
+
+                                    @foreach ($categories as $category)
+
+                                        <label class="lshop-check-row">
+
+                                            <input type="checkbox" class="lshop-category-filter" name="category[]"
+                                                value="{{ $category->categoryId }}" data-parent="1"
+                                                @checked(in_array($category->categoryId, (array) request('category', [])))>
+
+                                            <span class="lshop-check-box"></span>
+
+                                            <span class="lshop-check-label">
+                                                {{ $category->categoryname }}
+                                            </span>
+
+                                        </label>
+
+
+
+                                        @foreach ($subCategories as $subcategory)
+                                            <label class="lshop-check-row lshop-subcategory-row">
+
+                                                <input type="checkbox" class="lshop-category-filter" name="subcategory[]"
+                                                    value="{{ $subcategory->categoryId }}" @checked(in_array($subcategory->categoryId, (array) request('subcategory', [])))
+                                                    data-parent="{{ $category->categoryId }}">
+
+                                                <span class="lshop-check-box"></span>
+
+                                                <span class="lshop-check-label">
+                                                    {{ $subcategory->categoryname }}
+                                                </span>
+
+                                                @php
+                                                    $subProductCount = DB::table('product')
+                                                        ->where('categoryId', $category->categoryId)
+                                                        ->where('subcategoryid', $subcategory->categoryId)
+                                                        ->where('iStatus', 1)
+                                                        ->where('isDelete', 0)
+                                                        ->count();
+                                                @endphp
+
+                                                <small>
+                                                    {{ str_pad($subProductCount, 2, '0', STR_PAD_LEFT) }}
+                                                </small>
+
+                                            </label>
+                                        @endforeach
+                                    @endforeach
+
                                 </div>
+
                             </div>
-                        </div>
+                        </div>  --}}
                         <!-- =====================================
-             PRICE
-        ====================================== -->
+                                                                                                 PRICE
+                                                                                            ====================================== -->
                         <div class="lshop-filter-group lshop-filter-price">
                             <button type="button" class="lshop-filter-title">
                                 <span class="lshop-filter-title-left">
@@ -146,28 +156,32 @@
                             </button>
                             <div class="lshop-filter-body">
                                 <label class="lshop-check-row">
-                                    <input type="checkbox" class="lshop-price-filter" value="0-500">
+                                    <input type="checkbox" class="lshop-price-filter" name="price[]" value="0-500"
+                                        @checked(in_array('0-500', (array) request('price', []), true))>
                                     <span class="lshop-check-box"></span>
                                     <span class="lshop-check-label">
                                         Under ₹500
                                     </span>
                                 </label>
                                 <label class="lshop-check-row">
-                                    <input type="checkbox" class="lshop-price-filter" value="500-1000">
+                                    <input type="checkbox" class="lshop-price-filter" name="price[]" value="500-1000"
+                                        @checked(in_array('500-1000', (array) request('price', []), true))>
                                     <span class="lshop-check-box"></span>
                                     <span class="lshop-check-label">
                                         ₹500 – ₹1,000
                                     </span>
                                 </label>
                                 <label class="lshop-check-row">
-                                    <input type="checkbox" class="lshop-price-filter" value="1000-1500">
+                                    <input type="checkbox" class="lshop-price-filter" name="price[]" value="1000-1500"
+                                        @checked(in_array('1000-1500', (array) request('price', []), true))>
                                     <span class="lshop-check-box"></span>
                                     <span class="lshop-check-label">
                                         ₹1,000 – ₹1,500
                                     </span>
                                 </label>
                                 <label class="lshop-check-row">
-                                    <input type="checkbox" class="lshop-price-filter" value="1500-999999">
+                                    <input type="checkbox" class="lshop-price-filter" name="price[]" value="1500-999999"
+                                        @checked(in_array('1500-999999', (array) request('price', []), true))>
                                     <span class="lshop-check-box"></span>
                                     <span class="lshop-check-label">
                                         ₹1,500 & Above
@@ -176,8 +190,8 @@
                             </div>
                         </div>
                         <!-- =====================================
-             SIZE
-        ====================================== -->
+                                                                                                 SIZE
+                                                                                            ====================================== -->
                         <div class="lshop-filter-group lshop-filter-size">
                             <button type="button" class="lshop-filter-title">
                                 <span class="lshop-filter-title-left">
@@ -197,6 +211,18 @@
                                     Choose one or more sizes
                                 </p>
                                 <div class="lshop-size-filter">
+
+                                    @foreach ($sizes as $size)
+                                        <button type="button"
+                                            class="lshop-size-btn {{ in_array((string) $size, array_map('strval', (array) request('size', [])), true) ? 'active' : '' }}"
+                                            data-size="{{ $size }}">
+                                            {{ $size }}
+                                        </button>
+                                    @endforeach
+
+                                </div>
+
+                                {{--  <div class="lshop-size-filter">
                                     <button type="button" data-size="xs">
                                         XS
                                     </button>
@@ -212,23 +238,203 @@
                                     <button type="button" data-size="xl">
                                         XL
                                     </button>
-                                </div>
+                                </div>  --}}
+                            </div>
+                            <div class="lshop-filter-apply">
+
+                                <button type="button" class="lshop-filter-action" id="lshopApplyFilters">
+                                    Apply Filters
+                                </button>
+
                             </div>
                         </div>
                     </aside>
                     <!-- =========================================
-                         RIGHT PRODUCTS
-                    ========================================== -->
+                                                                                                             RIGHT PRODUCTS
+                                                                                                        ========================================== -->
                     <div class="lshop-products-area">
                         <!-- ACTIVE FILTERS -->
                         <div class="lshop-active-filters" id="lshopActiveFilters"></div>
                         <!-- =====================================
-                             PRODUCT GRID
-                        ====================================== -->
+                                                                                                                 PRODUCT GRID
+                                                                                                            ====================================== -->
+
                         <div class="lshop-product-grid" id="lshopProductGrid">
+
+                            @forelse($Product as $product)
+                                @php
+                                    $category = $categories->firstWhere('categoryId', $product->categoryId);
+
+                                    $subcategory = $subCategories->firstWhere('categoryId', $product->subcategoryid);
+
+                                    $productPrice = $product->product_attribute_price ?? ($product->rate ?? 0);
+
+                                    // Product image path
+                                    $productImage = $product->photo
+                                        ? asset('/Product/Thumbnail/' . $product->photo)
+                                        : asset('assets/images/no-image.jpg');
+
+                                    // Calculate discount if required
+                                    $discount = 0;
+
+                                    if ($product->rate > 0 && $productPrice < $product->rate) {
+                                        $discount = round((($product->rate - $productPrice) / $product->rate) * 100);
+                                    }
+                                @endphp
+
+
+                                <article class="lshop-card" data-category="{{ $product->categoryId }}"
+                                    data-subcategory="{{ $product->subcategoryid }}" data-price="{{ $productPrice }}"
+                                    data-discount="{{ $discount }}">
+
+                                    {{-- PRODUCT IMAGE --}}
+                                    <div class="lshop-card-image">
+
+                                        <a
+                                            href="{{ route('productdetail.slugs', [$subcategory->slugname ?? $category->slugname, $product->slugname]) }}">
+
+                                            <img src="{{ $productImage }}" alt="{{ $product->productname }}"
+                                                class="lshop-card-img-main">
+
+                                            @php
+                                                $secondImage = DB::table('productphotos')
+                                                    ->where('productid', $product->productId)
+                                                    ->skip(1)
+                                                    ->first();
+                                            @endphp
+
+                                            @if ($secondImage)
+                                                <img src="{{ asset('/Product/Thumbnail/' . $secondImage->strphoto) }}"
+                                                    alt="{{ $product->productname }}" class="lshop-card-img-hover">
+                                            @else
+                                                <img src="{{ $productImage }}" alt="{{ $product->productname }}"
+                                                    class="lshop-card-img-hover">
+                                            @endif
+
+                                        </a>
+
+
+                                        {{-- BADGE --}}
+                                        @if ($discount > 0)
+                                            <span class="lshop-card-badge">
+                                                {{ $discount }}% OFF
+                                            </span>
+                                        @endif
+
+
+                                        {{-- ACTIONS --}}
+                                        <div class="lshop-card-actions">
+
+                                            {{--  <button type="button" class="lshop-wishlist" aria-label="Wishlist">
+                                                <i class="fa fa-heart-o"></i>
+                                            </button>  --}}
+
+                                            <form action="{{ route('cart.store') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="attributeid"
+                                                    value="{{ $product->lowest_attribute_id }}">
+                                                <input type="hidden" name="product_attribute_size"
+                                                    value="{{ $product->lowest_attribute_size }}">
+                                                <input type="hidden" name="productid"
+                                                    value="{{ $product->productId }}">
+                                                <input type="hidden" name="categoryId"
+                                                    value="{{ $product->categoryId }}">
+                                                <input type="hidden" name="subcategoryid"
+                                                    value="{{ $product->subcategoryid }}">
+                                                <input type="hidden" name="productslug"
+                                                    value="{{ $product->slugname }}">
+                                                <input type="hidden" name="categoryslug"
+                                                    value="{{ $subcategory->slugname ?? $category->slugname }}">
+                                                <input type="hidden" name="categoryname"
+                                                    value="{{ $subcategory->categoryname ?? $category->categoryname }}">
+                                                <input type="hidden" name="productname"
+                                                    value="{{ $product->productname }}">
+                                                <input type="hidden" name="price" value="{{ $productPrice }}">
+                                                <input type="hidden" name="image" value="{{ $product->photo }}">
+                                                <input type="hidden" name="buttonValue" value="addtocart">
+                                                <input type="hidden" name="quant[1]" value="1">
+                                                <button type="submit" class="lshop-cart" aria-label="Add to cart">
+                                                    <i class="fa fa-shopping-bag"></i>
+                                                </button>
+                                            </form>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {{-- PRODUCT CONTENT --}}
+                                    <div class="lshop-card-content">
+
+                                        <span class="lshop-card-category">
+
+                                            {{ $category->categoryname ?? '' }}
+
+                                            @if ($subcategory)
+                                                • {{ $subcategory->categoryname }}
+                                            @endif
+
+                                        </span>
+
+
+                                        <a href="{{ route('productdetail.slugs', [$subcategory->slugname ?? $category->slugname, $product->slugname]) }}"
+                                            class="lshop-card-name">
+                                            {{ $product->productname }}
+                                        </a>
+
+
+                                        {{-- PRICE --}}
+                                        <div class="lshop-card-price">
+
+                                            <strong>
+                                                ₹{{ number_format($productPrice, 0) }}
+                                            </strong>
+
+
+                                            @if ($product->rate > $productPrice)
+                                                <del>
+                                                    ₹{{ number_format($product->rate, 0) }}
+                                                </del>
+
+                                                <span>
+                                                    {{ $discount }}% OFF
+                                                </span>
+                                            @endif
+
+                                        </div>
+
+                                    </div>
+
+                                </article>
+
+                            @empty
+
+                                <div class="lshop-empty show" id="lshopEmpty">
+
+                                    <span>
+                                        <i class="fa fa-search"></i>
+                                    </span>
+
+                                    <h3>
+                                        No Products Found
+                                    </h3>
+
+                                    <p>
+                                        No products are available in this category.
+                                    </p>
+
+                                    <button type="button" class="lshop-filter-action" id="lshopEmptyClear">
+                                        Clear Filters
+                                    </button>
+
+                                </div>
+                            @endforelse
+
+                        </div>
+                        {{--  <div class="lshop-product-grid" id="lshopProductGrid">
                             <!-- =================================
-                                 GIRLS PRODUCT 01
-                            ================================== -->
+                                     GIRLS PRODUCT 01
+                                ================================== -->
                             <article class="lshop-card" data-gender="girls" data-category="dresses" data-price="1099"
                                 data-discount="27" data-size="xs s m">
                                 <div class="lshop-card-image">
@@ -270,519 +476,8 @@
                                     </div>
                                 </div>
                             </article>
-                            <!-- =================================
-                                 GIRLS PRODUCT 02
-                            ================================== -->
-                            <article class="lshop-card" data-gender="girls" data-category="party-wear" data-price="1799"
-                                data-discount="22" data-size="s m l">
-                                <div class="lshop-card-image">
-                                    <a href="product-detail.html">
-                                        <img src="assets/images/girls-party.jpg" alt="Shimmer Party Dress"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/girls-dresses.jpg" alt="Shimmer Party Dress alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Party Pick
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Girls • Party Wear
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Shimmer Party Dress
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>
-                                            ₹1,799
-                                        </strong>
-                                        <del>
-                                            ₹2,299
-                                        </del>
-                                        <span>
-                                            22% OFF
-                                        </span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- =================================
-                                 GIRLS PRODUCT 03
-                            ================================== -->
-                            <article class="lshop-card" data-gender="girls" data-category="bottom-wear" data-price="899"
-                                data-discount="25" data-size="s m l">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/girls-skirts.jpg" alt="Pretty Pleated Skirt"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/girls-dresses.jpg" alt="Pretty Pleated Skirt alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Popular
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Girls • Skirts
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Pretty Pleated Skirt
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>
-                                            ₹899
-                                        </strong>
-                                        <del>
-                                            ₹1,199
-                                        </del>
-                                        <span>
-                                            25% OFF
-                                        </span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- =================================
-                                 GIRLS PRODUCT 04
-                            ================================== -->
-                            <article class="lshop-card" data-gender="girls" data-category="coord-sets" data-price="1399"
-                                data-discount="22" data-size="m l xl">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/girls-dresses.jpg" alt="Pastel Co-ord Set"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/girls-skirts.jpg" alt="Pastel Co-ord Set alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Trending
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Girls • Co-ord Sets
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Pastel Everyday Co-ord Set
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>
-                                            ₹1,399
-                                        </strong>
-                                        <del>
-                                            ₹1,799
-                                        </del>
-                                        <span>
-                                            22% OFF
-                                        </span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- =================================
-                                 GIRLS PRODUCT 05
-                            ================================== -->
-                            <article class="lshop-card" data-gender="girls" data-category="tops" data-price="749"
-                                data-discount="25" data-size="xs s m">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/girls-party.jpg" alt="Cute Printed Cotton Top"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/girls-dresses.jpg" alt="Cute Printed Cotton Top alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Everyday Pick
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Girls • Tops
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Cute Printed Cotton Top
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>
-                                            ₹749
-                                        </strong>
-                                        <del>
-                                            ₹999
-                                        </del>
-                                        <span>
-                                            25% OFF
-                                        </span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- =================================
-                                 GIRLS PRODUCT 06
-                            ================================== -->
-                            <article class="lshop-card" data-gender="girls" data-category="dresses" data-price="1299"
-                                data-discount="24" data-size="s m l xl">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/girls-dresses.jpg" alt="Rainbow Casual Dress"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/girls-party.jpg" alt="Rainbow Casual Dress alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        New
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Girls • Dresses
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Rainbow Casual Dress
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>
-                                            ₹1,299
-                                        </strong>
-                                        <del>
-                                            ₹1,699
-                                        </del>
-                                        <span>
-                                            24% OFF
-                                        </span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- =================================
-                                 BOYS PRODUCT 01
-                            ================================== -->
-                            <article class="lshop-card" data-gender="boys" data-category="shirts" data-price="999"
-                                data-discount="23" data-size="s m l">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/boys-shirts.jpg" alt="Classic Checked Shirt"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/boys-tshirts.jpg" alt="Classic Checked Shirt alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Bestseller
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Boys • Shirts
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Classic Checked Shirt
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>₹999</strong>
-                                        <del>₹1,299</del>
-                                        <span>23% OFF</span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- BOYS PRODUCT 02 -->
-                            <article class="lshop-card" data-gender="boys" data-category="tshirts" data-price="699"
-                                data-discount="22" data-size="xs s m">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/boys-tshirts.jpg" alt="Adventure Graphic T-Shirt"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/boys-shirts.jpg" alt="Adventure Graphic T-Shirt alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Everyday
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Boys • T-Shirts
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Adventure Graphic T-Shirt
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>₹699</strong>
-                                        <del>₹899</del>
-                                        <span>22% OFF</span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- BOYS PRODUCT 03 -->
-                            <article class="lshop-card" data-gender="boys" data-category="coord-sets" data-price="1399"
-                                data-discount="22" data-size="m l xl">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/boys-coord-sets.jpg" alt="Weekend Casual Co-ord Set"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/boys-tshirts.jpg"
-                                            alt="Weekend Casual Co-ord Set alternate" class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Trending
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Boys • Co-ord Sets
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Weekend Casual Co-ord Set
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>₹1,399</strong>
-                                        <del>₹1,799</del>
-                                        <span>22% OFF</span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- BOYS PRODUCT 04 -->
-                            <article class="lshop-card" data-gender="boys" data-category="bottom-wear" data-price="1249"
-                                data-discount="22" data-size="s m l xl">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/boys-jeans.jpg" alt="Classic Denim Jeans"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/boys-coord-sets.jpg" alt="Classic Denim Jeans alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Popular
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Boys • Jeans
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Classic Denim Jeans
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>₹1,249</strong>
-                                        <del>₹1,599</del>
-                                        <span>22% OFF</span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- =================================
-                                 BABY PRODUCT 01
-                            ================================== -->
-                            <article class="lshop-card" data-gender="baby" data-category="rompers" data-price="749"
-                                data-discount="25" data-size="xs s">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/baby-rompers.jpg" alt="Soft Cotton Baby Romper"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/baby-sleepsuits.jpg"
-                                            alt="Soft Cotton Baby Romper alternate" class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        New
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Baby • Rompers
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Soft Cotton Baby Romper
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>₹749</strong>
-                                        <del>₹999</del>
-                                        <span>25% OFF</span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- BABY PRODUCT 02 -->
-                            <article class="lshop-card" data-gender="baby" data-category="sleepsuits" data-price="849"
-                                data-discount="23" data-size="xs s">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/baby-sleepsuits.jpg" alt="Cosy Night Sleepsuit"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/baby-rompers.jpg" alt="Cosy Night Sleepsuit alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Soft Pick
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Baby • Sleepsuits
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Cosy Night Sleepsuit
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>₹849</strong>
-                                        <del>₹1,099</del>
-                                        <span>23% OFF</span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- BABY PRODUCT 03 -->
-                            <article class="lshop-card" data-gender="baby" data-category="gift-sets" data-price="1199"
-                                data-discount="20" data-size="xs">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/baby-gift-sets.jpg" alt="Little Love Gift Set"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/baby-rompers.jpg" alt="Little Love Gift Set alternate"
-                                            class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Gift Pick
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Baby • Gift Sets
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Little Love Gift Set
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>₹1,199</strong>
-                                        <del>₹1,499</del>
-                                        <span>20% OFF</span>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- BABY PRODUCT 04 -->
-                            <article class="lshop-card" data-gender="baby" data-category="baby-sets" data-price="949"
-                                data-discount="24" data-size="xs s">
-                                <div class="lshop-card-image">
-                                    <a href="#">
-                                        <img src="assets/images/baby-gift-sets.jpg" alt="Everyday Baby Clothing Set"
-                                            class="lshop-card-img-main">
-                                        <img src="assets/images/baby-sleepsuits.jpg"
-                                            alt="Everyday Baby Clothing Set alternate" class="lshop-card-img-hover">
-                                    </a>
-                                    <span class="lshop-card-badge">
-                                        Comfy Pick
-                                    </span>
-                                    <div class="lshop-card-actions">
-                                        <button type="button" class="lshop-wishlist">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                        <button type="button" class="lshop-cart">
-                                            <i class="fa fa-shopping-bag"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="lshop-card-content">
-                                    <span class="lshop-card-category">
-                                        Baby • Sets
-                                    </span>
-                                    <a href="product-detail.html" class="lshop-card-name">
-                                        Everyday Baby Clothing Set
-                                    </a>
-                                    <div class="lshop-card-price">
-                                        <strong>₹949</strong>
-                                        <del>₹1,249</del>
-                                        <span>24% OFF</span>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
+
+                        </div>  --}}
                         <!-- EMPTY RESULT -->
                         <div class="lshop-empty" id="lshopEmpty">
                             <span>
@@ -794,7 +489,7 @@
                             <p>
                                 Try changing or clearing your filters.
                             </p>
-                            <button type="button" id="lshopEmptyClear">
+                            <button type="button" class="lshop-filter-action" id="lshopEmptyClear">
                                 Clear Filters
                             </button>
                         </div>
@@ -808,5 +503,71 @@
 @endsection
 
 @section('scripts')
+    <script>
+        (() => {
+            const pageUrl = new URL(window.location.href);
+            let activeRequest;
 
+            const getFilterUrl = () => {
+                const params = new URLSearchParams();
+                const sort = document.getElementById('lshopSort').value;
+
+                if (sort !== 'featured') params.set('sort', sort);
+                document.querySelectorAll('.lshop-category-filter:checked').forEach((input) => {
+                    params.append(input.name, input.value);
+                });
+                document.querySelectorAll('.lshop-price-filter:checked').forEach((input) => {
+                    params.append(input.name, input.value);
+                });
+                document.querySelectorAll('.lshop-size-btn.active').forEach((button) => {
+                    params.append('size[]', button.dataset.size);
+                });
+
+                return `${pageUrl.pathname}?${params.toString()}`;
+            };
+
+            const applyFilters = async () => {
+                const filterUrl = getFilterUrl();
+                activeRequest?.abort();
+                activeRequest = new AbortController();
+                document.getElementById('lshopProductGrid')?.classList.add('is-loading');
+
+                try {
+                    const response = await fetch(filterUrl, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        signal: activeRequest.signal
+                    });
+
+                    if (!response.ok) throw new Error('Unable to load products');
+
+                    const html = await response.text();
+                    const nextGrid = new DOMParser()
+                        .parseFromString(html, 'text/html')
+                        .querySelector('#lshopProductGrid');
+
+                    if (!nextGrid) throw new Error('Product grid not found');
+
+                    document.getElementById('lshopProductGrid').replaceWith(nextGrid);
+                    window.history.pushState({}, '', filterUrl);
+                } catch (error) {
+                    if (error.name !== 'AbortError') window.location.href = filterUrl;
+                } finally {
+                    activeRequest = null;
+                }
+            };
+
+            document.querySelectorAll('.lshop-size-btn').forEach((button) => {
+                button.addEventListener('click', () => button.classList.toggle('active'));
+            });
+            document.getElementById('lshopApplyFilters')?.addEventListener('click', applyFilters);
+            document.getElementById('lshopClear')?.addEventListener('click', () => {
+                window.location.href = pageUrl.pathname;
+            });
+            document.addEventListener('click', (event) => {
+                if (event.target.closest('#lshopEmptyClear')) window.location.href = pageUrl.pathname;
+            });
+        })();
+    </script>
 @endsection

@@ -3,10 +3,15 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<style>
-    a{text-decoration:none;}
-    .card-body{height:148px;}
-</style>
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        .card-body {
+            height: 148px;
+        }
+    </style>
     <!-- ============================================================== -->
     <!-- Start right Content here -->
     <!-- ============================================================== -->
@@ -42,14 +47,14 @@
                                 <!--end col-->
                             </div>
                             <!--end row-->
-                            
-                            
+
+
 
                             <div class="row">
-                                
-                                @if(Auth::user()->role_id == 1)
+
+                                @if (Auth::user()->role_id == 1)
                                     <!-- <div class="col-xl-3 col-md-6">-->
-                                         <!--card -->
+                                    <!--card -->
                                     <!--    <div class="card card-animate"  style="background: #570f29;">-->
                                     <!--        <div class="card-body">-->
                                     <!--            <div class="d-flex align-items-center">-->
@@ -76,7 +81,7 @@
                                     <!--        </div>-->
                                     <!--    </div>-->
                                     <!--</div>-->
-                                    
+
                                     <!--<div class="col-xl-3 col-md-6">-->
                                     <!--    <div class="card card-animate" style="background: #055d83;">-->
                                     <!--        <div class="card-body">-->
@@ -105,9 +110,9 @@
                                     <!--        </div>-->
                                     <!--    </div>-->
                                     <!--</div>-->
-                                    
+
                                     <!--<div class="col-xl-3 col-md-6">-->
-                                        <!-- card -->
+                                    <!-- card -->
                                     <!--    <div class="card card-animate"   style="background: #7c1a3e;">-->
                                     <!--        <div class="card-body">-->
                                     <!--            <div class="d-flex align-items-center">-->
@@ -135,42 +140,42 @@
                                     <!--        </div>-->
                                     <!--    </div>-->
                                     <!--</div>-->
-    
-    
-    
+
+
+
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                         <a href="{{ route('product.index') }}"
-                                                            class="text-dark-50">
-                                        <div class="card card-animate"   style="background: #9caf88;">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
-                                                            Product</p>
+                                        <a href="{{ route('product.index') }}" class="text-dark-50">
+                                            <div class="card card-animate" style="background: #9caf88;">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-1 overflow-hidden">
+                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                                Product</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                                    <div>
-                                                        <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
-                                                                class="" >{{ $Product }}</span>
-                                                        </h4>
-                                                       <!--View-->
-                                                       <!--     Product-->
+                                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                                        <div>
+                                                            <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                                    class="">{{ $Product }}</span>
+                                                            </h4>
+                                                            <!--View-->
+                                                            <!--     Product-->
+                                                        </div>
+                                                        <!--<div class="avatar-sm flex-shrink-0">-->
+                                                        <!--    <span class="avatar-title bg-soft-light rounded fs-3">-->
+                                                        <!--        <i class="fa-solid fa-box-open"></i>-->
+                                                        <!--    </span>-->
+                                                        <!--</div>-->
                                                     </div>
-                                                    <!--<div class="avatar-sm flex-shrink-0">-->
-                                                    <!--    <span class="avatar-title bg-soft-light rounded fs-3">-->
-                                                    <!--        <i class="fa-solid fa-box-open"></i>-->
-                                                    <!--    </span>-->
-                                                    <!--</div>-->
                                                 </div>
                                             </div>
-                                        </div></a>
+                                        </a>
                                     </div>
-    
-    
+
+
                                     <!--<div class="col-xl-3 col-md-6">-->
-                                        <!-- card -->
+                                    <!-- card -->
                                     <!--    <div class="card card-animate"   style="background: #7c1a3e;">-->
                                     <!--        <div class="card-body">-->
                                     <!--            <div class="d-flex align-items-center">-->
@@ -197,15 +202,15 @@
                                     <!--        </div>-->
                                     <!--    </div>-->
                                     <!--</div>-->
-    
-                                   
-    
-                                    
-    
-    
-    
+
+
+
+
+
+
+
                                     <!--<div class="col-xl-3 col-md-6">-->
-                                        <!-- card -->
+                                    <!-- card -->
                                     <!--    <div class="card card-animate"   style="background: #570f29;">-->
                                     <!--        <div class="card-body">-->
                                     <!--            <div class="d-flex align-items-center">-->
@@ -233,7 +238,7 @@
                                     <!--        </div>-->
                                     <!--    </div>-->
                                     <!--</div>-->
-                                    
+
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
                                         <div class="card card-animate" style="background: #b6ae9f;height: 148px;">
@@ -263,40 +268,40 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                         <a href="{{ route('order.pending') }}"
-                                                            class=" text-dark-50">
-                                        <div class="card card-animate"   style="background: #9caf88;">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
-                                                            Not Yet Dispatched</p>
+                                        <a href="{{ route('order.pending') }}" class=" text-dark-50">
+                                            <div class="card card-animate" style="background: #9caf88;">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-1 overflow-hidden">
+                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                                Not Yet Dispatched</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                                    <div>
-                                                        <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
-                                                                class="counter-value"
-                                                                data-target="{{ $PendingOrder }}">0</span>
-                                                        </h4>
-                                                       
+                                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                                        <div>
+                                                            <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                                    class="counter-value"
+                                                                    data-target="{{ $PendingOrder }}">0</span>
+                                                            </h4>
+
                                                             <!--View Pending Order-->
+                                                        </div>
+                                                        <!--<div class="avatar-sm flex-shrink-0">-->
+                                                        <!--    <span class="avatar-title bg-soft-light rounded fs-3">-->
+                                                        <!--        <i class="fa-solid fa-clock-rotate-left"></i>-->
+                                                        <!--    </span>-->
+                                                        <!--</div>-->
                                                     </div>
-                                                    <!--<div class="avatar-sm flex-shrink-0">-->
-                                                    <!--    <span class="avatar-title bg-soft-light rounded fs-3">-->
-                                                    <!--        <i class="fa-solid fa-clock-rotate-left"></i>-->
-                                                    <!--    </span>-->
-                                                    <!--</div>-->
                                                 </div>
                                             </div>
-                                        </div></a>
+                                        </a>
                                     </div>
-                                    
+
                                     <!--<div class="col-xl-3 col-md-6">-->
-                                        <!-- card -->
+                                    <!-- card -->
                                     <!--    <div class="card card-animate"   style="background: #7c1a3e;">-->
                                     <!--        <div class="card-body">-->
                                     <!--            <div class="d-flex align-items-center">-->
@@ -317,7 +322,7 @@
                                     <!--                </div>-->
                                     <!--                <div class="avatar-sm flex-shrink-0">-->
                                     <!--                    <span class="avatar-title bg-soft-light rounded fs-3">-->
-                                                            <!--<i class="fa-solid fa-circle-question"></i>-->
+                                    <!--<i class="fa-solid fa-circle-question"></i>-->
                                     <!--                        <img style="width: 52px;height: 45px;" src="{{ asset('images/favicon.ico') }}" >-->
                                     <!--                    </span>-->
                                     <!--                </div>-->
@@ -325,9 +330,9 @@
                                     <!--        </div>-->
                                     <!--    </div>-->
                                     <!--</div>-->
-                                    
+
                                     <!--<div class="col-xl-3 col-md-6">-->
-                                        <!-- card -->
+                                    <!-- card -->
                                     <!--    <div class="card card-animate"   style="background: #570f29;">-->
                                     <!--        <div class="card-body">-->
                                     <!--            <div class="d-flex align-items-center">-->
@@ -355,38 +360,38 @@
                                     <!--        </div>-->
                                     <!--    </div>-->
                                     <!--</div>-->
-                                    
+
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                        <a href="{{ route('order.dispatched') }}"
-                                                            class=" text-dark-50">
-                                        <div class="card card-animate"   style="background: #b6ae9f;">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
-                                                            Dispatched Order</p>
+                                        <a href="{{ route('order.dispatched') }}" class=" text-dark-50">
+                                            <div class="card card-animate" style="background: #b6ae9f;">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-1 overflow-hidden">
+                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                                Dispatched Order</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                                    <div>
-                                                        <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
-                                                                class="counter-value"
-                                                                data-target="{{ $DispatchedOrder }}">0</span>
-                                                        </h4>
-                                                        
+                                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                                        <div>
+                                                            <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                                    class="counter-value"
+                                                                    data-target="{{ $DispatchedOrder }}">0</span>
+                                                            </h4>
+
                                                             <!--View Dispatched Order-->
+                                                        </div>
+                                                        <!--<div class="avatar-sm flex-shrink-0">-->
+                                                        <!--    <span class="avatar-title bg-soft-light rounded fs-3">-->
+                                                        <!--        <i class="fa-solid fa-truck-fast"></i>-->
+                                                        <!--    </span>-->
+                                                        <!--</div>-->
                                                     </div>
-                                                    <!--<div class="avatar-sm flex-shrink-0">-->
-                                                    <!--    <span class="avatar-title bg-soft-light rounded fs-3">-->
-                                                    <!--        <i class="fa-solid fa-truck-fast"></i>-->
-                                                    <!--    </span>-->
-                                                    <!--</div>-->
                                                 </div>
                                             </div>
-                                        </div></a>
+                                        </a>
                                     </div>
-                                    
+
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
                                         <div class="card card-animate" style="background: #9caf88;height: 148px;">
@@ -407,15 +412,15 @@
                                                         <!--    class="text-decoration-underline text-dark-50">-->
                                                         <!--    View Inquiry</a>-->
                                                     </div>
-                                                    
+
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                        <div class="card card-animate"  style="background: #b6ae9f;height: 148px;">
+                                        <div class="card card-animate" style="background: #b6ae9f;height: 148px;">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-grow-1 overflow-hidden">
@@ -429,17 +434,17 @@
                                                                 class="counter-value"
                                                                 data-target="{{ $amount }}">{{ $amount }}</span>
                                                         </h4>
-                                                        
+
                                                     </div>
-                                                    
+
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                        <div class="card card-animate"  style="background: #9caf88;height: 148px;">
+                                        <div class="card card-animate" style="background: #9caf88;height: 148px;">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-grow-1 overflow-hidden">
@@ -453,69 +458,69 @@
                                                                 class="counter-value"
                                                                 data-target="{{ $stock }}">{{ $stock }}</span>
                                                         </h4>
-                                                        
+
                                                     </div>
-                                                   
+
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    
+
+
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                        <a href="{{ route('report.orderTracking') }}"
-                                                            class=" text-dark-50">
-                                        <div class="card card-animate"  style="background: #b6ae9f;height: 148px;">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
-                                                            Order Tracking</p>
+                                        <a href="{{ route('report.orderTracking') }}" class=" text-dark-50">
+                                            <div class="card card-animate" style="background: #b6ae9f;height: 148px;">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-1 overflow-hidden">
+                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                                Order Tracking</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                                    <div>
-                                                        
-                                                        
-                                                           <!--View Order Tracking-->
-                                                        
-                                                        
+                                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                                        <div>
+
+
+                                                            <!--View Order Tracking-->
+
+
+                                                        </div>
+
                                                     </div>
-                                                    
                                                 </div>
                                             </div>
-                                        </div></a>
+                                        </a>
                                     </div>
-                                    
-                                    
+
+
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                         <a href="{{ route('report.searchCustomer') }}"
-                                                            class=" text-dark-50">
-                                        <div class="card card-animate"  style="background: #9caf88;height: 148px;">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
-                                                            Customer Search</p>
+                                        <a href="{{ route('report.searchCustomer') }}" class=" text-dark-50">
+                                            <div class="card card-animate" style="background: #9caf88;height: 148px;">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-1 overflow-hidden">
+                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                                Customer Search</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                                    <div>
-                                                        
-                                                       
+                                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                                        <div>
+
+
                                                             <!--View Customer Search-->
-                                                        
-                                                        
+
+
+                                                        </div>
+
                                                     </div>
-                                                    
                                                 </div>
                                             </div>
-                                        </div></a>
+                                        </a>
                                     </div>
-                                    <div class="col-xl-3 col-md-6">
-                                        <!-- card -->
+                                    {{--  <div class="col-xl-3 col-md-6">
+
                                         <a href="{{ route('shoowroom.index') }}"
                                                             class=" text-dark-50">
                                         <div class="card card-animate" style="background: #b6ae9f;height: 148px;">
@@ -529,10 +534,6 @@
                                                 <div class="d-flex align-items-end justify-content-between mt-4">
                                                     <div>
 
-                                                        
-                                                            <!--View ShowRoom Tracking-->
-                                                       
-
                                                     </div>
 
                                                 </div>
@@ -540,7 +541,7 @@
                                         </div> </a>
                                     </div>
                                     <div class="col-xl-3 col-md-6">
-                                        <!-- card -->
+
                                          <a href="{{ route('shoowroom.create') }}"
                                                             class=" text-dark-50">
                                         <div class="card card-animate" style="background: #9caf88;height: 148px;">
@@ -554,52 +555,49 @@
                                                 <div class="d-flex align-items-end justify-content-between mt-4">
                                                     <div>
 
-                                                       
+
                                                             <!--Add ShowRoom Tracking-->
-                                                       
+
 
                                                     </div>
 
                                                 </div>
                                             </div>
                                         </div> </a>
-                                    </div>
-
+                                    </div>  --}}
                                 @else
-                                
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                         <a href="{{ route('order.userpending') }}"
-                                                            class=" text-dark-50">
-                                        <div class="card card-animate"   style="background: #b6ae9f;">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
-                                                            Pending Order Delivery</p>
+                                        <a href="{{ route('order.userpending') }}" class=" text-dark-50">
+                                            <div class="card card-animate" style="background: #b6ae9f;">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-1 overflow-hidden">
+                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                                Pending Order Delivery</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                                    <div>
-                                                        <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
-                                                                class="counter-value"
-                                                                data-target="{{ $PendingOrderDelivery }}">0</span>
-                                                        </h4>
-                                                       
+                                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                                        <div>
+                                                            <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                                    class="counter-value"
+                                                                    data-target="{{ $PendingOrderDelivery }}">0</span>
+                                                            </h4>
+
                                                             <!--View Pending Order Delivery-->
-                                                    </div>
-                                                    <div class="avatar-sm flex-shrink-0">
-                                                        <span class="avatar-title bg-soft-light rounded fs-3">
-                                                            <i class="fa-solid fa-circle-question"></i>
-                                                        </span>
+                                                        </div>
+                                                        <div class="avatar-sm flex-shrink-0">
+                                                            <span class="avatar-title bg-soft-light rounded fs-3">
+                                                                <i class="fa-solid fa-circle-question"></i>
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div></a>
+                                        </a>
                                     </div>
-                                
-                                @endif        
-    
+                                @endif
+
                             </div>
                         </div>
                     </div>

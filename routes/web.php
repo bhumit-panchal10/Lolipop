@@ -337,8 +337,11 @@ Route::post('/submit/contact_us', [FrontController::class, 'contact_us'])->name(
 
 //product
 Route::any('/product/get/price', [FrontController::class, 'bindpriceonsize'])->name('product.bindpriceonsize');
-Route::any('/products/{id?}', [FrontController::class, 'products'])->name('FrontProduct');
+Route::any('/products/{slug?}', [FrontController::class, 'products'])
+    ->name('FrontProduct');
+// Route::any('/products/{id?}', [FrontController::class, 'products'])->name('FrontProduct');
 Route::get('/product/detail/{category?}/{id?}', [FrontController::class, 'productdetail'])->name('productdetail');
+Route::get('/product/{subcategory}/{product}', [FrontController::class, 'productdetail'])->name('productdetail.slugs');
 Route::get('/product/popup/{id?}', [FrontController::class, 'productpopupview'])->name('productpopupview');
 //Features
 Route::get('Features', [FrontController::class, 'isfeatures'])->name('IsFeatures');
@@ -349,6 +352,8 @@ Route::get('/loadMoreProducts', [FrontController::class, 'loadMoreProducts'])->n
 Route::get('/loadMoreCategoryProducts', [FrontController::class, 'loadMoreCategoryProducts'])->name('loadMoreCategoryProducts');
 
 Route::get('/loadMoreSearchData', [FrontController::class, 'loadMoreSearchData'])->name('loadMoreSearchData');
+
+Route::get('/get-subcategories',[FrontController::class, 'getSubCategories'])->name('front.getSubCategories');
 
 
 //===================================Cart routes start============================

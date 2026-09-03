@@ -6372,7 +6372,7 @@ a.wonder-contact-item:hover {
 }
 
 /* =====================================================
-   CATEGORY TABS 
+   CATEGORY TABS
 ===================================================== */
 .category-tabs {
   width: max-content;
@@ -10115,6 +10115,10 @@ a.wonder-contact-item:hover {
   transition: .2s ease;
 }
 
+.lshop-card-actions form {
+  margin: 0;
+}
+
 .lshop-wishlist {
   background: #fff;
   color: #68757d;
@@ -10234,6 +10238,8 @@ a.wonder-contact-item:hover {
    EMPTY
 ===================================================== */
 .lshop-empty {
+  grid-column: 1 / -1;
+  width: 100%;
   min-height: 430px;
   display: none;
   flex-direction: column;
@@ -12335,8 +12341,7 @@ a.wonder-contact-item:hover {
 ===================================================== */
 .lcart-layout {
   display: grid;
-  grid-template-columns:
-    minmax(0, 1fr) 355px;
+  grid-template-columns: 1fr;
   gap: 34px;
   align-items: start;
 }
@@ -12633,8 +12638,8 @@ a.wonder-contact-item:hover {
    RIGHT ORDER SUMMARY
 ===================================================== */
 .lcart-summary {
-  position: sticky;
-  top: 25px;
+  position: relative;
+  top: auto;
   overflow: hidden;
   border: 1px solid #e2e8eb;
   border-radius: 27px;
@@ -12981,8 +12986,7 @@ a.wonder-contact-item:hover {
 ===================================================== */
 @media(max-width:1100px) {
   .lcart-layout {
-    grid-template-columns:
-      minmax(0, 1fr) 320px;
+    grid-template-columns: 1fr;
     gap: 24px;
   }
 
