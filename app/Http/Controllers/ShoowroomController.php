@@ -17,11 +17,11 @@ class ShoowroomController extends Controller
     public function index(Request $request)
     {
         $couriers = DB::table('courier')
-        ->where('iStatus', 1)
-        ->where('isDelete', 0)
-        ->orderBy('name')
-        ->get();
-        
+            ->where('iStatus', 1)
+            ->where('isDelete', 0)
+            ->orderBy('name')
+            ->get();
+
         $query = DB::table('shoowroomreports as sr')
             ->leftJoin('courier as c', 'c.id', '=', 'sr.courier_id')
             ->select(
@@ -47,7 +47,7 @@ class ShoowroomController extends Controller
             ->orderBy('sr.id', 'DESC')
             ->paginate(20);
 
-        return view('showroom.index', compact('ShowroomOrders','couriers'))
+        return view('showroom.index', compact('ShowroomOrders', 'couriers'))
             ->with('name', $request->name)
             ->with('mobile', $request->mobile)
             ->with('email', $request->email);
@@ -139,7 +139,7 @@ class ShoowroomController extends Controller
                 ['-', $courier->name, $request->docketNo, $trackingUrl, $docketType],
                 $htmlBody
             );
-            
+
 
             try {
                 Mail::html($htmlBody, function ($m) use ($request, $subject, $sendEmail) {
@@ -170,13 +170,13 @@ class ShoowroomController extends Controller
                 "Your parcel has been dispatched.\n\n" .
                 "Tracking Link:\n{$trackingUrl}\n\n" .
                 "Your {$docketType}: *{$request->docketNo}*\n\n" .
-                "Regards,\nTeam The Wardrobe Fashion.";
+                "Regards,\nTeam Lolipop Kidswear.";
         } else {
             $whatsappMsg =
                 "*Dear {$request->customer_name}*,\n\n" .
                 "Click on the below link to track your order:\n" .
                 "{$trackingUrl}\n\n" .
-                "Regards,\nTeam The Wardrobe Fashion.";
+                "Regards,\nTeam Lolipop Kidswear.";
         }
 
         $customer->WhatsappMessage($request->mobile, $whatsappMsg);
@@ -277,13 +277,13 @@ class ShoowroomController extends Controller
                 "Your parcel has been dispatched.\n\n" .
                 "Tracking Link:\n{$trackingUrl}\n\n" .
                 "{$docketType}: *{$order->docketNo}*\n\n" .
-                "Regards,\nTeam The Wardrobe Fashion.";
+                "Regards,\nTeam Lolipop Kidswear.";
         } else {
             $whatsappMsg =
                 "*Dear {$order->customer_name}*,\n\n" .
                 "Click on the below link to track your order:\n" .
                 "{$trackingUrl}\n\n" .
-                "Regards,\nTeam The Wardrobe Fashion.";
+                "Regards,\nTeam Lolipop Kidswear.";
         }
 
         $customer->WhatsappMessage($order->mobile, $whatsappMsg);
@@ -301,7 +301,7 @@ class ShoowroomController extends Controller
 
         return back()->with('success', 'SMS, WhatsApp & Email resent successfully.');
     }
-    
+
     public function edit($id)
     {
         $order = DB::table('shoowroomreports')->where('id', $id)->first();

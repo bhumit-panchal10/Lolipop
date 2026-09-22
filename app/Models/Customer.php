@@ -11,7 +11,10 @@ use App\Models\Setting;
 class Customer extends Model
 {
     use HasFactory;
+
     public $table = 'customer';
+    protected $primaryKey = 'customerid';
+
     protected $fillable = [
         'customername',
         'password',
@@ -19,5 +22,8 @@ class Customer extends Model
         'customeremail',
         'strIP',
         'token',
+        'guid',
+        'iStatus',
+        'isDelete',
     ];
 }

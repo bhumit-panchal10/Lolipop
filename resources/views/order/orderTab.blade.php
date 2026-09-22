@@ -5,18 +5,18 @@
             Pending Order <span class="badge bg-danger rounded-circle"></span>
         </a>
     </li>
-    <li class="nav-item ">
+    {{--  <li class="nav-item ">
         <a class="nav-link @if (request()->routeIs('order.tirupati')) {{ 'active' }} @endif"
             href="{{ route('order.tirupati') }}" role="tab">
             Pending Tirupati <span class="badge bg-danger rounded-circle"></span>
         </a>
-    </li>
-    <li class="nav-item ">
+    </li>  --}}
+    {{--  <li class="nav-item ">
         <a class="nav-link @if (request()->routeIs('order.delivery')) {{ 'active' }} @endif"
             href="{{ route('order.delivery') }}" role="tab">
             Pending Delivery <span class="badge bg-danger rounded-circle"></span>
         </a>
-    </li>
+    </li>  --}}
     <li class="nav-item ">
         <a class="nav-link @if (request()->routeIs('order.dispatched')) {{ 'active' }} @endif"
             href="{{ route('order.dispatched') }}" role="tab">

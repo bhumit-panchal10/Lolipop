@@ -26,7 +26,6 @@ class OrderController extends Controller
 {
     public function pending(Request $request)
     {
-
         if (Auth::user()->id == 1) {
             $OrderNo = $request->order_no;
             $FromDate = $request->fromdate;
@@ -34,32 +33,101 @@ class OrderController extends Controller
             $Status = $request->strStatus;
             $CustomerName = $request->customer_name;
 
-            $Courier = Courier::orderBy('id', 'desc')->where(['iStatus' => 1, 'isDelete' => 0])->get();
 
-            $Pend = Order::orderBy('order_id', 'desc')
-                ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0, 'dispatchCourierId' => 0, 'order.isPayment' => 1])
-                ->when($request->customer_name, fn($query, $CustomerName) => $query
-                    ->where('order.shipping_cutomerName', 'like', '%' . $CustomerName . '%'))
-                ->when($request->order_no, fn($query, $OrderNo) => $query
-                    ->Where('order.order_id', '=', $OrderNo))
-                ->when($request->fromdate, fn($query, $FromDate) => $query
-                    ->where('order.created_at', '>=', date('Y-m-d 00:00:00', strtotime($FromDate))))
-                ->when($request->todate, fn($query, $ToDate) => $query
-                    ->where('order.created_at', '<=', date('Y-m-d 23:59:59', strtotime($ToDate))))
-                ->join('state', 'order.shiiping_state', '=', 'state.stateId');
+            // Courier list
+            $Courier = Courier::orderBy('id', 'desc')
+                ->where('iStatus', 1)
+                ->where('isDelete', 0)
+                ->get();
+
+            // Pending Orders
+            $Pend = Order::query()
+                ->leftJoin(
+                    'state',
+                    'order.shiiping_state',
+                    '=',
+                    'state.stateId'
+                )
+                ->where('order.iStatus', 1)
+                ->where('order.isDelete', 0)
+                ->where('order.isDispatched', 0)
+                ->where('order.courier', 0)
+                ->where('order.isPayment', 1)
+
+                ->when($request->customer_name, function ($query, $CustomerName) {
+                    $query->where(
+                        'order.shipping_cutomerName',
+                        'like',
+                        '%' . $CustomerName . '%'
+                    );
+                })
+
+                ->when($request->order_no, function ($query, $OrderNo) {
+                    $query->where('order.order_id', $OrderNo);
+                })
+
+                ->when($request->fromdate, function ($query, $FromDate) {
+                    $query->where(
+                        'order.created_at',
+                        '>=',
+                        date('Y-m-d 00:00:00', strtotime($FromDate))
+                    );
+                })
+
+                ->when($request->todate, function ($query, $ToDate) {
+                    $query->where(
+                        'order.created_at',
+                        '<=',
+                        date('Y-m-d 23:59:59', strtotime($ToDate))
+                    );
+                });
+
             if ($request->strStatus != "") {
-                //  ->when($request->strStatus, fn ($query, $Status) => $query
-                $Pend->where('order.isPayment', '=', $request->strStatus);
+                $Pend->where(
+                    'order.isPayment',
+                    '=',
+                    $request->strStatus
+                );
             }
 
-            $Pending = $Pend->paginate(15);
+            $Pending = $Pend
+                ->orderBy('order.order_id', 'desc')
+                ->paginate(15);
+
+            // if (Auth::user()->id == 1) {
+            //     $OrderNo = $request->order_no;
+            //     $FromDate = $request->fromdate;
+            //     $ToDate = $request->todate;
+            //     $Status = $request->strStatus;
+            //     $CustomerName = $request->customer_name;
+
+            //     $Courier = Courier::orderBy('id', 'desc')->where(['iStatus' => 1, 'isDelete' => 0])->get();
+
+            //     $Pend = Order::orderBy('order_id', 'desc')
+            //         ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0, 'dispatchCourierId' => 0, 'order.isPayment' => 1])
+            //         ->when($request->customer_name, fn($query, $CustomerName) => $query
+            //             ->where('order.shipping_cutomerName', 'like', '%' . $CustomerName . '%'))
+            //         ->when($request->order_no, fn($query, $OrderNo) => $query
+            //             ->Where('order.order_id', '=', $OrderNo))
+
+            //         ->when($request->fromdate, fn($query, $FromDate) => $query
+            //             ->where('order.created_at', '>=', date('Y-m-d 00:00:00', strtotime($FromDate))))
+            //         ->when($request->todate, fn($query, $ToDate) => $query
+            //             ->where('order.created_at', '<=', date('Y-m-d 23:59:59', strtotime($ToDate))))
+            //         ->join('state', 'order.shiiping_state', '=', 'state.stateId');
+            //     if ($request->strStatus != "") {
+            //         //  ->when($request->strStatus, fn ($query, $Status) => $query
+            //         $Pend->where('order.isPayment', '=', $request->strStatus);
+            //     }
+
+            //     $Pending = $Pend->paginate(15);
             // ->toSql();
             // dd($Pending);
 
             return view('order.pending', compact('Pending', 'FromDate', 'ToDate', 'Courier', 'Status', 'OrderNo', 'CustomerName'));
         }
     }
-    
+
     public function updateShippingMobile(Request $request)
     {
         $request->validate([
@@ -89,201 +157,203 @@ class OrderController extends Controller
 
         return view('order.userpending', compact('Pending', 'Courier'));
     }
-    
+
     public function moveToOrder($id)
     {
-        try {
-            // 1. Update payment table like RazorPaySuccess
-            Payment::where('order_id', $id)->update([
-                'status' => 'Success',
-                'iPaymentType' => 2, // manual
-                'Remarks' => 'Moved manually to Order'
-            ]);
+        // try {
+        // 1. Update payment table like RazorPaySuccess
+        Payment::where('order_id', $id)->update([
+            'status' => 'Success',
+            'iPaymentType' => 2, // manual
+            'Remarks' => 'Moved manually to Order'
+        ]);
 
-            // 2. Update order payment status
-            Order::where("order_id", $id)->update([
-                'isPayment' => 1
-            ]);
-            
-             // MAIN ORDER
-            $order  = Order::where("order_id", $id)->first();
+        // 2. Update order payment status
+        Order::where("order_id", $id)->update([
+            'isPayment' => 1
+        ]);
 
-            // 3. Get order items
-            $cart_Items = OrderDetail::where("orderID", $id)->get();
-            $iCounter = 0;
+        // MAIN ORDER
+        $order  = Order::where("order_id", $id)->first();
 
-            foreach ($cart_Items as $cartItem) {
+        // 3. Get order items
+        $cart_Items = OrderDetail::where("orderID", $id)->get();
+        $iCounter = 0;
 
-                // Last stock row
-                $opening = Ledger::select('openingBalance', 'closingBalance', 'cr', 'dr', 'iProductId', 'iOrderId')
-                    ->orderBy('ledger.ledgerId', 'DESC')
-                    ->where([
-                        'ledger.iStatus' => 1,
-                        'ledger.isDelete' => 0,
-                        'iProductId' => $cartItem->productId,
-                        'iSize' => $cartItem->size
-                    ])
-                    ->first();
+        foreach ($cart_Items as $cartItem) {
+            $ledgerAlreadyCreated = Ledger::where([
+                'iOrderId' => $id,
+                'iOrderDetailId' => $cartItem->orderDetailId,
+                'iProductId' => $cartItem->productId,
+                'iSize' => $cartItem->size,
+            ])->exists();
 
-                $dr = $cartItem->quantity;
-                $openingBalance = $opening->closingBalance ?? 0;
-                $closing = ($openingBalance - $dr);
+            if ($ledgerAlreadyCreated) {
+                continue;
+            }
 
-                // Insert ledger
-                $Ledger = [
+            // Last stock row
+            $opening = Ledger::select('ledgerId', 'openingBalance', 'closingBalance', 'cr', 'dr', 'iProductId', 'iOrderId')
+                ->orderBy('ledger.ledgerId', 'DESC')
+                ->where([
+                    'ledger.iStatus' => 1,
+                    'ledger.isDelete' => 0,
                     'iProductId' => $cartItem->productId,
-                    'iSize' => $cartItem->size,
-                    'iInwardId' => 0,
-                    'iOrderId' => $id,
-                    'iOrderDetailId' => $cartItem->orderDetailId,
-                    'openingBalance' => $openingBalance,
-                    'cr' => 0,
-                    'dr' => $dr,
-                    'closingBalance' => $closing,
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'strIP' => request()->ip()
-                ];
+                    'iSize' => $cartItem->size
+                ])
+                ->first();
 
-                DB::table('ledger')->insert($Ledger);
+            $dr = $cartItem->quantity;
+            $openingBalance = $opening->closingBalance ?? 0;
+            $closing = ($openingBalance - $dr);
 
-                // Refund check
-                if ($closing < 0) {
-                    OrderDetail::where("orderDetailId", $cartItem->orderDetailId)
-                        ->update(['isRefund' => 1]);
-                    $iCounter++;
-                }
+            DB::table('ledger')->where('ledgerId', $opening->ledgerId)->update([
+                'dr' => (int) $opening->dr + $dr,
+                'closingBalance' => $closing,
+                'iOrderId' => $id,
+                'iOrderDetailId' => $cartItem->orderDetailId,
+                'updated_at' => date('Y-m-d H:i:s'),
+                'strIP' => request()->ip()
+            ]);
+
+            // Refund check
+            if ($closing < 0) {
+                OrderDetail::where("orderDetailId", $cartItem->orderDetailId)
+                    ->update(['isRefund' => 1]);
+                $iCounter++;
             }
+        }
 
-            // 4. Update order note if refund required
-            if ($iCounter > 0) {
-                $orderNote = $iCounter . " Product need to Refund.";
-                Order::where("order_id", $id)->update(["orderNote" => $orderNote]);
-            }
-            
-            // ==========  EMAIL CODE  ==========
+        // 4. Update order note if refund required
+        if ($iCounter > 0) {
+            $orderNote = $iCounter . " Product need to Refund.";
+            Order::where("order_id", $id)->update(["orderNote" => $orderNote]);
+        }
 
-            $StateName = State::where(["stateId" => $order->shiiping_state])->first();
-            $stateName = $StateName->stateName ?? '';
+        // ==========  EMAIL CODE  ==========
 
-            $sendEmail = DB::table('sendemaildetails')->where(['id' => 9])->first();
-            $adminSetting = DB::table('setting')->select('email')->first();
-            $adminEmail = $adminSetting->email ?? null;
+        $StateName = State::where(["stateId" => $order->shiiping_state])->first();
+        $stateName = $StateName->stateName ?? '';
 
-            $root = $_SERVER['DOCUMENT_ROOT'];
+        $sendEmail = DB::table('sendemaildetails')->where(['id' => 9])->first();
+        $adminSetting = DB::table('setting')->select('email')->first();
+        $adminEmail = $adminSetting->email ?? null;
 
-            // ORDER DETAIL TABLE
-            $OrderDetail = OrderDetail::select(
-                'orderdetail.orderDetailId',
-                'orderdetail.orderID',
-                'orderdetail.productId',
-                'orderdetail.quantity',
-                'orderdetail.rate',
-                'orderdetail.amount',
-                'orderdetail.size',
-                'product.productname',
-                DB::raw('(SELECT strphoto FROM productphotos WHERE productphotos.productid=product.productId LIMIT 1) as photo')
-            )
-                ->where(['orderdetail.iStatus' => 1, 'orderdetail.isDelete' => 0, 'orderdetail.orderID' => $id])
-                ->join('product', 'orderdetail.productId', '=', 'product.productId')
-                ->get();
+        $root = $_SERVER['DOCUMENT_ROOT'];
 
-            $rowsHtml = '';
-            $i = 1;
+        // ORDER DETAIL TABLE
+        $OrderDetail = OrderDetail::select(
+            'orderdetail.orderDetailId',
+            'orderdetail.orderID',
+            'orderdetail.productId',
+            'orderdetail.quantity',
+            'orderdetail.rate',
+            'orderdetail.amount',
+            'orderdetail.size',
+            'product.productname',
+            DB::raw('(SELECT strphoto FROM productphotos WHERE productphotos.productid=product.productId LIMIT 1) as photo')
+        )
+            ->where(['orderdetail.iStatus' => 1, 'orderdetail.isDelete' => 0, 'orderdetail.orderID' => $id])
+            ->join('product', 'orderdetail.productId', '=', 'product.productId')
+            ->get();
 
-            foreach ($OrderDetail as $cartItem) {
+        $rowsHtml = '';
+        $i = 1;
 
-                $attr = ProductAttributes::orderBy('id', 'desc')
-                    ->where(["product_id" => $cartItem->productId, 'id' => $cartItem->size])
-                    ->first();
+        foreach ($OrderDetail as $cartItem) {
 
-                $Total = $cartItem->quantity * $cartItem->rate;
+            $attr = ProductAttributes::orderBy('id', 'desc')
+                ->where(["product_id" => $cartItem->productId, 'id' => $cartItem->size])
+                ->first();
 
-                $rowsHtml .= "
+            $Total = $cartItem->quantity * $cartItem->rate;
+
+            $rowsHtml .= "
                 <tr>
                     <td style='text-align:center;'>$i</td>
                     <td style='text-align:center;'>{$cartItem->productname}</td>
                     <td style='text-align:center;'>
-                        <img width='48' height='48' src='https://thewardrobefashion.in/Product/{$cartItem->photo}'>
+                        <img width='48' height='48' src='http://127.0.0.1:8000//Product/{$cartItem->photo}'>
                     </td>
-                    <td style='text-align:center;'>{$attr->product_attribute_size}</td>
+                    <td style='text-align:center;'>{$cartItem->size}</td>
                     <td style='text-align:center;'>{$cartItem->quantity}</td>
                     <td style='text-align:center;'>{$cartItem->rate}</td>
                     <td style='text-align:center;'>{$Total}</td>
                 </tr>";
-                $i++;
-            }
-
-            // LOAD TEMPLATE
-            $templatePath = $root . '/mailers/checkoutmail.html';
-            $htmlBody = @file_get_contents($templatePath);
-
-            $address = trim(($order->shiiping_address1 ?? '') . ', ' . ($order->shiiping_address2 ?? ''), ', ');
-
-            // REPLACE VALUES
-            $replacements = [
-                '#order_no'      => $id,
-                '#name'          => $order->shipping_cutomerName,
-                '#email'         => $order->shipping_email,
-                '#mobile'        => $order->shipping_mobile,
-                '#mobile1'       => $order->shipping_mobile1,
-                '#address'       => e($address),
-                '#state'         => e($stateName),
-                '#city'          => e($order->shipping_city),
-                '#pincode'       => e($order->shipping_pincode),
-                '#amount'        => number_format((float)$order->amount, 2),
-                '#netAmount'     => number_format((float)$order->netAmount, 2),
-                '#tableProductTr' => $rowsHtml,
-            ];
-
-            $htmlBody = strtr($htmlBody, $replacements);
-
-            // SEND EMAIL
-            $subject = "Order Detail From The Wardrobe Fashion Order No #{$id}";
-            $fromMail = $sendEmail->strFromMail ?? config('mail.from.address');
-            $fromName = $sendEmail->strFromName ?? config('mail.from.name');
-
-            try {
-                if ($adminEmail) {
-                    Mail::html($htmlBody, function ($m) use ($adminEmail, $subject, $fromMail, $fromName) {
-                        $m->to($adminEmail)->subject($subject);
-                        $m->from($fromMail, $fromName);
-                    });
-                }
-
-                if (!empty($order->shipping_email)) {
-                    Mail::html($htmlBody, function ($m) use ($order, $subject, $fromMail, $fromName) {
-                        $m->to($order->shipping_email)->subject($subject);
-                        $m->from($fromMail, $fromName);
-                    });
-                }
-            } catch (\Throwable $e) {
-                Log::error('Checkout email send failed', ['order_id' => $id, 'err' => $e->getMessage()]);
-            }
-
-            
-            // WHATSAPP + SMS SENT
-        
-            $ORDER_ID = $id;
-            $Customer = Customer::where("customerid", $order->customerid)->first();
-            $mobile = $order->shipping_mobile;
-
-            $textMessage = "Dear Customer, Your order will be dispatched within 3 working Days. Tracking Id will be soon issue to you. Regards, Team The Wardrobe Fashion.";
-
-            $cust = new Customer();
-            $cust->sendMessage($mobile, $textMessage, "1707172104144059732");
-            // $cust->sendWhatsappMessage($mobile, $textMessage);
-
-            $whatsappmsg = "Dear Customer, Your order will be dispatched within 3 working Days. Tracking Id will be soon issue to you. Regards, Team The Wardrobe Fashion.";
-
-            //$whatsappmsg = "*Dear {$order->shipping_cutomerName}*,\n\nYour Order No : $id.\n\nClick below to view your order:\nhttps://thewardrobefashion.in/Order/$ORDER_ID/{$Customer->guid}\n\nRegards,\nTeam WardrobeFashion.";
-
-             //$cust->WhatsappMessage($mobile, $whatsappmsg);
-
-            // 5. Return same page message
-            return redirect()->back()->with('success', 'Order successfully moved to Pending Order Page!');
-        } catch (\Throwable $th) {
-            return redirect()->back()->with('error', $th->getMessage());
+            $i++;
         }
+
+        // LOAD TEMPLATE
+        $templatePath = $root . '/mailers/checkoutmail.html';
+        $htmlBody = @file_get_contents($templatePath);
+
+        $address = trim(($order->shiiping_address1 ?? '') . ', ' . ($order->shiiping_address2 ?? ''), ', ');
+
+        // REPLACE VALUES
+        $replacements = [
+            '#order_no'      => $id,
+            '#name'          => $order->shipping_cutomerName,
+            '#email'         => $order->shipping_email,
+            '#mobile'        => $order->shipping_mobile,
+            '#mobile1'       => $order->shipping_mobile1,
+            '#address'       => e($address),
+            '#state'         => e($order->shiiping_state),
+            '#city'          => e($order->shipping_city),
+            '#pincode'       => e($order->shipping_pincode),
+            '#amount'        => number_format((float)$order->amount, 2),
+            '#netAmount'     => number_format((float)$order->netAmount, 2),
+            '#tableProductTr' => $rowsHtml,
+        ];
+
+        $htmlBody = strtr($htmlBody, $replacements);
+
+        // SEND EMAIL
+        $subject = "Order Detail From Lolipop Kidswear Order No #{$id}";
+        $fromMail = $sendEmail->strFromMail ?? config('mail.from.address');
+        $fromName = $sendEmail->strFromName ?? config('mail.from.name');
+
+        try {
+            if ($adminEmail) {
+                Mail::html($htmlBody, function ($m) use ($adminEmail, $subject, $fromMail, $fromName) {
+                    $m->to($adminEmail)->subject($subject);
+                    $m->from($fromMail, $fromName);
+                });
+            }
+
+            if (!empty($order->shipping_email)) {
+                Mail::html($htmlBody, function ($m) use ($order, $subject, $fromMail, $fromName) {
+                    $m->to($order->shipping_email)->subject($subject);
+                    $m->from($fromMail, $fromName);
+                });
+            }
+        } catch (\Throwable $e) {
+            Log::error('Checkout email send failed', ['order_id' => $id, 'err' => $e->getMessage()]);
+        }
+
+
+        // WHATSAPP + SMS SENT
+
+        // $ORDER_ID = $id;
+        // $Customer = Customer::where("customerid", $order->customerid)->first();
+        // $mobile = $order->shipping_mobile;
+
+        // $textMessage = "Dear Customer, Your order will be dispatched within 3 working Days. Tracking Id will be soon issue to you. Regards, Team Lolipop Kidswear.";
+
+        // $cust = new Customer();
+        // $cust->sendMessage($mobile, $textMessage, "1707172104144059732");
+        // // $cust->sendWhatsappMessage($mobile, $textMessage);
+
+        // $whatsappmsg = "Dear Customer, Your order will be dispatched within 3 working Days. Tracking Id will be soon issue to you. Regards, Team Lolipop Kidswear.";
+
+        //$whatsappmsg = "*Dear {$order->shipping_cutomerName}*,\n\nYour Order No : $id.\n\nClick below to view your order:\nhttp://127.0.0.1:8000//Order/$ORDER_ID/{$Customer->guid}\n\nRegards,\nTeam WardrobeFashion.";
+
+        //$cust->WhatsappMessage($mobile, $whatsappmsg);
+
+        // 5. Return same page message
+        return redirect()->back()->with('success', 'Order successfully moved to Pending Order Page!');
+        // } catch (\Throwable $th) {
+        //     return redirect()->back()->with('error', $th->getMessage());
+        // }
     }
 
     public function tirupati(Request $request)
@@ -372,8 +442,6 @@ class OrderController extends Controller
                 'state.stateName',
                 'order.docketNo',
                 'order.isDispatched',
-                'order.quikshipx_res_flag',
-                'order.quikshipx_order_id',
             )
                 ->orderBy('order_id', 'desc')
                 ->where(['order.iStatus' => 1, 'order.isDelete' => 0, 'order.isDispatched' => 1])
@@ -383,8 +451,8 @@ class OrderController extends Controller
                     ->where('order.created_at', '>=', date('Y-m-d 00:00:00', strtotime($FromDate))))
                 ->when($request->todate, fn($query, $ToDate) => $query
                     ->where('order.created_at', '<=', date('Y-m-d 23:59:59', strtotime($ToDate))))
-                ->join('courier', 'order.courier', '=', 'courier.id')
-                ->join('state', 'order.shiiping_state', '=', 'state.stateId')
+                ->leftJoin('courier', 'order.courier', '=', 'courier.id')
+                ->leftJoin('state', 'order.shiiping_state', '=', 'state.stateName')
                 ->paginate(15);
             //dd($Dispatched);
 
@@ -407,7 +475,7 @@ class OrderController extends Controller
                     ->where('order.created_at', '>=', date('Y-m-d 00:00:00', strtotime($FromDate))))
                 ->when($request->todate, fn($query, $ToDate) => $query
                     ->where('order.created_at', '<=', date('Y-m-d 23:59:59', strtotime($ToDate))))
-                ->join('state', 'order.shiiping_state', '=', 'state.stateId')
+                ->leftJoin('state', 'order.shiiping_state', '=', 'state.stateName')
                 ->paginate(15);
 
             return view('order.cancel', compact('Cancel', 'FromDate', 'ToDate', 'OrderNo'));
@@ -459,15 +527,13 @@ class OrderController extends Controller
             if ($Order->courier == 1) {
                 $urlToClient = $Courier->url;
                 $DocketType = "AWB No";
-            } elseif ($Order->courier == 2){
+            } elseif ($Order->courier == 2) {
                 $urlToClient = $Courier->url . $request->docketNo;
                 $DocketType = "Docket No";
-            }elseif ($Order->courier == 4){
+            } elseif ($Order->courier == 4) {
                 $urlToClient = $Courier->url;
                 $DocketType = "Consignment No";
-            }
-            else
-            {
+            } else {
                 $urlToClient = $Courier->url;
                 $DocketType = "Artical No";
             }
@@ -475,8 +541,8 @@ class OrderController extends Controller
             $root = $_SERVER['DOCUMENT_ROOT'];
             $htmlBody = file_get_contents($root . '/mailers/dispatchemail.html');
             $htmlBody = str_replace(
-                ['#orderNo', '#courierName', '#docketNo', '#link','#docketType'],
-                [$request->order_id, $Courier->name ?? '', $request->docketNo, $urlToClient,$DocketType],
+                ['#orderNo', '#courierName', '#docketNo', '#link', '#docketType'],
+                [$request->order_id, $Courier->name ?? '', $request->docketNo, $urlToClient, $DocketType],
                 $htmlBody
             );
 
@@ -491,7 +557,7 @@ class OrderController extends Controller
                         $m->from($sendEmail->strFromMail, $sendEmail->strFromName ?? config('app.name'));
                     }
                     // optional: bcc admin
-                    // $m->bcc('orders@thewardrobefashion.in');
+                    // $m->bcc('abc123@gmail.com');
                 });
 
                 Log::info("Dispatched mail sent to {$toMail}");
@@ -511,38 +577,34 @@ class OrderController extends Controller
             $key = $Setting->api_key;
             $shippingName  = $Order->shipping_cutomerName;
 
-            if ($Order->courier == 1) {
-                $whatsappmsg = "*Dear $shippingName*,\n\nYour parcel has been dispatch.\n\nTo track your order, Visit below link.\n\nLink : $urlToClient\n\nYour Awb No : $request->docketNo\n\nRegards,\nTeam The Wardrobe Fashion.";
-            }
-            if ($request->courier == 4) {
-                $whatsappmsg = "*Dear $shippingName*,\n\nYour parcel has been dispatch.\n\nTo track your order, Visit below link.\n\nLink : $urlToClient\n\nYour consignment No : $request->docketNo\n\nRegards,\nTeam The Wardrobe Fashion.";
-            }
-            else {
-                $whatsappmsg = "*Dear $shippingName*,\n\nClick on the below link to track your order:\n$urlToClient\n\nRegards,\nTeam The Wardrobe Fashion.";
-            }
+            // if ($Order->courier == 1) {
+            //     $whatsappmsg = "*Dear $shippingName*,\n\nYour parcel has been dispatch.\n\nTo track your order, Visit below link.\n\nLink : $urlToClient\n\nYour Awb No : $request->docketNo\n\nRegards,\nTeam Lolipop Kidswear.";
+            // }
+            // if ($request->courier == 4) {
+            //     $whatsappmsg = "*Dear $shippingName*,\n\nYour parcel has been dispatch.\n\nTo track your order, Visit below link.\n\nLink : $urlToClient\n\nYour consignment No : $request->docketNo\n\nRegards,\nTeam Lolipop Kidswear.";
+            // } else {
+            //     $whatsappmsg = "*Dear $shippingName*,\n\nClick on the below link to track your order:\n$urlToClient\n\nRegards,\nTeam Lolipop Kidswear.";
+            // }
 
-            $message = "Dear $Order->shipping_cutomerName, Click on the link below to track your order: $urlToClient Regards , Team The Wardrobe Fashion";
+            // $message = "Dear $Order->shipping_cutomerName, Click on the link below to track your order: $urlToClient Regards , Team Lolipop Kidswear";
 
-            $customer = new Customer();
-            $status = $customer->sendWhatsappMessage($MobileNumber, $key, $message, $InsertedId);
+            // $customer = new Customer();
+            // $status = $customer->sendWhatsappMessage($MobileNumber, $key, $message, $InsertedId);
 
-            $customer = new Customer();
+            // $customer = new Customer();
 
-            $docketNo = $request->docketNo;
+            // $docketNo = $request->docketNo;
 
-            if ($request->courier == 1) {
-                $status = $customer->tirupatiMsg($MobileNumber, $docketNo);
-            } elseif ($request->courier == 2){
-                $status = $customer->delhiveryMsg($MobileNumber, $docketNo);
-            }
-            elseif ($request->courier == 4){
-                $status = $customer->ShreemahavirMsg($MobileNumber, $docketNo);
-            }
-            else
-            {
-                $status = $customer->indianpostMsg($MobileNumber, $docketNo);
-            }
-            $mobile = $MobileNumber;
+            // if ($request->courier == 1) {
+            //     $status = $customer->tirupatiMsg($MobileNumber, $docketNo);
+            // } elseif ($request->courier == 2) {
+            //     $status = $customer->delhiveryMsg($MobileNumber, $docketNo);
+            // } elseif ($request->courier == 4) {
+            //     $status = $customer->ShreemahavirMsg($MobileNumber, $docketNo);
+            // } else {
+            //     $status = $customer->indianpostMsg($MobileNumber, $docketNo);
+            // }
+            // $mobile = $MobileNumber;
             //Whatsapp
             // $whatsapp = $customer->WhatsappMessage($mobile, $whatsappmsg);
 
@@ -554,8 +616,130 @@ class OrderController extends Controller
         //   } catch (\Throwable $th) {
         //         // Rollback & Return Error Message
         //         return redirect()->back()->with('error', $th->getMessage());
-        //     } 
+        //     }
     }
+
+    // public function statustodispatched(Request $request)
+    // {
+    //     // dd($request);
+    //     $session = Auth::user()->id;
+    //     //   try {
+    //     $CheckCourier = Order::where(['iStatus' => 1, 'isDelete' => 0, 'courier' => $request->courier, 'docketNo' => $request->docketNo])->first();
+    //     // dd($CheckCourier);
+    //     if (!($CheckCourier) && $CheckCourier == null) {
+    //         // dd('if');
+    //         $status = DB::table('order')
+    //             ->where(['iStatus' => 1, 'isDelete' => 0, 'order_id' => $request->order_id])
+    //             ->update([
+    //                 'courier' => $request->courier,
+    //                 'docketNo' => $request->docketNo,
+    //                 'isDispatched' => 1,
+    //                 'isDispatchedBy' => $session,
+    //                 'updated_at' => date('Y-m-d H:i:s')
+    //             ]);
+    //         $Order = Order::where(['iStatus' => 1, 'isDelete' => 0, 'order_id' => $request->order_id])->first();
+    //         $Courier = Courier::where(['iStatus' => 1, 'isDelete' => 0, 'id' => $request->courier])->first();
+    //         $sendEmail = DB::table('sendemaildetails')->where(['id' => 10])->first();
+    //         $toMail = $Order->shipping_email;
+    //         $subject = $sendEmail->strSubject;
+
+    //         $urlToClient = "";
+    //         // $urlToClient = $Courier->url . $request->docketNo;
+    //         $DocketType = "Docket No";
+    //         if ($Order->courier == 1) {
+    //             $urlToClient = $Courier->url;
+    //             $DocketType = "AWB No";
+    //         } elseif ($Order->courier == 2) {
+    //             $urlToClient = $Courier->url . $request->docketNo;
+    //             $DocketType = "Docket No";
+    //         } elseif ($Order->courier == 4) {
+    //             $urlToClient = $Courier->url;
+    //             $DocketType = "Consignment No";
+    //         } else {
+    //             $urlToClient = $Courier->url;
+    //             $DocketType = "Artical No";
+    //         }
+
+    //         $root = $_SERVER['DOCUMENT_ROOT'];
+    //         $htmlBody = file_get_contents($root . '/mailers/dispatchemail.html');
+    //         $htmlBody = str_replace(
+    //             ['#orderNo', '#courierName', '#docketNo', '#link', '#docketType'],
+    //             [$request->order_id, $Courier->name ?? '', $request->docketNo, $urlToClient, $DocketType],
+    //             $htmlBody
+    //         );
+
+    //         // 3) Send with Laravel Mail (instead of raw mail())
+    //         try {
+    //             Mail::html($htmlBody, function ($m) use ($toMail, $subject, $sendEmail) {
+    //                 $m->to($toMail)
+    //                     ->subject($subject);
+
+    //                 // optional: set From from DB (fallback to .env)
+    //                 if (!empty($sendEmail->strFromMail)) {
+    //                     $m->from($sendEmail->strFromMail, $sendEmail->strFromName ?? config('app.name'));
+    //                 }
+    //                 // optional: bcc admin
+    //                 // $m->bcc('orders@thewardrobefashion.in');
+    //             });
+
+    //             Log::info("Dispatched mail sent to {$toMail}");
+    //         } catch (\Throwable $e) {
+    //             // Don’t block the flow if email fails; show a warning
+    //             Log::error('Dispatched mail failed', ['err' => $e->getMessage()]);
+    //             return redirect()
+    //                 ->route('order.dispatched')
+    //                 ->with('success', 'Status updated, but email could not be sent. (' . $e->getMessage() . ')');
+    //         }
+
+    //         $Customer = Customer::where(["customerid" => $Order->customerid])->first();
+    //         $InsertedId =  $Customer->customerid;
+    //         $ORDER_ID = $Order->order_id;
+    //         $MobileNumber = $Order->shipping_mobile;
+    //         $Setting = Setting::where(["id" => 1])->first();
+    //         $key = $Setting->api_key;
+    //         $shippingName  = $Order->shipping_cutomerName;
+
+    //         // if ($Order->courier == 1) {
+    //         //     $whatsappmsg = "*Dear $shippingName*,\n\nYour parcel has been dispatch.\n\nTo track your order, Visit below link.\n\nLink : $urlToClient\n\nYour Awb No : $request->docketNo\n\nRegards,\nTeam Lolipop Kidswear.";
+    //         // }
+    //         // if ($request->courier == 4) {
+    //         //     $whatsappmsg = "*Dear $shippingName*,\n\nYour parcel has been dispatch.\n\nTo track your order, Visit below link.\n\nLink : $urlToClient\n\nYour consignment No : $request->docketNo\n\nRegards,\nTeam Lolipop Kidswear.";
+    //         // } else {
+    //         //     $whatsappmsg = "*Dear $shippingName*,\n\nClick on the below link to track your order:\n$urlToClient\n\nRegards,\nTeam Lolipop Kidswear.";
+    //         // }
+
+    //         // $message = "Dear $Order->shipping_cutomerName, Click on the link below to track your order: $urlToClient Regards , Team Lolipop Kidswear";
+
+    //         // $customer = new Customer();
+    //         // $status = $customer->sendWhatsappMessage($MobileNumber, $key, $message, $InsertedId);
+
+    //         // $customer = new Customer();
+
+    //         // $docketNo = $request->docketNo;
+
+    //         // if ($request->courier == 1) {
+    //         //     $status = $customer->tirupatiMsg($MobileNumber, $docketNo);
+    //         // } elseif ($request->courier == 2) {
+    //         //     $status = $customer->delhiveryMsg($MobileNumber, $docketNo);
+    //         // } elseif ($request->courier == 4) {
+    //         //     $status = $customer->ShreemahavirMsg($MobileNumber, $docketNo);
+    //         // } else {
+    //         //     $status = $customer->indianpostMsg($MobileNumber, $docketNo);
+    //         // }
+    //         // $mobile = $MobileNumber;
+    //         //Whatsapp
+    //         // $whatsapp = $customer->WhatsappMessage($mobile, $whatsappmsg);
+
+    //         return redirect()->route('order.dispatched')->with('success', 'Status Updated Successfully.');
+    //     } else {
+    //         // dd('else');
+    //         return back()->with('error', 'Docket No Already Exists.');
+    //     }
+    //     //   } catch (\Throwable $th) {
+    //     //         // Rollback & Return Error Message
+    //     //         return redirect()->back()->with('error', $th->getMessage());
+    //     //     }
+    // }
 
 
     public function statustopending(Request $request, $id)
@@ -566,6 +750,7 @@ class OrderController extends Controller
                 ->update([
                     'isDispatched' => 0,
                     'dispatchCourierId' => 0,
+                    'courier' => 0,
                     'updated_at' => date('Y-m-d H:i:s')
                 ]);
             return redirect()->route('order.pending')->with('success', 'Status Updated Successfully.');
@@ -579,7 +764,10 @@ class OrderController extends Controller
 
         $Shipping = Shipping::select('rate as shippingcharge')->orderBy('id', 'desc')->first();
         $data = Order::select('order.*', 'state.stateName')->orderBy('order_id', 'DESC')->where(['iStatus' => 1, 'isDelete' => 0, 'order_id' => $id])
-            ->join('state', 'state.stateId', '=', 'order.shiiping_state')->first();
+            ->leftJoin('state', 'state.stateName', '=', 'order.shiiping_state')->first();
+        if (!$data) {
+            return redirect()->route('order.pending')->with('error', 'Order not found.');
+        }
         // dd($data);
         $detail = OrderDetail::select(
             'order.cutomerName',
@@ -632,9 +820,13 @@ class OrderController extends Controller
             )
                 ->orderBy('order_id', 'DESC')
                 ->where(['order.iStatus' => 1, 'order.isDelete' => 0, 'order.order_id' => $id])
-                ->join('state', 'state.stateId', '=', 'order.shiiping_state')
+                ->leftJoin('state', 'state.stateName', '=', 'order.shiiping_state')
                 ->leftjoin('courier', 'order.courier', '=', 'courier.id')
                 ->first();
+
+            if (!$data) {
+                return redirect()->route('order.pending')->with('error', 'Order not found.');
+            }
 
             $detail = OrderDetail::select(
                 'order.order_id',
@@ -697,9 +889,12 @@ class OrderController extends Controller
 
             $data = Order::orderBy('order_id', 'desc')
                 ->where(['iStatus' => 1, 'isDelete' => 0, 'order_id' => $id])
-                ->join('state', 'order.shiiping_state', '=', 'state.stateId')
+                ->leftJoin('state', 'order.shiiping_state', '=', 'state.stateName')
                 ->first();
-            // dd($data); 
+
+            if (!$data) {
+                return redirect()->route('order.pending')->with('error', 'Order not found.');
+            }
 
             $pdf = PDF::loadView('order.DispatchPDF', ['data' => $data]);
             return $pdf->stream('Dispatch.pdf');
@@ -714,7 +909,7 @@ class OrderController extends Controller
             );
         }
     }
-    
+
     public function generatedelivery(Request $request, $id)
     {
         if (Auth::user()->id  == 1) {
@@ -772,7 +967,7 @@ class OrderController extends Controller
                 ],
                 "product_details" => []
             ];
-           
+
 
             // multiple products handle
             $requestData['product_details'] = [
@@ -799,7 +994,7 @@ class OrderController extends Controller
             $orderMain = Order::where('order_id', $id)->first();
             $orderMain->quikshipx_req = json_encode($requestData);
             $orderMain->quikshipx_res = json_encode($responseBody);
-            
+
             $errorMessage = '';
 
             if (isset($responseBody['response'][0]['errors'])) {
@@ -812,18 +1007,16 @@ class OrderController extends Controller
                 $orderMain->quikshipx_res_flag = 1;
                 $orderMain->quikshipx_order_id = $responseBody['response'][0]['order_id'];
                 $orderMain->save();
-
             } else {
                 $orderMain->quikshipx_res_flag = 0;
                 //$orderMain->save();
 
-                 return redirect()->back()
-                ->with('error', $errorMessage ?: 'Something went wrong!');
+                return redirect()->back()
+                    ->with('error', $errorMessage ?: 'Something went wrong!');
             }
 
             $orderMain->save();
             return redirect()->route('order.pending')->with('success', 'Delhivery Generate Successfully.');
-            
         }
     }
 
@@ -831,34 +1024,122 @@ class OrderController extends Controller
     {
         // dd($request);
 
-        if (Auth::user()->id  == 1) {
+        if (Auth::user()->id == 1) {
+
             $FromDate = $request->fromdate;
-            $ToDate = $request->todate;
-            $Mobile = $request->mobile;
-            $Name = $request->strName;
-            $OrderNo = $request->order_no;
+            $ToDate   = $request->todate;
+            $Mobile   = $request->mobile;
+            $Name     = $request->strName;
+            $OrderNo  = $request->order_no;
 
-            $Courier = Courier::orderBy('id', 'desc')->where(['iStatus' => 1, 'isDelete' => 0])->get();
+            $Courier = Courier::orderBy('id', 'desc')
+                ->where([
+                    'iStatus' => 1,
+                    'isDelete' => 0
+                ])
+                ->get();
 
-            $Pend = Order::orderBy('order_id', 'desc')
-                ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0, 'dispatchCourierId' => 0, 'order.isPayment' => 0])
-                ->when($request->order_no, fn($query, $OrderNo) => $query
-                    ->Where('order.order_id', '=', $OrderNo))
-                ->when($request->fromdate, fn($query, $FromDate) => $query
-                    ->where('order.created_at', '>=', date('Y-m-d 00:00:00', strtotime($FromDate))))
-                ->when($request->todate, fn($query, $ToDate) => $query
-                    ->where('order.created_at', '<=', date('Y-m-d 23:59:59', strtotime($ToDate))))
-                ->when($request->mobile, fn($query, $Mobile) => $query
-                    ->where('order.shipping_mobile', 'like', '%' . $Mobile . '%'))
-                ->when($request->strName, fn($query, $Name) => $query
-                    ->where('order.shipping_cutomerName', 'like', '%' . $Name . '%'))
-                ->join('state', 'order.shiiping_state', '=', 'state.stateId');
+            $Pend = Order::query()
+                ->orderBy('order.order_id', 'desc')
+
+                ->where('order.iStatus', 1)
+                ->where('order.isDelete', 0)
+
+                // Not dispatched
+                ->where('order.isDispatched', 0)
+                ->where('order.dispatchCourierId', 0)
+
+                // Pending OR Failed payment
+                ->whereIn('order.isPayment', [0, 2])
+
+                ->when($request->order_no, function ($query, $OrderNo) {
+                    $query->where('order.order_id', $OrderNo);
+                })
+
+                ->when($request->fromdate, function ($query, $FromDate) {
+                    $query->where(
+                        'order.created_at',
+                        '>=',
+                        date('Y-m-d 00:00:00', strtotime($FromDate))
+                    );
+                })
+
+                ->when($request->todate, function ($query, $ToDate) {
+                    $query->where(
+                        'order.created_at',
+                        '<=',
+                        date('Y-m-d 23:59:59', strtotime($ToDate))
+                    );
+                })
+
+                ->when($request->mobile, function ($query, $Mobile) {
+                    $query->where(
+                        'order.shipping_mobile',
+                        'like',
+                        '%' . $Mobile . '%'
+                    );
+                })
+
+                ->when($request->strName, function ($query, $Name) {
+                    $query->where(
+                        'order.shipping_cutomerName',
+                        'like',
+                        '%' . $Name . '%'
+                    );
+                })
+
+                // Use LEFT JOIN so orders don't disappear if state is missing
+                ->leftJoin(
+                    'state',
+                    'order.shiiping_state',
+                    '=',
+                    'state.stateId'
+                );
 
             $Pending = $Pend->paginate(15);
 
-
-            return view('order.paymentPendingOrder', compact('Pending', 'FromDate', 'ToDate', 'Courier', 'Name', 'Mobile', 'OrderNo'));
+            return view(
+                'order.paymentPendingOrder',
+                compact(
+                    'Pending',
+                    'FromDate',
+                    'ToDate',
+                    'Courier',
+                    'Name',
+                    'Mobile',
+                    'OrderNo'
+                )
+            );
         }
+
+        // if (Auth::user()->id  == 1) {
+        //     $FromDate = $request->fromdate;
+        //     $ToDate = $request->todate;
+        //     $Mobile = $request->mobile;
+        //     $Name = $request->strName;
+        //     $OrderNo = $request->order_no;
+
+        //     $Courier = Courier::orderBy('id', 'desc')->where(['iStatus' => 1, 'isDelete' => 0])->get();
+
+        //     $Pend = Order::orderBy('order_id', 'desc')
+        //         ->where(['iStatus' => 1, 'isDelete' => 0, 'isDispatched' => 0, 'dispatchCourierId' => 0, 'order.isPayment' => 0])
+        //         ->when($request->order_no, fn($query, $OrderNo) => $query
+        //             ->Where('order.order_id', '=', $OrderNo))
+        //         ->when($request->fromdate, fn($query, $FromDate) => $query
+        //             ->where('order.created_at', '>=', date('Y-m-d 00:00:00', strtotime($FromDate))))
+        //         ->when($request->todate, fn($query, $ToDate) => $query
+        //             ->where('order.created_at', '<=', date('Y-m-d 23:59:59', strtotime($ToDate))))
+        //         ->when($request->mobile, fn($query, $Mobile) => $query
+        //             ->where('order.shipping_mobile', 'like', '%' . $Mobile . '%'))
+        //         ->when($request->strName, fn($query, $Name) => $query
+        //             ->where('order.shipping_cutomerName', 'like', '%' . $Name . '%'))
+        //         ->join('state', 'order.shiiping_state', '=', 'state.stateId');
+
+        //     $Pending = $Pend->paginate(15);
+
+
+        //     return view('order.paymentPendingOrder', compact('Pending', 'FromDate', 'ToDate', 'Courier', 'Name', 'Mobile', 'OrderNo'));
+        // }
     }
 
     public function linkSendToCustomer(Request $request, $id)
@@ -873,36 +1154,36 @@ class OrderController extends Controller
             $InsertedId =  $Customer->customerid;
             $ORDER_ID = $Order->order_id;
             $MobileNumber = $Order->shipping_mobile;
-            
+
             $Setting = Setting::where(["id" => 1])->first();
             $key = $Setting->api_key;
             $shippingName  = $Order->shipping_cutomerName;
-            
+
             // $urlToClient = $Courier->url . $Order->docketNo;
-            
+
             if ($Order->courier == 1) {
                 $urlToClient = $Courier->url;
             } else {
                 $urlToClient = $Courier->url . $Order->docketNo;
             }
-            
+
             // dd($urlToClient);
-        //     $whatsappmsg = "*Dear Customer*,
-                    
-        // Click on the below link to track your order:
-        // $urlToClient
-        
-        // Regards,     
-        // Team The Wardrobe Fashion.";
-        
+            //     $whatsappmsg = "*Dear Customer*,
+
+            // Click on the below link to track your order:
+            // $urlToClient
+
+            // Regards,
+            // Team Lolipop Kidswear.";
+
             if ($Order->courier == 1) {
-                $whatsappmsg = "*Dear $shippingName*,\n\nYour parcel has been dispatch.\n\nTo track your order, Visit below link.\n\nLink : $urlToClient\n\nYour Awb No : $request->docketNo\n\nRegards,\nTeam The Wardrobe Fashion.";
+                $whatsappmsg = "*Dear $shippingName*,\n\nYour parcel has been dispatch.\n\nTo track your order, Visit below link.\n\nLink : $urlToClient\n\nYour Awb No : $request->docketNo\n\nRegards,\nTeam Lolipop Kidswear.";
             } else {
-                $whatsappmsg = "*Dear $shippingName*,\n\nClick on the below link to track your order:\n$urlToClient\n\nRegards,\nTeam The Wardrobe Fashion.";
+                $whatsappmsg = "*Dear $shippingName*,\n\nClick on the below link to track your order:\n$urlToClient\n\nRegards,\nTeam Lolipop Kidswear.";
             }
 
 
-            // $message = "Dear Customer, Click on the link below to track your order: $urlToClient Regards , Team The Wardrobe Fashion";
+            // $message = "Dear Customer, Click on the link below to track your order: $urlToClient Regards , Team Lolipop Kidswear";
             $docketNo = $Order->docketNo;
 
             $customer = new Customer();
@@ -950,8 +1231,18 @@ class OrderController extends Controller
 
                 $iCounter = 0;
                 foreach ($cart_Items as $cartItem) {
+                    $ledgerAlreadyCreated = Ledger::where([
+                        'iOrderId' => $request->order_id,
+                        'iOrderDetailId' => $cartItem->orderDetailId,
+                        'iProductId' => $cartItem->productId,
+                        'iSize' => $cartItem->size,
+                    ])->exists();
 
-                    $opening = Ledger::select('openingBalance', 'closingBalance', 'cr', 'dr', 'iProductId', 'iOrderId')
+                    if ($ledgerAlreadyCreated) {
+                        continue;
+                    }
+
+                    $opening = Ledger::select('ledgerId', 'openingBalance', 'closingBalance', 'cr', 'dr', 'iProductId', 'iOrderId')
                         ->orderBy('ledger.ledgerId', 'DESC')
                         ->where([
                             'ledger.iStatus' => 1,
@@ -966,21 +1257,14 @@ class OrderController extends Controller
                     $openingBalance = $opening->closingBalance ?? 0;
                     $closing = ($openingBalance - $dr);
 
-                    $Ledger = array(
-                        'iProductId' => $cartItem->productId,
-                        'iSize' => $cartItem->size,
-                        'iInwardId' =>  0,
+                    DB::table('ledger')->where('ledgerId', $opening->ledgerId)->update([
+                        'dr' => (int) $opening->dr + $dr,
+                        'closingBalance' => $closing,
                         'iOrderId' => $request->order_id,
-                        'iOrderDetailId' =>  $cartItem->orderDetailId,
-                        'openingBalance' => $openingBalance,
-                        'cr' => 0,
-                        'dr' =>  $dr,
-                        'closingBalance' =>  $closing,
-                        'created_at' => date('Y-m-d H:i:s'),
+                        'iOrderDetailId' => $cartItem->orderDetailId,
+                        'updated_at' => date('Y-m-d H:i:s'),
                         'strIP' => $request->ip()
-                    );
-                    // dd($Ledger);
-                    DB::table('ledger')->insert($Ledger);
+                    ]);
 
                     if ($closing < 0) {
                         OrderDetail::where("orderDetailId", '=', $cartItem->orderDetailId)->update(['isRefund' => 1]);
@@ -1064,7 +1348,7 @@ class OrderController extends Controller
                 // Regards,
                 // Team Wardrobefashion.";
 
-                // $message = "Dear Customer, Click on the link below to track your order: $urlToClient Regards , Team The Wardrobe Fashion";
+                // $message = "Dear Customer, Click on the link below to track your order: $urlToClient Regards , Team Lolipop Kidswear";
 
                 $customer = new Customer();
                 // $status = $customer->sendWhatsappMessage($MobileNumber, $key, $msg, $InsertedId);

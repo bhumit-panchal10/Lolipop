@@ -13,6 +13,7 @@ class Order extends Model
     protected $primaryKey = 'order_id';
 
     protected $fillable = [
+        'customerid',
         'cutomerName',
         'mobile',
         'email',
@@ -41,5 +42,7 @@ class Order extends Model
         'quikshipx_res',
         'quikshipx_res_flag',
         'quikshipx_order_id',
+        'iStatus',
+        'isDelete',
     ];
 }

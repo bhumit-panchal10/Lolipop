@@ -13,8 +13,8 @@
 
                 {{-- Alert Messages --}}
                 @include('common.alert')
-                
-                 
+
+
 
                 <div class="row">
                     <div class="col-xxl-12">
@@ -25,7 +25,7 @@
 
                                 @include('order.orderTab')
 
-                               
+
                                 <div class="tab-content text-muted">
                                     <div class="tab-pane active" id="PendingOrder" role="tabpanel">
                                         <div class="row">
@@ -58,137 +58,168 @@
                                                                     $i = 1;
                                                                     ?>
                                                                     @foreach ($Pending as $pending)
-                                                                         <?php 
-                                                                            $detail = App\Models\OrderDetail::select('orderdetail.*',DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId ORDER BY product.productId  LIMIT 1) as photo'),)->orderBy('orderDetailId', 'DESC')
-                                                                                ->where(['orderdetail.iStatus' => 1, 'orderdetail.isDelete' => 0, 'orderdetail.orderID' => $pending->order_id])
-                                                                                ->join('order', 'orderdetail.orderID', '=', 'order.order_id')
-                                                                                ->join('product', 'orderdetail.productId', '=', 'product.productId')
-                                                                                ->get();
-                                                                                $Count = $detail->count() +3;
-                                                                            ?>
-                                                                        <tr class="text-center" style='<?= $pending->orderNote != "" ? "background: #f96767 !important;color: white  !important;" : ''; ?>'>
-                                                                            <td rowspan="{{ $Count }}">{{ $i + $Pending->perPage() * ($Pending->currentPage() - 1) }}
+                                                                        <?php
+                                                                        $detail = App\Models\OrderDetail::select('orderdetail.*', DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId ORDER BY product.productId  LIMIT 1) as photo'))
+                                                                            ->orderBy('orderDetailId', 'DESC')
+                                                                            ->where(['orderdetail.iStatus' => 1, 'orderdetail.isDelete' => 0, 'orderdetail.orderID' => $pending->order_id])
+                                                                            ->join('order', 'orderdetail.orderID', '=', 'order.order_id')
+                                                                            ->join('product', 'orderdetail.productId', '=', 'product.productId')
+                                                                            ->get();
+                                                                        $Count = $detail->count() + 3;
+                                                                        ?>
+                                                                        <tr class="text-center"
+                                                                            style='<?= $pending->orderNote != ''
+                                                                            ? 'background: #f96767 !important;color: white  !important;'
+                                                                            : '' ?>'>
+                                                                            <td rowspan="{{ $Count }}">
+                                                                                {{ $i + $Pending->perPage() * ($Pending->currentPage() - 1) }}
                                                                             </td>
 
                                                                             <td>{{ date('d-m-Y H:i:s', strtotime($pending->created_at)) }}
                                                                             </td>
 
                                                                             <td>{{ $pending->shipping_cutomerName }}</td>
-                                                                            
+
                                                                             <!--<td>{{ $pending->shipping_email }}</td>-->
                                                                             <td>{{ $pending->shipping_mobile }}</td>
-                                                                            <td>{{ $pending->shipping_city	 }}</td>
+                                                                            <td>{{ $pending->shipping_city }}</td>
                                                                             <td>{{ $pending->stateName }}</td>
                                                                             <td>{{ $pending->shipping_pincode }}</td>
-                                                                            
-                                                                            <td>{{ $pending->netAmount }}</td>   
+
+                                                                            <td>{{ $pending->netAmount }}</td>
                                                                             <td>
                                                                                 @if ($pending->isPayment == 0)
                                                                                     Pending
-                                                                                @elseif($pending->isPayment == 1)    
+                                                                                @elseif($pending->isPayment == 1)
                                                                                     Success
                                                                                 @else
                                                                                     Failed
-                                                                                @endif  
-                                                                            </td>   
-                                                                            <td>{{ $pending->orderNote ?? "-" }}</td>
-                                                                            </tr>
-                                                                            
-                                                                            
-                                                                            
-                                                                            <tr>
-                                                                                 <th colspan="2">PRODUCT</th>
-                                                                                <th colspan="2">QTY</th>
-                                                                                <th colspan="2">SIZE</th>
-                                                                                <th colspan="2">PRICE</th>
-                                                                                <th colspan="2">TOTAL</th>
-                                                                            </tr>
-                                                                            @foreach($detail as $item)
-                                                                             @php 
-                                                                                $ProductAttribute = App\Models\ProductAttributes::orderBy('id', 'desc')
-                                                                                    ->where(["product_id" => $item->productId, 'id' => $item->size])
+                                                                                @endif
+                                                                            </td>
+                                                                            <td>{{ $pending->orderNote ?? '-' }}</td>
+                                                                        </tr>
+
+
+
+                                                                        <tr>
+                                                                            <th colspan="2">PRODUCT</th>
+                                                                            <th colspan="2">QTY</th>
+                                                                            <th colspan="2">SIZE</th>
+                                                                            <th colspan="2">PRICE</th>
+                                                                            <th colspan="2">TOTAL</th>
+                                                                        </tr>
+                                                                        @foreach ($detail as $item)
+                                                                            @php
+                                                                                $ProductAttribute = App\Models\ProductAttributes::orderBy(
+                                                                                    'id',
+                                                                                    'desc',
+                                                                                )
+                                                                                    ->where([
+                                                                                        'product_id' =>
+                                                                                            $item->productId,
+                                                                                        'id' => $item->size,
+                                                                                    ])
                                                                                     ->first();
-                                                                            @endphp 
+                                                                            @endphp
                                                                             <tr>
-                                                                                <td colspan="2" class="image" data-title="No"><img
-                                                                                        src="{{ asset('Product/Thumbnail') . '/' . $item->photo }}" width="50" height="50" alt="#">
+                                                                                <td colspan="2" class="image"
+                                                                                    data-title="No"><img
+                                                                                        src="{{ asset('Product/Thumbnail') . '/' . $item->photo }}"
+                                                                                        width="50" height="50"
+                                                                                        alt="#">
                                                                                 </td>
                                                                                 <!--<td class="product-des" data-title="Description">-->
                                                                                 <!--    <p class="product-name"><a href="productlisting.php">{{ $item->name }}</a></p>-->
                                                                                 <!--</td>-->
-                                                                                <td colspan="2" class="qty text-right" data-title="Qty">
+                                                                                <td colspan="2" class="qty text-right"
+                                                                                    data-title="Qty">
                                                                                     {{ $item->quantity }}&nbsp;&nbsp;&nbsp;
                                                                                 </td>
-                                                                                <td colspan="2" class="qty text-center" data-title="Qty">
+                                                                                <td colspan="2" class="qty text-center"
+                                                                                    data-title="Qty">
                                                                                     {{ $ProductAttribute->product_attribute_size }}
                                                                                 </td>
-                                                                                <td colspan="2" class="price text-left" data-title="Price">
+                                                                                <td colspan="2" class="price text-left"
+                                                                                    data-title="Price">
                                                                                     <span> &#x20B9; {{ $item->rate }}
                                                                                     </span>
                                                                                 </td>
-                                            
-                                                                                <td colspan="2" class="total-amount text-right" data-title="Total">
-                                                                                    <span> &#x20B9; {{ $item->rate * $item->quantity }}</span>
+
+                                                                                <td colspan="2"
+                                                                                    class="total-amount text-right"
+                                                                                    data-title="Total">
+                                                                                    <span> &#x20B9;
+                                                                                        {{ $item->rate * $item->quantity }}</span>
                                                                                 </td>
-                                                                                
-                                                                                
+
+
                                                                             </tr>
-                                                                            @endforeach
-                                                                            
-                                                                            <tr style='<?= $pending->orderNote != "" ? "background: #f96767 !important;color: white  !important;" : ''; ?>'>
-                                                                                <!--<td>-</td>-->
-                                                                            
-                                                                            
-                                                                                
+                                                                        @endforeach
+
+                                                                        <tr style='<?= $pending->orderNote != ''
+                                                                            ? 'background: #f96767 !important;color: white  !important;'
+                                                                            : '' ?>'>
+                                                                            <!--<td>-</td>-->
+
+
+
                                                                             <td colspan="10" class="des-ll">
-                                                                               <div class="d-flex justify-content-between">
+                                                                                <div class="d-flex justify-content-between">
                                                                                     <a class="" href="#"
-                                                                                    data-bs-toggle="modal" title="Dispatch"
-                                                                                    data-bs-target="#showModal"
-                                                                                    onclick="getEditData(<?= $pending->order_id ?>);">
-                                                                                    <i class="fa-solid fa-truck fa-lg"></i>
-                                                                                     Dispatch Order
-                                                                                </a>
+                                                                                        data-bs-toggle="modal"
+                                                                                        title="Dispatch"
+                                                                                        data-bs-target="#showModal"
+                                                                                        onclick="getEditData(<?= $pending->order_id ?>);">
+                                                                                        <i
+                                                                                            class="fa-solid fa-truck fa-lg"></i>
+                                                                                        Dispatch Order
+                                                                                    </a>
 
-                                                                                <a href="{{ route('order.statustocancel', $pending->order_id) }}"
-                                                                                    onclick="return confirm('Are you Sure You wanted to Cancel?');"
-                                                                                    class="mx-2" title="Cancel">
-                                                                                    <i class="fa-solid fa-xmark fa-xl"></i>
-                                                                                    Cancel Order
-                                                                                </a>
+                                                                                    <a href="{{ route('order.statustocancel', $pending->order_id) }}"
+                                                                                        onclick="return confirm('Are you Sure You wanted to Cancel?');"
+                                                                                        class="mx-2" title="Cancel">
+                                                                                        <i
+                                                                                            class="fa-solid fa-xmark fa-xl"></i>
+                                                                                        Cancel Order
+                                                                                    </a>
 
-                                                                                <a class="mx-2"
-                                                                                    href="{{ route('order.orderdetail', $pending->order_id) }}"
-                                                                                    title="Details">
-                                                                                    <i class="fa-solid fa-circle-info fa-lg"></i>
-                                                                                    View Order Details
-                                                                                </a>
+                                                                                    <a class="mx-2"
+                                                                                        href="{{ route('order.orderdetail', $pending->order_id) }}"
+                                                                                        title="Details">
+                                                                                        <i
+                                                                                            class="fa-solid fa-circle-info fa-lg"></i>
+                                                                                        View Order Details
+                                                                                    </a>
 
-                                                                                <a class="mx-2" target="_blank"
-                                                                                    href="{{ route('order.DetailPDF', $pending->order_id) }}"
-                                                                                    title="Pdf Details">
-                                                                                    <i class="fa-solid fa-file-pdf fa-lg"></i>
-                                                                                    Order PDF
-                                                                                </a>
-                                                                                
-                                                                                <a class="mx-2" target="_blank"
-                                                                                    href="{{ route('order.DispatchPDF', $pending->order_id) }}"
-                                                                                    title="Dispatch Pdf Details">
-                                                                                    <i class="fa-solid fa-file-pdf fa-lg"></i>
-                                                                                    Dispatch Order Sticker PDF
-                                                                                </a>
-                                                                           </div>
+                                                                                    <a class="mx-2" target="_blank"
+                                                                                        href="{{ route('order.DetailPDF', $pending->order_id) }}"
+                                                                                        title="Pdf Details">
+                                                                                        <i
+                                                                                            class="fa-solid fa-file-pdf fa-lg"></i>
+                                                                                        Order PDF
+                                                                                    </a>
+
+                                                                                    <a class="mx-2" target="_blank"
+                                                                                        href="{{ route('order.DispatchPDF', $pending->order_id) }}"
+                                                                                        title="Dispatch Pdf Details">
+                                                                                        <i
+                                                                                            class="fa-solid fa-file-pdf fa-lg"></i>
+                                                                                        Dispatch Order Sticker PDF
+                                                                                    </a>
+                                                                                </div>
                                                                             </td>
                                                                         </tr>
-                                                                            <tr style='<?= $pending->orderNote != "" ? "background: #f96767 !important;color: white  !important;" : ''; ?>'>
-                                                                                <td style="height: 50px;"  colspan="10"></td>
-                                                                            </tr>
-                                                                            <!--<tr style='<?= $pending->orderNote != "" ? "background: #f96767 !important;color: white  !important;" : ''; ?>'>-->
-                                                                            <!--    <td style="border: none !important;" colspan="10">.</td>-->
-                                                                            <!--</tr>-->
-                                                                            <!--<tr style='<?= $pending->orderNote != "" ? "background: #f96767 !important;color: white  !important;" : ''; ?>'>-->
-                                                                            <!--    <td style="border: none !important;" colspan="10">.</td>-->
-                                                                            <!--</tr>-->
+                                                                        <tr style='<?= $pending->orderNote != ''
+                                                                            ? 'background: #f96767 !important;color: white  !important;'
+                                                                            : '' ?>'>
+                                                                            <td style="height: 50px;" colspan="10"></td>
+                                                                        </tr>
+                                                                        <!--<tr style='<?= $pending->orderNote != '' ? 'background: #f96767 !important;color: white  !important;' : '' ?>'>-->
+                                                                        <!--    <td style="border: none !important;" colspan="10">.</td>-->
+                                                                        <!--</tr>-->
+                                                                        <!--<tr style='<?= $pending->orderNote != '' ? 'background: #f96767 !important;color: white  !important;' : '' ?>'>-->
+                                                                        <!--    <td style="border: none !important;" colspan="10">.</td>-->
+                                                                        <!--</tr>-->
                                                                         <?php $i++; ?>
                                                                     @endforeach
 

@@ -23,7 +23,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        
+
         $ProductName = $request->productName;
         // dd($ProductName);
         $Product = Product::select(
@@ -38,30 +38,28 @@ class ProductController extends Controller
             'category.categoryname'
         )
             ->orderBy('productId', 'desc')
-            ->where([ 'product.isDelete' => 0])
-            ->when($request->productName, fn ($query, $ProductName) => $query
+            ->where(['product.isDelete' => 0])
+            ->when($request->productName, fn($query, $ProductName) => $query
                 ->where('product.productname', 'like', "%$ProductName%"))
             ->join('category', 'product.categoryId', '=', 'category.categoryId')
             ->paginate(14);
         // dd($Product);
 
-        return view('product.index', compact('Product','ProductName'));
-        
+        return view('product.index', compact('Product', 'ProductName'));
     }
 
     public function createview()
     {
-        
+
         $Category = Category::where('subcategoryid', 0)->orderBy('categoryId', 'desc')->get();
 
         return view('product.add', compact('Category'));
-    
     }
 
     public function getsubcategory(Request $request)
     {
         $html = "";
-        $SubCategory = Category::where([ 'isDelete' => 0, 'subcategoryid' => $request->Category])->get();
+        $SubCategory = Category::where(['isDelete' => 0, 'subcategoryid' => $request->Category])->get();
         // dd($SubCategory);
         $html .= '<option value="" selected >Select Sub Category</option>';
         foreach ($SubCategory as $subcategory) {
@@ -127,9 +125,9 @@ class ProductController extends Controller
             $img->resize(540, 720, function ($constraint) {
                 $constraint->aspectRatio();
             })->save($destinationPath . '/' . $imgName);
-            
-            
-            
+
+
+
             $destinationpath = $root . '/Product/';
             $file->move($destinationpath, $imgName);
 
@@ -143,14 +141,13 @@ class ProductController extends Controller
         }
 
         return redirect()->route('product.index')->with('success', 'Product Created Successfully.');
-    
     }
 
     public function GetSelectedSubCategory(Request $request)
     {
         //dd($request);
         $html = "";
-        $SubCategory = Category::where([ 'isDelete' => 0, 'subcategoryid' => $request->Category])->get();
+        $SubCategory = Category::where(['isDelete' => 0, 'subcategoryid' => $request->Category])->get();
         $html .= '<option value="" selected >Select Sub Category</option>';
         foreach ($SubCategory as $subcategory) {
             if ($request->SubCategory == $subcategory->categoryId) {
@@ -169,14 +166,14 @@ class ProductController extends Controller
         $product = Product::where(['isDelete' => 0, 'productId' => $id])->first();
 
         $SubCategory = Category::where(['isDelete' => 0, 'categoryId' => $product->subcategoryid])->get();
-        
+
         return view('product.edit', compact('product', 'Category', 'SubCategory'));
     }
 
     public function getEditsubcategory(Request $request)
     {
         $html = "";
-        $SubCategory = Category::where([ 'isDelete' => 0, 'subcategoryid' => $request->Category])->get();
+        $SubCategory = Category::where(['isDelete' => 0, 'subcategoryid' => $request->Category])->get();
         $html .= '<option value="" selected >Select Sub Category</option>';
         foreach ($SubCategory as $subcategory) {
             $html .= '<option value=' . $subcategory->categoryId . '>' . $subcategory->categoryname . '</option>';
@@ -202,7 +199,7 @@ class ProductController extends Controller
         $ProductName = str_replace(' ', '-', $ProductLoverCase);
 
         $update = DB::table('product')
-            ->where([ 'isDelete' => 0, 'productId' => $id])
+            ->where(['isDelete' => 0, 'productId' => $id])
             ->update([
                 'categoryId' => $request->categoryId ?? 0,
                 'subcategoryid' => $request->subcategoryid ?? 0,
@@ -210,14 +207,14 @@ class ProductController extends Controller
                 'slugname' => $ProductName,
                 'description' => $request->description,
                 'fabric' => $request->fabric,
-            'care' => $request->care,
-            'disclaimer' => $request->disclaimer,
+                'care' => $request->care,
+                'disclaimer' => $request->disclaimer,
                 'isFeatures' => $isFeatures ?? 0,
                 'meta_title' => $request->meta_title,
                 'meta_description' => $request->meta_description,
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
-            // dd($update);
+        // dd($update);
 
 
         $img = "";
@@ -247,14 +244,14 @@ class ProductController extends Controller
                 DB::table('productphotos')->insert($data);
             }
         }
-        
+
         return redirect()->route('product.index')->with('success', 'Product Updated Successfully.');
     }
 
     //Product Index Page Delete
     public function delete(Request $request)
     {
-        $delete = DB::table('productphotos')->where([ 'isDelete' => 0, 'productid' => $request->productId])->get();
+        $delete = DB::table('productphotos')->where(['isDelete' => 0, 'productid' => $request->productId])->get();
 
         $root = $_SERVER['DOCUMENT_ROOT'];
         $destinationpath = $root . '/Product/';
@@ -269,9 +266,9 @@ class ProductController extends Controller
             }
         }
 
-        DB::table('productphotos')->where([ 'isDelete' => 0, 'productId' => $request->productId])->delete();
+        DB::table('productphotos')->where(['isDelete' => 0, 'productId' => $request->productId])->delete();
 
-        DB::table('product')->where([ 'isDelete' => 0, 'productId' => $request->productId])->delete();
+        DB::table('product')->where(['isDelete' => 0, 'productId' => $request->productId])->delete();
 
         return redirect()->route('product.index')->with('success', 'Product Deleted Successfully!.');
     }
@@ -279,7 +276,7 @@ class ProductController extends Controller
     //Product Image Delete In Edit Page
     public function productimage(Request $request, $id)
     {
-        $delete = DB::table('productphotos')->where([ 'isDelete' => 0, 'productphotosid' => $id])->first();
+        $delete = DB::table('productphotos')->where(['isDelete' => 0, 'productphotosid' => $id])->first();
 
         if ($_SERVER['SERVER_NAME'] == "127.0.0.1") {
             $root = $_SERVER['DOCUMENT_ROOT'];
@@ -303,7 +300,7 @@ class ProductController extends Controller
                 unlink($destinationpath . $delete->strphoto);
             }
         }
-        DB::table('productphotos')->where([ 'isDelete' => 0, 'productphotosid' => $id])->delete();
+        DB::table('productphotos')->where(['isDelete' => 0, 'productphotosid' => $id])->delete();
 
         echo 1;
     }
@@ -311,7 +308,7 @@ class ProductController extends Controller
     //Product Photos Listing Page
     public function productphotos(Request $request, $id)
     {
-        $datas = Productphotos::orderby('productphotosid', 'desc')->where([ 'isDelete' => 0, 'productid' => $id])->paginate(5);
+        $datas = Productphotos::orderby('productphotosid', 'desc')->where(['isDelete' => 0, 'productid' => $id])->paginate(5);
 
         return view('product.photoslist', compact('datas'));
     }
@@ -319,7 +316,7 @@ class ProductController extends Controller
     //In Product Photos Listing Page Photo Delete
     public function productphotosdelete(Request $request)
     {
-        $delete = DB::table('productphotos')->where([ 'isDelete' => 0, 'productphotosid' => $request->productphotosid])->first();
+        $delete = DB::table('productphotos')->where(['isDelete' => 0, 'productphotosid' => $request->productphotosid])->first();
 
         $root = $_SERVER['DOCUMENT_ROOT'];
         $destinationpath = $root . '/Product/';
@@ -331,19 +328,19 @@ class ProductController extends Controller
             unlink($destinationpath  . $delete->strphoto);
         }
 
-        DB::table('productphotos')->where([ 'isDelete' => 0, 'productphotosid' => $request->productphotosid])->delete();
-        
+        DB::table('productphotos')->where(['isDelete' => 0, 'productphotosid' => $request->productphotosid])->delete();
+
         return back()->with('success', 'Product Photo Deleted Successfully!.');
     }
 
     public function product_attribute(Request $request, $id)
     {
-        $Product = Product::select( 
+        $Product = Product::select(
             'product.*',
             DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId ORDER BY product.productId  LIMIT 1) as photo')
-            )
+        )
             ->orderBy('productId', 'desc')
-            ->where([ 'product.isDelete' => 0, 'product.productId' => $id])
+            ->where(['product.isDelete' => 0, 'product.productId' => $id])
             ->first();
 
         $ProductAttributes = ProductAttributes::select(
@@ -363,7 +360,7 @@ class ProductController extends Controller
             ->paginate(25);
         // dd($ProductAttributes);
         $Attribute = Attributes::get();
-        
+
         return view('product.attribute', compact('Product', 'Attribute', 'ProductAttributes', 'id'));
     }
 
@@ -382,7 +379,7 @@ class ProductController extends Controller
             }
             $image->move($destinationpath, $img);
         }
-      
+
         $ProductAttribute = ProductAttributes::orderBy('id', 'desc')
             ->where(["product_attributes.product_id" => $request->productid, 'product_attributes.product_attribute_size' => $request->product_attribute_size])
             ->first();
@@ -401,25 +398,26 @@ class ProductController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             );
             $product_attributesId = DB::table('product_attributes')->insertGetId($Data);
-            
+
             $GetProductAttributes = ProductAttributes::where(['id' => $product_attributesId])->first();
-            
+
             $opening = Ledger::select('openingBalance', 'closingBalance', 'cr', 'dr', 'iProductId', 'iOrderId')
-            ->orderBy('ledger.ledgerId', 'DESC')
-            ->where([
-                'ledger.iStatus' => 1, 'ledger.isDelete' => 0,
-                'iProductId' => $request->productid,
-                'iSize' => $request->product_attribute_size
-            ])
-            ->first();
+                ->orderBy('ledger.ledgerId', 'DESC')
+                ->where([
+                    'ledger.iStatus' => 1,
+                    'ledger.isDelete' => 0,
+                    'iProductId' => $request->productid,
+                    'iSize' => $request->product_attribute_size
+                ])
+                ->first();
             // dd($opening);
-        
-                $cr = $request->product_attribute_qty;
-                $dr = 0;
-                $openingBalance = $opening->closingBalance ?? 0;
-                $closing = ($openingBalance + $cr);
-            
-             $Inward = array(
+
+            $cr = $request->product_attribute_qty;
+            $dr = 0;
+            $openingBalance = $opening->closingBalance ?? 0;
+            $closing = ($openingBalance + $cr);
+
+            $Inward = array(
                 'iProductId' => $request->productid ?? 0,
                 'iSize' => $GetProductAttributes->id ?? 0,
                 'iQty' => $request->product_attribute_qty,
@@ -427,7 +425,7 @@ class ProductController extends Controller
                 'strIP' => $request->ip()
             );
             $InsetedId = DB::table('inward')->insertGetId($Inward);
-    
+
             $Ledger = array(
                 'iProductId' => $request->productid ?? 0,
                 'iSize' => $GetProductAttributes->id ?? 0,
@@ -443,7 +441,7 @@ class ProductController extends Controller
             );
             // dd($Ledger);
             DB::table('ledger')->insert($Ledger);
-            
+
             return redirect()->route('product.product_attribute', $request->productid)->with('success', 'Product Attribute Created Successfully.');
         }
     }
@@ -470,21 +468,21 @@ class ProductController extends Controller
 
     public function product_attribute_delete(Request $request)
     {
-        
+
         DB::table('product_attributes')->where(['id' => $request->id])->delete();
 
-        
+
         return back()->with('success', 'Product Attribute Deleted Successfully!.');
     }
 
     public function product_inward(Request $request, $id)
     {
-        $Product = Product::select( 
+        $Product = Product::select(
             'product.*',
             DB::raw('(SELECT strphoto FROM productphotos WHERE  productphotos.productid=product.productId ORDER BY product.productId  LIMIT 1) as photo')
-            )
+        )
             ->orderBy('productId', 'desc')
-            ->where([ 'product.isDelete' => 0, 'product.productId' => $id])
+            ->where(['product.isDelete' => 0, 'product.productId' => $id])
             ->first();
 
         $GetSize = ProductAttributes::where(['product_id' => $id])->get();
@@ -508,9 +506,8 @@ class ProductController extends Controller
             ->paginate(25);
         // dd($ProductAttributes);
         $Attribute = Attributes::get();
-        
+
         return view('product.inward', compact('Product', 'Attribute', 'ProductAttributes', 'id', 'GetSize'));
-        
     }
 
     public function product_inward_store(Request $request)
@@ -518,7 +515,8 @@ class ProductController extends Controller
         $opening = Ledger::select('openingBalance', 'closingBalance', 'cr', 'dr', 'iProductId', 'iOrderId')
             ->orderBy('ledger.ledgerId', 'DESC')
             ->where([
-                'ledger.iStatus' => 1, 'ledger.isDelete' => 0,
+                'ledger.iStatus' => 1,
+                'ledger.isDelete' => 0,
                 'iProductId' => $request->productid,
                 'iSize' => $request->iSize
             ])
@@ -565,10 +563,10 @@ class ProductController extends Controller
 
         return back()->with('success', 'Deleted Successfully!.');
     }
-    
+
     public function updateStatus($product_id, $status)
     {
-        
+
         $validate = Validator::make([
             'product_id'   => $product_id,
             'status'    => $status
@@ -586,7 +584,7 @@ class ProductController extends Controller
             DB::beginTransaction();
 
             // Update Status
-            Product::where('productId',$product_id)->update(['iStatus' => $status]);
+            Product::where('productId', $product_id)->update(['iStatus' => $status]);
 
             // Commit And Redirect on index with Success Message
             DB::commit();
@@ -598,7 +596,7 @@ class ProductController extends Controller
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
-    
+
     public function inwardData(Request $request, $id)
     {
         $data = Ledger::select(
@@ -618,7 +616,7 @@ class ProductController extends Controller
             ->where(['iProductId' => $id])
             ->join('product', 'ledger.iProductId', '=', 'product.productId')
             ->get();
-            DB::commit();
-        echo json_encode($data);    
+        DB::commit();
+        echo json_encode($data);
     }
 }

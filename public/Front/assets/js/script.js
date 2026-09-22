@@ -868,3 +868,75 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+
+
+/* =====================================================
+   MOBILE FILTER OPEN / CLOSE
+===================================================== */
+
+const filterOpenBtn =
+    document.getElementById('lshopFilterOpen');
+
+const filterCloseBtn =
+    document.getElementById('lshopFilterClose');
+
+const filterPanel =
+    document.getElementById('lshopFilter');
+
+const filterOverlay =
+    document.getElementById('lshopOverlay');
+
+
+const openMobileFilter = () => {
+
+    filterPanel?.classList.add('open');
+
+    filterOverlay?.classList.add('open');
+
+    document.body.classList.add('lshop-filter-opened');
+
+};
+
+
+const closeMobileFilter = () => {
+
+    filterPanel?.classList.remove('open');
+
+    filterOverlay?.classList.remove('open');
+
+    document.body.classList.remove('lshop-filter-opened');
+
+};
+
+
+filterOpenBtn?.addEventListener(
+    'click',
+    openMobileFilter
+);
+
+
+filterCloseBtn?.addEventListener(
+    'click',
+    closeMobileFilter
+);
+
+
+filterOverlay?.addEventListener(
+    'click',
+    closeMobileFilter
+);
+
+
+/* ESC KEY CLOSE */
+
+document.addEventListener(
+    'keydown',
+    function (event) {
+
+        if (event.key === 'Escape') {
+            closeMobileFilter();
+        }
+
+    }
+);

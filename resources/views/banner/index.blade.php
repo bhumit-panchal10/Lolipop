@@ -24,22 +24,22 @@
                                         </div>
 
                                         <div class="live-preview">
-                                            <form method="POST" action="{{ route('banner.store') }}" onsubmit="return validateFile()"
-                                                autocomplete="off" enctype="multipart/form-data">
+                                            <form method="POST" action="{{ route('banner.store') }}"
+                                                onsubmit="return validateFile()" autocomplete="off"
+                                                enctype="multipart/form-data">
                                                 @csrf
 
                                                 <div class="modal-body">
-                                                  
+
                                                     <div class="mb-3">
                                                         <span style="color:red;">*</span>Photo
-                                                        <input type="file" class="form-control" name="strPhoto" id="strPhoto"
-                                                             autocomplete="off"
-                                                            required autofocus>
+                                                        <input type="file" class="form-control" name="strPhoto"
+                                                            id="strPhoto" autocomplete="off" required autofocus>
                                                         <div id="viewimg">
                                                             @error('photo')
                                                                 <span class="text-danger">{{ $message }}</span>
                                                             @enderror
-                                                        </div>    
+                                                        </div>
                                                     </div>
 
                                                 </div>
@@ -60,14 +60,14 @@
                                         <div class="d-flex justify-content-between card-header">
                                             <h5 class="card-title mb-0">Banner List</h5>
                                         </div>
-                                        
+
                                         <table id="scroll-horizontal" class="table nowrap align-middle mt-3"
                                             style="width:100%">
                                             <thead>
                                                 <tr class="text-center">
-                                                    <th >No</th>
-                                                    <th >Photo</th>
-                                                    <th >Action</th>
+                                                    <th>No</th>
+                                                    <th>Photo</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -77,9 +77,10 @@
                                                         <td>{{ $i + $datas->perPage() * ($datas->currentPage() - 1) }}
                                                         </td>
                                                         <td>
-                                                            <a href="https://www.thewardrobefashion.in/Banner/<?php echo $data->strPhoto; ?>"
+                                                            <a href="http://127.0.0.1:8000/Banner/<?php echo $data->strPhoto; ?>"
                                                                 target="_blank" class="mx-1">
-                                                                <img src="{{ asset('Banner/').'/'.$data->strPhoto }}" alt="" width="50px" height="50px">
+                                                                <img src="{{ asset('Banner/') . '/' . $data->strPhoto }}"
+                                                                    alt="" width="50px" height="50px">
                                                             </a>
                                                         </td>
                                                         <td>
@@ -111,7 +112,7 @@
                     </div>
                 </div>
 
-                
+
 
                 <!--Delete Modal Start -->
                 <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
@@ -140,8 +141,7 @@
                                     </a>
                                     <button type="button" class="btn w-sm btn-primary mx-2"
                                         data-bs-dismiss="modal">Close</button>
-                                    <form id="user-delete-form" method="POST"
-                                        action="{{ route('banner.delete') }}">
+                                    <form id="user-delete-form" method="POST" action="{{ route('banner.delete') }}">
                                         @csrf
                                         @method('DELETE')
                                         <input type="hidden" name="bannerId" id="deleteid" value="">
@@ -180,8 +180,8 @@
             return isValidFile;
         }
     </script>
-    
-       {{-- Add photo --}}
+
+    {{-- Add photo --}}
     <script>
         function readURL(input) {
             if (input.files && input.files[0]) {

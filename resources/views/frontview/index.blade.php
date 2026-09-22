@@ -205,8 +205,8 @@
 
             </div>
             <!-- =====================================================
-                                                                                      subcategory show
-                                                                                 ====================================================== -->
+                                                                                                                                                              subcategory show
+                                                                                                                                                         ====================================================== -->
 
             <div class="category-panel active" id="dynamic-category-panel">
 
@@ -417,68 +417,84 @@
         <span class="sale-bg-shape sale-bg-shape-one"></span>
         <span class="sale-bg-shape sale-bg-shape-two"></span>
         <div class="container season-sale-inner">
-            <!-- LEFT CONTENT -->
-            <div class="season-sale-content">
-                <span class="season-script">
-                    End of the
+            <!-- =====================================================
+                                 LEFT CONTENT
+                            ====================================================== -->
+            <div class="season-sale-content simple-brand-content">
+
+                <!-- SMALL LABEL -->
+                <span class="simple-brand-label">
+                    ABOUT LOLIPOP
                 </span>
-                <h2>
-                    <span>SEASON</span>
-                    <strong>SALE</strong>
+
+
+                <!-- MAIN WELCOME -->
+                <h2 class="simple-brand-heading">
+                    Welcome to
+                    <span>lollipop children wear.</span>
                 </h2>
-                <h3>
-                    Big styles. Bigger savings.
-                </h3>
-                <p>
-                    Refresh their wardrobe with playful styles,
-                    everyday essentials and comfy footwear —
-                    all at special prices.
+
+
+                <!-- CONTENT -->
+                <p class="simple-brand-description">
+                    A modern clothing brand dedicated to designing stylish,
+                    comfortable and high quality apparel for boys and girls.
+                    We serve age group between <strong>6 months to 15 years.</strong>
+                    Our collection are inspired by today's fashion trends while
+                    keeping comfort, durability and practicality at the core.
                 </p>
-                <!-- CATEGORY LINKS -->
-                {{--  <div class="season-sale-categories">
-                    <a href="#">
-                        <span class="season-cat-icon girls-cat">
-                            <i class="fa fa-female"></i>
+
+
+                <p class="simple-brand-description simple-brand-description-last">
+                    From everyday casual wear to special occasion outfits,
+                    we create clothing that allows children to move freely,
+                    feel confident and express their personality.
+                </p>
+
+
+                <!-- BOTTOM -->
+                <div class="simple-brand-bottom">
+
+                    <a href="#" class="simple-brand-btn">
+
+                        <span>
+                            Explore Collection
                         </span>
-                        <small>Girls</small>
-                    </a>
-                    <a href="#">
-                        <span class="season-cat-icon boys-cat">
-                            <i class="fa fa-male"></i>
-                        </span>
-                        <small>Boys</small>
+
+                        <i class="fa fa-long-arrow-right"></i>
+
                     </a>
 
-                </div>  --}}
-                <!-- BOTTOM ACTION -->
-                <div class="season-sale-action">
-                    <a href="#" class="season-sale-btn">
-                        <i class="fa fa-shopping-bag"></i>
-                        <span>Shop The Sale</span>
-                        <span class="sale-btn-arrow">
-                            <i class="fa fa-long-arrow-right"></i>
-                        </span>
-                    </a>
-                    <span class="season-limited">
-                        <i class="fa fa-clock-o"></i>
-                        Limited Time Only
-                    </span>
+
+                    <div class="simple-brand-age">
+
+                        <i class="fa fa-child"></i>
+
+                        <div>
+                            <small>
+                                AGE GROUP
+                            </small>
+
+                            <strong>
+                                6 Months – 15 Years
+                            </strong>
+                        </div>
+
+                    </div>
+
                 </div>
+
             </div>
             <!-- RIGHT VISUAL -->
             <div class="season-sale-art">
-                <img src="{{ '/Front/assets/images/end-sale-right-art.jpg' }}" alt="End of Season Sale Kidswear">
+                <img src="{{ asset('Front/assets/images/sale-offer.webp') }}" alt="End of Season Sale Kidswear">
             </div>
         </div>
     </section>
-    <!-- =========================================================
-                                                                                                                                                                                                                         LOLIPOP - FEATURED PRODUCT GRID
-                                                                                                                                                                                                                    ========================================================== -->
+
     <section class="lpx-products-section">
         <div class="container">
-            <!-- =================================================
-                                                                                                                                                                                                                                 SECTION HEADER
-                                                                                                                                                                                                                            ================================================== -->
+
             <div class="lpx-section-header">
                 <div class="lpx-heading">
                     <span class="lpx-kicker">
@@ -494,437 +510,91 @@
                     </p>
                 </div>
             </div>
-            <!-- =================================================
-                                                                                                                                                                                                                                 PRODUCT GRID
-                                                                                                                                                                                                                            ================================================== -->
+
             <div class="lpx-products-grid">
-                <!-- =================================================
-                                                                                                                                                                                                                                     PRODUCT 01
-                                                                                                                                                                                                                                ================================================== -->
-                <article class="lpx-card lpx-girls" data-category="girls">
-                    <div class="lpx-image-box">
-                        <a href="#" class="lpx-image-link">
-                            <img src="{{ asset('Front/assets/images/girls-party.jpg') }}" alt="Shimmer Party Dress"
-                                class="lpx-img lpx-img-main">
-                            <img src="{{ asset('Front/assets/images/girls-dresses.jpg') }}"
-                                alt="Shimmer Party Dress Alternate View" class="lpx-img lpx-img-hover">
-                        </a>
-                        <span class="lpx-badge">
-                            New
-                        </span>
-                        <!-- LOWER ACTIONS -->
-                        <div class="lpx-card-actions">
-                            <button class="lpx-wishlist" type="button" aria-label="Add to wishlist">
-                                <i class="fa fa-heart-o"></i>
-                            </button>
-                            <button class="lpx-cart" type="button" aria-label="Add to cart">
-                                <span class="lpx-cart-icon">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </span>
-                                <span class="lpx-cart-text">
-                                    Add to Cart
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                    {{--  <div class="lpx-card-content">
-                        <div class="lpx-card-small-info">
-                            <span class="lpx-category">
-                                Girls • Party Wear
-                            </span>
-                        </div>
-                        <a href="#" class="lpx-product-name">
-                            Shimmer Party Dress
-                        </a>
-                        <div class="lpx-price-row">
-                            <div class="lpx-price">
-                                <strong>
-                                    ₹1,799
-                                </strong>
-                                <del>
-                                    ₹2,299
-                                </del>
-                                <span class="lpx-discount">
-                                    22% OFF
-                                </span>
-                            </div>
-                            <div class="lpx-color-list">
-                                <span style="background:#eb87aa;"></span>
-                                <span style="background:#b791cf;"></span>
-                            </div>
-                        </div>
-                    </div>  --}}
-                </article>
-                <!-- =================================================
-                                                                                                                                                                                                                                     PRODUCT 02
-                                                                                                                                                                                                                                ================================================== -->
-                {{--  <article class="lpx-card lpx-boys" data-category="boys">
-                    <div class="lpx-image-box">
-                        <a href="#" class="lpx-image-link">
-                            <img src="{{ asset('Front/assets/images/boys-shirts.jpg') }}" alt="Cool Casual Shirt"
-                                class="lpx-img lpx-img-main">
-                            <img src="{{ asset('Front/assets/images/boys-tshirts.jpg') }}"
-                                alt="Cool Casual Shirt Alternate View" class="lpx-img lpx-img-hover">
-                        </a>
-                        <span class="lpx-badge">
-                            Best Seller
-                        </span>
-                        <div class="lpx-card-actions">
-                            <button class="lpx-wishlist" type="button" aria-label="Add to wishlist">
-                                <i class="fa fa-heart-o"></i>
-                            </button>
-                            <button class="lpx-cart" type="button" aria-label="Add to cart">
-                                <span class="lpx-cart-icon">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </span>
-                                <span class="lpx-cart-text">
-                                    Add to Cart
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="lpx-card-content">
-                        <div class="lpx-card-small-info">
-                            <span class="lpx-category">
-                                Boys • Shirts
-                            </span>
-                        </div>
-                        <a href="#" class="lpx-product-name">
-                            Cool Casual Shirt
-                        </a>
-                        <div class="lpx-price-row">
-                            <div class="lpx-price">
-                                <strong>
-                                    ₹999
-                                </strong>
-                                <del>
-                                    ₹1,299
-                                </del>
-                                <span class="lpx-discount">
-                                    23% OFF
-                                </span>
+                @foreach ($latestProducts as $product)
+                    @php
+                        $productPrice = $product->product_attribute_price ?? ($product->rate ?? 0);
+                        $discount =
+                            $product->rate > $productPrice && $product->rate > 0
+                                ? round((($product->rate - $productPrice) / $product->rate) * 100)
+                                : 0;
+                        $productUrl =
+                            $product->subcategoryslug && $product->slugname
+                                ? route('productdetail.slugs', [
+                                    'subcategory' => $product->subcategoryslug,
+                                    'product' => $product->slugname,
+                                ])
+                                : '#';
+                    @endphp
+                    <article class="lpx-card" data-category="{{ $product->categoryslug }}">
+                        <div class="lpx-image-box">
+                            <a href="{{ $productUrl }}" class="lpx-image-link">
+                                <img src="{{ $product->photo ? asset('/Product/Thumbnail/' . $product->photo) : asset('assets/images/no-image.jpg') }}"
+                                    alt="{{ $product->productname }}" class="lpx-img lpx-img-main">
+                                <img src="{{ $product->hoverphoto ? asset('/Product/Thumbnail/' . $product->hoverphoto) : ($product->photo ? asset('/Product/Thumbnail/' . $product->photo) : asset('assets/images/no-image.jpg')) }}"
+                                    alt="{{ $product->productname }}" class="lpx-img lpx-img-hover">
+                            </a>
+                            @if ($discount > 0)
+                                <span class="lpx-badge">{{ $discount }}% OFF</span>
+                            @endif
+                            <!-- LOWER ACTIONS -->
+                            <div class="lpx-card-actions">
+
+                                <form action="{{ route('cart.store') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="attributeid"
+                                        value="{{ $product->lowest_attribute_id }}">
+                                    <input type="hidden" name="product_attribute_size"
+                                        value="{{ $product->lowest_attribute_size }}">
+                                    <input type="hidden" name="productid" value="{{ $product->productId }}">
+                                    <input type="hidden" name="categoryId" value="{{ $product->categoryId }}">
+                                    <input type="hidden" name="subcategoryid" value="{{ $product->subcategoryid }}">
+                                    <input type="hidden" name="productslug" value="{{ $product->slugname }}">
+                                    <input type="hidden" name="categoryslug"
+                                        value="{{ $product->subcategoryslug ?? $product->categoryslug }}">
+                                    <input type="hidden" name="categoryname"
+                                        value="{{ $product->subcategoryname ?? $product->categoryname }}">
+                                    <input type="hidden" name="productname" value="{{ $product->productname }}">
+                                    <input type="hidden" name="price" value="{{ $productPrice }}">
+                                    <input type="hidden" name="image" value="{{ $product->photo }}">
+                                    <input type="hidden" name="buttonValue" value="addtocart">
+                                    <input type="hidden" name="quant[1]" value="1">
+
+
+                                    <button class="lpx-cart" type="submit" aria-label="Add to cart">
+                                        <span class="lpx-cart-icon">
+                                            <i class="fa fa-shopping-bag"></i>
+                                        </span>
+                                        <span class="lpx-cart-text">Add to Cart</span>
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                    </div>
-                </article>  --}}
-                <!-- =================================================
-                                                                                                                                                                                                                                     PRODUCT 03
-                                                                                                                                                                                                                                ================================================== -->
-                {{--  <article class="lpx-card lpx-baby" data-category="baby">
-                    <div class="lpx-image-box">
-                        <a href="#" class="lpx-image-link">
-                            <img src="{{ asset('Front/assets/images/baby-sleepsuits.jpg') }}" alt="Soft Cotton Sleepsuit"
-                                class="lpx-img lpx-img-main">
-                            <img src="{{ asset('Front/assets/images/baby-rompers.jpg') }}"
-                                alt="Soft Cotton Sleepsuit Alternate View" class="lpx-img lpx-img-hover">
-                        </a>
-                        <span class="lpx-badge">
-                            Soft Pick
-                        </span>
-                        <div class="lpx-card-actions">
-                            <button class="lpx-wishlist" type="button" aria-label="Add to wishlist">
-                                <i class="fa fa-heart-o"></i>
-                            </button>
-                            <button class="lpx-cart" type="button" aria-label="Add to cart">
-                                <span class="lpx-cart-icon">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </span>
-                                <span class="lpx-cart-text">
-                                    Add to Cart
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="lpx-card-content">
-                        <div class="lpx-card-small-info">
-                            <span class="lpx-category">
-                                Baby • Sleepsuits
-                            </span>
-                        </div>
-                        <a href="#" class="lpx-product-name">
-                            Soft Cotton Sleepsuit
-                        </a>
-                        <div class="lpx-price-row">
-                            <div class="lpx-price">
-                                <strong>
-                                    ₹849
-                                </strong>
-                                <del>
-                                    ₹1,099
-                                </del>
-                                <span class="lpx-discount">
-                                    23% OFF
-                                </span>
+                        <div class="lpx-card-content">
+                            <div class="lpx-card-small-info">
+                                <span
+                                    class="lpx-category">{{ $product->subcategoryname ?? $product->categoryname }}</span>
+                            </div>
+                            <a href="{{ $productUrl }}" class="lpx-product-name">
+                                {{ $product->productname }}
+                            </a>
+                            <div class="lpx-price-row">
+                                <div class="lpx-price">
+                                    <strong>₹{{ number_format($productPrice, 0) }}</strong>
+                                    @if ($discount > 0)
+                                        <del>₹{{ number_format($product->rate, 0) }}</del>
+                                        <span class="lpx-discount">{{ $discount }}% OFF</span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </article>  --}}
-                <!-- =================================================
-                                                                                                                                                                                                                         PRODUCT 04 - BOYS CO-ORD SET
-                                                                                                                                                                                                                    ================================================== -->
-                {{--  <article class="lpx-card lpx-boys" data-category="boys">
-                    <div class="lpx-image-box">
-                        <a href="#" class="lpx-image-link">
-                            <img src="{{ asset('Front/assets/images/boys-coord-sets.jpg') }}"
-                                alt="Boys Casual Co-ord Set" class="lpx-img lpx-img-main">
-                            <img src="{{ asset('Front/assets/images/boys-tshirts.jpg') }}"
-                                alt="Boys Casual Co-ord Set Alternate View" class="lpx-img lpx-img-hover">
-                        </a>
-                        <span class="lpx-badge">
-                            Trending
-                        </span>
-                        <div class="lpx-card-actions">
-                            <button class="lpx-wishlist" type="button" aria-label="Add to wishlist">
-                                <i class="fa fa-heart-o"></i>
-                            </button>
-                            <button class="lpx-cart" type="button" aria-label="Add to cart">
-                                <span class="lpx-cart-icon">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </span>
-                                <span class="lpx-cart-text">
-                                    Add to Cart
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="lpx-card-content">
-                        <div class="lpx-card-small-info">
-                            <span class="lpx-category">
-                                Boys • Co-ord Sets
-                            </span>
-                        </div>
-                        <a href="#" class="lpx-product-name">
-                            Cool Everyday Co-ord Set
-                        </a>
-                        <div class="lpx-price-row">
-                            <div class="lpx-price">
-                                <strong>
-                                    ₹1,399
-                                </strong>
-                                <del>
-                                    ₹1,799
-                                </del>
-                                <span class="lpx-discount">
-                                    22% OFF
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </article>  --}}
-                <!-- =================================================
-                                                                                                                                                                                                                                     PRODUCT 05
-                                                                                                                                                                                                                                ================================================== -->
-                {{--  <article class="lpx-card lpx-girls" data-category="girls">
-                    <div class="lpx-image-box">
-                        <a href="#" class="lpx-image-link">
-                            <img src="assets/images/girls-skirts.jpg" alt="Pretty Everyday Skirt"
-                                class="lpx-img lpx-img-main">
-                            <img src="assets/images/girls-dresses.jpg" alt="Pretty Everyday Skirt Alternate View"
-                                class="lpx-img lpx-img-hover">
-                        </a>
-                        <span class="lpx-badge">
-                            Trending
-                        </span>
-                        <div class="lpx-card-actions">
-                            <button class="lpx-wishlist" type="button" aria-label="Add to wishlist">
-                                <i class="fa fa-heart-o"></i>
-                            </button>
-                            <button class="lpx-cart" type="button" aria-label="Add to cart">
-                                <span class="lpx-cart-icon">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </span>
-                                <span class="lpx-cart-text">
-                                    Add to Cart
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="lpx-card-content">
-                        <div class="lpx-card-small-info">
-                            <span class="lpx-category">
-                                Girls • Skirts
-                            </span>
-                        </div>
-                        <a href="#" class="lpx-product-name">
-                            Pretty Everyday Skirt
-                        </a>
-                        <div class="lpx-price-row">
-                            <div class="lpx-price">
-                                <strong>
-                                    ₹899
-                                </strong>
-                                <del>
-                                    ₹1,199
-                                </del>
-                                <span class="lpx-discount">
-                                    25% OFF
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </article>  --}}
-                <!-- =================================================
-                                                                                                                                                                                                                                     PRODUCT 06
-                                                                                                                                                                                                                                ================================================== -->
-                {{--  <article class="lpx-card lpx-baby" data-category="baby">
-                    <div class="lpx-image-box">
-                        <a href="#" class="lpx-image-link">
-                            <img src="assets/images/baby-rompers.jpg" alt="Everyday Baby Romper"
-                                class="lpx-img lpx-img-main">
-                            <img src="assets/images/baby-gift-sets.jpg" alt="Everyday Baby Romper Alternate View"
-                                class="lpx-img lpx-img-hover">
-                        </a>
-                        <span class="lpx-badge">
-                            New
-                        </span>
-                        <div class="lpx-card-actions">
-                            <button class="lpx-wishlist" type="button" aria-label="Add to wishlist">
-                                <i class="fa fa-heart-o"></i>
-                            </button>
-                            <button class="lpx-cart" type="button" aria-label="Add to cart">
-                                <span class="lpx-cart-icon">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </span>
-                                <span class="lpx-cart-text">
-                                    Add to Cart
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="lpx-card-content">
-                        <div class="lpx-card-small-info">
-                            <span class="lpx-category">
-                                Baby • Rompers
-                            </span>
-                        </div>
-                        <a href="#" class="lpx-product-name">
-                            Everyday Baby Romper
-                        </a>
-                        <div class="lpx-price-row">
-                            <div class="lpx-price">
-                                <strong>
-                                    ₹749
-                                </strong>
-                                <del>
-                                    ₹999
-                                </del>
-                                <span class="lpx-discount">
-                                    25% OFF
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </article>  --}}
-                <!-- =================================================
-                                                                                                                                                                                                                                     PRODUCT 07
-                                                                                                                                                                                                                                ================================================== -->
-                {{--  <article class="lpx-card lpx-boys" data-category="boys">
-                    <div class="lpx-image-box">
-                        <a href="#" class="lpx-image-link">
-                            <img src="assets/images/boys-jeans.jpg" alt="Classic Denim Jeans"
-                                class="lpx-img lpx-img-main">
-                            <img src="assets/images/boys-coord-sets.jpg" alt="Classic Denim Jeans Alternate View"
-                                class="lpx-img lpx-img-hover">
-                        </a>
-                        <span class="lpx-badge">
-                            Popular
-                        </span>
-                        <div class="lpx-card-actions">
-                            <button class="lpx-wishlist" type="button" aria-label="Add to wishlist">
-                                <i class="fa fa-heart-o"></i>
-                            </button>
-                            <button class="lpx-cart" type="button" aria-label="Add to cart">
-                                <span class="lpx-cart-icon">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </span>
-                                <span class="lpx-cart-text">
-                                    Add to Cart
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="lpx-card-content">
-                        <div class="lpx-card-small-info">
-                            <span class="lpx-category">
-                                Boys • Jeans
-                            </span>
-                        </div>
-                        <a href="#" class="lpx-product-name">
-                            Classic Denim Jeans
-                        </a>
-                        <div class="lpx-price-row">
-                            <div class="lpx-price">
-                                <strong>
-                                    ₹1,249
-                                </strong>
-                                <del>
-                                    ₹1,599
-                                </del>
-                                <span class="lpx-discount">
-                                    22% OFF
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </article>  --}}
-                <!-- =================================================
-                                                                                                                                                                                                                         PRODUCT 08 - GIRLS CASUAL DRESS
-                                                                                                                                                                                                                    ================================================== -->
-                {{--  <article class="lpx-card lpx-girls" data-category="girls">
-                    <div class="lpx-image-box">
-                        <a href="#" class="lpx-image-link">
-                            <img src="assets/images/girls-dresses.jpg" alt="Girls Everyday Casual Dress"
-                                class="lpx-img lpx-img-main">
-                            <img src="assets/images/girls-party.jpg" alt="Girls Everyday Casual Dress Alternate View"
-                                class="lpx-img lpx-img-hover">
-                        </a>
-                        <span class="lpx-badge">
-                            New Style
-                        </span>
-                        <div class="lpx-card-actions">
-                            <button class="lpx-wishlist" type="button" aria-label="Add to wishlist">
-                                <i class="fa fa-heart-o"></i>
-                            </button>
-                            <button class="lpx-cart" type="button" aria-label="Add to cart">
-                                <span class="lpx-cart-icon">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </span>
-                                <span class="lpx-cart-text">
-                                    Add to Cart
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="lpx-card-content">
-                        <div class="lpx-card-small-info">
-                            <span class="lpx-category">
-                                Girls • Casual Dresses
-                            </span>
-                        </div>
-                        <a href="#" class="lpx-product-name">
-                            Pretty Everyday Dress
-                        </a>
-                        <div class="lpx-price-row">
-                            <div class="lpx-price">
-                                <strong>
-                                    ₹1,099
-                                </strong>
-                                <del>
-                                    ₹1,499
-                                </del>
-                                <span class="lpx-discount">
-                                    27% OFF
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </article>  --}}
+                    </article>
+                @endforeach
             </div>
-            <!-- =================================================
-                                                                                                                                                                                                                                 BOTTOM BUTTON
-                                                                                                                                                                                                                            ================================================== -->
+
             <div class="lpx-bottom-cta">
-                <a href="#">
+                <a href="{{ route('FrontProduct') }}">
                     <span>
                         Explore All Products
                     </span>
@@ -936,16 +606,16 @@
         </div>
     </section>
     <!-- ================================
-                                                                                                                                                                                                                         CLIENTS + TESTIMONIAL SECTION
-                                                                                                                                                                                                                    ================================= -->
+                                                                                                                                                                                                                                                                                                 CLIENTS + TESTIMONIAL SECTION
+                                                                                                                                                                                                                                                                                            ================================= -->
     <section class="lc-social-proof">
         <!-- Decorative Background -->
         <div class="lc-proof-grid"></div>
         <span class="lc-proof-orb lc-orb-one"></span>
         <span class="lc-proof-orb lc-orb-two"></span>
         <!-- ===========================
-                                                                                                                                                                                                                             CLIENT LOGO SLIDER
-                                                                                                                                                                                                                        ============================ -->
+                                                                                                                                                                                                                                                                                                     CLIENT LOGO SLIDER
+                                                                                                                                                                                                                                                                                                ============================ -->
         <div class="lc-client-area">
             <div class="container">
                 <div class="lc-client-heading">
@@ -957,61 +627,27 @@
             <div class="lc-logo-slider">
                 <div class="lc-logo-track">
                     <!-- First Set -->
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-1.png" alt="Client">
-                    </div>
-                    {{--  <div class="lc-logo-item">
-                        <img src="assets/images/logo-2.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-3.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-4.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-5.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-6.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-1.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-2.png" alt="Client">
-                    </div>
+                    @foreach ($ourClients as $client)
+                        <div class="lc-logo-item">
+                            <img src="{{ asset('uploads/clients/' . $client->image) }}"
+                                alt="{{ $client->name ?? 'Client' }}">
+                        </div>
+                    @endforeach
+
                     <!-- Duplicate Set for Infinite Slider -->
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-1.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-2.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-3.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-4.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-5.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-6.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-1.png" alt="Client">
-                    </div>
-                    <div class="lc-logo-item">
-                        <img src="assets/images/logo-2.png" alt="Client">
-                    </div>  --}}
+                    @foreach ($ourClients as $client)
+                        <div class="lc-logo-item">
+                            <img src="{{ asset('uploads/clients/' . $client->image) }}"
+                                alt="{{ $client->name ?? 'Client' }}">
+                        </div>
+                    @endforeach
+
                 </div>
             </div>
         </div>
         <!-- ===========================
-                                                                                                                                                                                                                             TESTIMONIAL SECTION
-                                                                                                                                                                                                                        ============================ -->
+                                                                                                                                                                                                                                                                                                     TESTIMONIAL SECTION
+                                                                                                                                                                                                                                                                                                ============================ -->
         <div class="container">
             <div class="lc-testimonial-wrap">
                 <!-- Left Content -->
@@ -1063,119 +699,36 @@
                     </div>
                     <div class="lc-testimonial-slider">
                         <div class="lc-testimonial-track">
-                            <!-- Slide 1 -->
-                            <article class="lc-testimonial-card">
-                                <div class="lc-card-top">
-                                    <span class="lc-verified">
-                                        <i>✓</i>
-                                        Verified Buyer
-                                    </span>
-                                    <span class="lc-card-stars">
-                                        ★★★★★
-                                    </span>
-                                </div>
-                                <p class="lc-review-text">
-                                    I loved how simple it was to explore everything.
-                                    The products arrived exactly as expected and
-                                    everything from browsing to checkout felt smooth
-                                    and thoughtfully designed.
-                                </p>
-                                <div class="lc-review-footer">
-                                    <div class="lc-review-user">
-                                        <div class="lc-user-avatar">
-                                            <img src="images/user-1.jpg" alt="Customer">
-                                        </div>
-                                        <div>
-                                            <strong>Olivia Martin</strong>
-                                            <span>Happy Customer</span>
+                            @foreach ($testimonials as $testimonial)
+                                <article class="lc-testimonial-card">
+                                    <div class="lc-card-top">
+                                        <span class="lc-verified">
+                                            <i>✓</i>
+                                            Verified Buyer
+                                        </span>
+                                        <span class="lc-card-stars">
+                                            ★★★★★
+                                        </span>
+                                    </div>
+                                    <div class="lc-card-top">
+
+                                    </div>
+
+                                    <p class="lc-review-text">
+                                        {{ $testimonial->description }}
+                                    </p>
+
+                                    <div class="lc-review-footer">
+                                        <div class="lc-review-user">
+                                            <div>
+                                                <strong>{{ $testimonial->name }}</strong>
+                                                <span>{{ $testimonial->tag }}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </article>
-                            <!-- Slide 2 -->
-                            <article class="lc-testimonial-card">
-                                <div class="lc-card-top">
-                                    <span class="lc-verified">
-                                        <i>✓</i>
-                                        Verified Buyer
-                                    </span>
-                                    <span class="lc-card-stars">
-                                        ★★★★★
-                                    </span>
-                                </div>
-                                <p class="lc-review-text">
-                                    The quality is fantastic and the little details
-                                    make a huge difference. My order was packed
-                                    beautifully and I will definitely shop here again.
-                                </p>
-                                <div class="lc-review-footer">
-                                    <div class="lc-review-user">
-                                        <div class="lc-user-avatar">
-                                            <img src="images/user-2.jpg" alt="Customer">
-                                        </div>
-                                        <div>
-                                            <strong>Sophia Brown</strong>
-                                            <span>Regular Customer</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- Slide 3 -->
-                            <article class="lc-testimonial-card">
-                                <div class="lc-card-top">
-                                    <span class="lc-verified">
-                                        <i>✓</i>
-                                        Verified Buyer
-                                    </span>
-                                    <span class="lc-card-stars">
-                                        ★★★★★
-                                    </span>
-                                </div>
-                                <p class="lc-review-text">
-                                    Everything feels carefully selected instead of
-                                    overwhelming. I found exactly what I wanted and
-                                    the delivery experience was excellent too.
-                                </p>
-                                <div class="lc-review-footer">
-                                    <div class="lc-review-user">
-                                        <div class="lc-user-avatar">
-                                            <img src="images/user-3.jpg" alt="Customer">
-                                        </div>
-                                        <div>
-                                            <strong>Emma Wilson</strong>
-                                            <span>Verified Customer</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <!-- Slide 4 -->
-                            <article class="lc-testimonial-card">
-                                <div class="lc-card-top">
-                                    <span class="lc-verified">
-                                        <i>✓</i>
-                                        Verified Buyer
-                                    </span>
-                                    <span class="lc-card-stars">
-                                        ★★★★★
-                                    </span>
-                                </div>
-                                <p class="lc-review-text">
-                                    From discovering the collection to receiving the
-                                    package, the whole journey felt premium. I have
-                                    already recommended it to friends.
-                                </p>
-                                <div class="lc-review-footer">
-                                    <div class="lc-review-user">
-                                        <div class="lc-user-avatar">
-                                            <img src="images/user-4.jpg" alt="Customer">
-                                        </div>
-                                        <div>
-                                            <strong>Mia Davis</strong>
-                                            <span>Happy Customer</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
+                                </article>
+                            @endforeach
+
                         </div>
                     </div>
                 </div>

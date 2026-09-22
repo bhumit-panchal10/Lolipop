@@ -10,7 +10,7 @@
              </div>
              <div class="topbar-right">
                  <a href="{{ route('Fronttrackorder') }}">Track Order</a>
-                 <a href="#">Help</a>
+                 {{--  <a href="#">Help</a>  --}}
              </div>
          </div>
      </div>
@@ -19,7 +19,7 @@
          <div class="container header-inner">
              <!-- LOGO -->
              <a href="{{ route('FrontIndex') }}" class="logo">
-                 <img src="{{ asset('Front/assets/images/lolipop-logo.png') }}" alt="Lolipop Kidswear">
+                 <img src="{{ asset('Front/assets/images/lolipop-logo-new.png') }}" alt="Lolipop Kidswear">
              </a>
              <!-- DESKTOP NAVIGATION -->
              <nav class="desktop-nav">
@@ -84,7 +84,7 @@
                                              {{ $category->meta_description }}
                                          </p>
 
-                                         <a href="{{ url('product') }}" class="feature-link">
+                                         <a href="{{ url('products') }}" class="feature-link">
                                              Shop all {{ $category->categoryname }}
                                              <b>→</b>
                                          </a>
@@ -109,7 +109,7 @@
                                                  </h4>
                                              </div>
 
-                                             <a href="{{ url('product') }}">
+                                             <a href="{{ url('products') }}">
                                                  View all {{ $category->categoryname }} →
                                              </a>
 
@@ -165,17 +165,17 @@
 
 
                  <!-- <a href="#" class="nav-link simple-page-link">About Us</a>
-          <a href="#" class="nav-link simple-page-link">Blog</a>
-          <a href="#" class="nav-link simple-page-link">Contact Us</a> -->
+                    <a href="#" class="nav-link simple-page-link">Blog</a>
+                    <a href="#" class="nav-link simple-page-link">Contact Us</a> -->
              </nav>
              <!-- ACTIONS -->
              <div class="header-actions">
-                 <button class="icon-btn search-trigger" type="button" aria-label="Search">
+                 {{--  <button class="icon-btn search-trigger" type="button" aria-label="Search">
                      <svg viewBox="0 0 24 24">
                          <circle cx="11" cy="11" r="6" />
                          <path d="m16 16 4 4" />
                      </svg>
-                 </button>
+                 </button>  --}}
 
                  {{--  <a href="#" class="account-btn">
                      <span class="account-icon">
@@ -211,7 +211,7 @@
          <span></span><span></span><span></span><span></span><span></span>
      </div>
      <!-- SEARCH PANEL -->
-     <div class="search-panel" id="searchPanel">
+     {{--  <div class="search-panel" id="searchPanel">
          <div class="container search-inner">
              <form>
                  <svg viewBox="0 0 24 24">
@@ -222,69 +222,50 @@
                  <button type="button" id="searchClose">Close</button>
              </form>
          </div>
-     </div>
+     </div>  --}}
      <!-- MOBILE MENU -->
      <div class="mobile-menu" id="mobileMenu">
          <div class="container mobile-inner">
-             <a href="#" class="mobile-link active">Home</a>
-             <div class="mobile-group">
-                 <button class="mobile-parent" type="button">Girls
-                     <span>+</span></button>
-                 <div class="mobile-sub">
-                     <a href="#">Dresses</a>
-                     <a href="#">Tops & T-Shirts</a>
-                     <a href="#">Jeans & Trousers</a>
-                     <a href="#">Shorts & Skirts</a>
-                     <a href="#">Co-ord Sets</a>
-                     <a href="#">Nightwear</a>
-                     <a href="#">Ethnic Wear</a>
-                     <a href="#">Party Wear</a>
+             <a href="{{ route('FrontIndex') }}" class="mobile-link active">Home</a>
+             @foreach ($categories as $category)
+                 @php
+                     $children = $subCategories[$category->categoryId] ?? collect();
+                 @endphp
+
+                 <div class="mobile-group">
+
+                     {{-- MAIN CATEGORY --}}
+                     @if ($children->count() > 0)
+                         <button class="mobile-parent" type="button">
+                             {{ $category->categoryname }}
+                             <span>+</span>
+                         </button>
+
+                         <div class="mobile-sub">
+
+                             @foreach ($children as $subcategory)
+                                 <a href="{{ route('FrontProduct', ['slug' => $subcategory->slugname]) }}">
+                                     {{ $subcategory->categoryname }}
+                                 </a>
+                             @endforeach
+
+                         </div>
+                     @else
+                         {{-- CATEGORY WITHOUT SUBCATEGORY --}}
+                         <a href="{{ route('FrontProduct', ['slug' => $category->slugname]) }}" class="mobile-link">
+                             {{ $category->categoryname }}
+                         </a>
+                     @endif
+
                  </div>
-             </div>
-             <div class="mobile-group">
-                 <button class="mobile-parent" type="button">Boys
-                     <span>+</span></button>
-                 <div class="mobile-sub">
-                     <a href="#">T-Shirts</a>
-                     <a href="#">Shirts</a>
-                     <a href="#">Jeans & Trousers</a>
-                     <a href="#">Shorts</a>
-                     <a href="#">Co-ord Sets</a>
-                     <a href="#">Nightwear</a>
-                     <a href="#">Ethnic Wear</a>
-                     <a href="#">Party Wear</a>
-                 </div>
-             </div>
-             <div class="mobile-group">
-                 <button class="mobile-parent" type="button">Baby
-                     <span>+</span></button>
-                 <div class="mobile-sub">
-                     <a href="#">Baby Boy</a>
-                     <a href="#">Baby Girl</a>
-                     <a href="#">Rompers</a>
-                     <a href="#">Baby Sets</a>
-                     <a href="#">Sleepsuits</a>
-                     <a href="#">Gift Sets</a>
-                 </div>
-             </div>
-             <div class="mobile-group">
-                 <button class="mobile-parent" type="button">Collections
-                     <span>+</span></button>
-                 <div class="mobile-sub">
-                     <a href="#">Best Sellers</a>
-                     <a href="#">Summer Collection</a>
-                     <a href="#">Winter Collection</a>
-                     <a href="#">Festive Collection</a>
-                     <a href="#">Party Collection</a>
-                 </div>
-             </div>
+             @endforeach
              <!-- <a href="about-us.html" class="mobile-link">About Us</a>
-        <a href="blog.html" class="mobile-link">Blog</a>
-        <a href="contact-us.html" class="mobile-link">Contact Us</a>
-        <a href="#" class="sale-link">
-          Sale
-          <span>40%</span>
-        </a> -->
+                <a href="blog.html" class="mobile-link">Blog</a>
+                <a href="contact-us.html" class="mobile-link">Contact Us</a>
+                <a href="#" class="sale-link">
+                Sale
+                <span>40%</span>
+                </a> -->
          </div>
      </div>
  </header>

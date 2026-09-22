@@ -31,8 +31,7 @@
                                                     <div class="col-md-3  mb-2">
                                                         <div class="d-flex align-items-center">
                                                             <input placeholder="Enter Order No" type="text"
-                                                                class="form-control" name="order_no"
-                                                                autocomplete="off"
+                                                                class="form-control" name="order_no" autocomplete="off"
                                                                 value="<?= isset($OrderNo) ? $OrderNo : '' ?>">
                                                         </div>
                                                     </div>
@@ -107,26 +106,27 @@
                                                                             <td>{{ date('d-m-Y', strtotime($dispatched->created_at)) }}
                                                                             </td>
                                                                             <td>{{ $dispatched->shipping_cutomerName }}</td>
-                                                                            
+
                                                                             <td>{{ $dispatched->shipping_email }}</td>
                                                                             <td>{{ $dispatched->shipping_mobile }}</td>
-                                                                            <td>{{ $dispatched->shipping_city	 }}</td>
+                                                                            <td>{{ $dispatched->shipping_city }}</td>
                                                                             <td>{{ $dispatched->stateName }}</td>
                                                                             <td>{{ $dispatched->shipping_pincode }}</td>
-                                                                            <td>{{ $dispatched->netAmount }}</td>   
+                                                                            <td>{{ $dispatched->netAmount }}</td>
                                                                             <td>
                                                                                 @if ($dispatched->isPayment == 0)
                                                                                     Pending
-                                                                                @elseif($dispatched->isPayment == 1)    
+                                                                                @elseif($dispatched->isPayment == 1)
                                                                                     Success
                                                                                 @else
                                                                                     Failed
-                                                                                @endif  
-                                                                            </td>   
+                                                                                @endif
+                                                                            </td>
                                                                             <td>
-                                                                                <a target="_blank" href="{{ $dispatched->url . $dispatched->docketNo }}">
+                                                                                <a target="_blank"
+                                                                                    href="{{ $dispatched->url . $dispatched->docketNo }}">
                                                                                     {{ $dispatched->name }}
-                                                                                </a> 
+                                                                                </a>
                                                                                 <!--{{ $dispatched->name }}-->
                                                                             </td>
                                                                             <td>{{ $dispatched->docketNo }}</td>
@@ -137,7 +137,7 @@
                                                                                     <i class="fa-solid fa-xmark fa-xl"></i>
                                                                                 </a>
                                                                                 <a href="{{ route('order.statustopending', $dispatched->order_id) }}"
-                                                                                    onclick="return confirm('Are you Sure You wanted to Pending?');"
+                                                                                    onclick="return confirm('Are you Sure You wanted Move to Pending?');"
                                                                                     class="mx-2" title="Pending">
                                                                                     <i class="fa-solid fa-clock fa-lg"></i>
                                                                                 </a>
@@ -154,23 +154,13 @@
                                                                                     <i
                                                                                         class="fa-solid fa-file-pdf fa-lg"></i>
                                                                                 </a>
-                                                                                
+
                                                                                 <!--<a class="mx-2"-->
                                                                                 <!--    href="{{ route('order.linkSendToCustomer', $dispatched->order_id) }}"-->
                                                                                 <!--    title="Pdf Details">-->
                                                                                 <!--    <i class="fa-brands fa-square-whatsapp fa-lg"></i>-->
                                                                                 <!--</a>-->
-        
-                                                                                 @if ($dispatched->quikshipx_res_flag == 0)
-                                                                                    <a class="mx-2"
-                                                                                        href="{{ route('order.generatedelivery', $dispatched->order_id) }}"
-                                                                                        title="Delhivery">
-                                                                                        <i
-                                                                                            class="fa-solid fa-box-open"></i>
-                                                                                    </a>
-                                                                                @else
-                                                                                    <span>{{ $dispatched->quikshipx_order_id }}</span>
-                                                                                @endif
+
                                                                             </td>
                                                                         </tr>
                                                                         <?php $i++; ?>

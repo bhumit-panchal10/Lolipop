@@ -15,7 +15,7 @@
                          Soft fabrics, playful colours and easy everyday styles designed
                          for busy little people with big personalities.
                      </p>
-                     <a href="#" class="wonder-shop-btn">
+                     <a href="{{ url('products') }}" class="wonder-shop-btn">
                          Shop New Arrivals
                          <span>
                              <i class="fa fa-long-arrow-right"></i>
@@ -23,7 +23,50 @@
                      </a>
                  </div>
                  <!-- 3 CATEGORY VISUALS -->
+                 @php
+                     $categories = DB::table('category')
+                         ->where('subcategoryid', 0)
+                         ->where('iStatus', 1)
+                         ->where('isDelete', 0)
+                         ->orderByRaw("FIELD(slugname, 'girls-wear', 'boys-wear', 'discounted-outfit')")
+                         ->get();
+                 @endphp
+
                  <div class="wonder-categories">
+
+                     @foreach ($categories as $category)
+                         @php
+                             $cardClass = match ($category->slugname) {
+                                 'girls-wear' => 'wonder-girls',
+                                 'boys-wear' => 'wonder-boys',
+                                 'discounted-outfit' => 'wonder-baby',
+                                 default => 'wonder-baby',
+                             };
+                         @endphp
+
+                         <a href="{{ url('products') }}" class="wonder-card {{ $cardClass }}">
+
+                             <img src="{{ asset('Category/' . $category->photo) }}"
+                                 alt="{{ $category->categoryname }} collection">
+
+                             <span class="wonder-card-overlay"></span>
+
+                             <div class="wonder-card-content">
+
+                                 <small>{{ $category->meta_title }}</small>
+
+                                 <strong>{{ $category->categoryname }}</strong>
+
+                                 <span>Explore →</span>
+
+                             </div>
+
+                         </a>
+                     @endforeach
+
+                 </div>
+
+                 {{--  <div class="wonder-categories">
                      <a href="#" class="wonder-card wonder-girls">
                          <img src="assets/images/menu-girls.png" alt="Girls collection">
                          <span class="wonder-card-overlay"></span>
@@ -51,14 +94,14 @@
                              <span>Explore →</span>
                          </div>
                      </a>
-                 </div>
+                 </div>  --}}
              </div>
              <!-- INFO AREA -->
              <div class="wonder-info">
                  <!-- BRAND -->
                  <div class="wonder-brand">
-                     <a href="#" class="wonder-logo">
-                         <img src="{{ asset('/Front/assets/images/lolipop-logo.png') }}" alt="Lolipop Kidswear">
+                     <a href="{{ route('FrontIndex') }}" class="wonder-logo">
+                         <img src="{{ asset('/Front/assets/images/lolipop-logo-new.png') }}" alt="Lolipop Kidswear">
                      </a>
                      <p>
                          Colourful kidswear for school days, party days, play days
@@ -89,26 +132,29 @@
                  <!-- LINKS -->
                  <div class="wonder-links">
                      <h3>Shop</h3>
-                     <a href="#">Girls</a>
+
+                     @foreach ($categories as $category)
+                         <a href="{{ url('products') }}">{{ $category->categoryname }}</a>
+                     @endforeach
+
+                     {{--  <a href="#">Girls</a>
                      <a href="#">Boys</a>
                      <a href="#">Baby</a>
-                     <a href="#">New Arrivals</a>
+                     <a href="#">New Arrivals</a>  --}}
                  </div>
                  <div class="wonder-links">
                      <h3>Explore</h3>
-                     <a href="#">Best Sellers</a>
-                     <a href="#">Collections</a>
                      <a href="{{ route('Frontaboutus') }}">About Us</a>
-                     <a href="#">Blog</a>
+                     {{--  <a href="#">Blog</a>  --}}
                      <a href="{{ route('FrontContactUs') }}">Contact Us</a>
                  </div>
                  <div class="wonder-links">
                      <h3>Help</h3>
                      <a href="{{ route('Fronttrackorder') }}">Track Order</a>
-                     <a href="#">Shipping</a>
+                     {{--  <a href="#">Shipping</a>
                      <a href="#">Returns & Exchange</a>
                      <a href="#">Size Guide</a>
-                     <a href="#">FAQs</a>
+                     <a href="#">FAQs</a>  --}}
                  </div>
                  <!-- CONTACT INFORMATION -->
                  <div class="wonder-contact-card">
@@ -137,7 +183,7 @@
                              </span>
                          </a>
                          <!-- EMAIL -->
-                         <a href="mailto:info.lolipopkalol@gmail.com" class="wonder-contact-item">
+                         <a href="mailto:firefashion313@gmail.com" class="wonder-contact-item">
                              <span class="wonder-contact-icon wonder-contact-email">
                                  <i class="fa fa-envelope-o"></i>
                              </span>
@@ -146,7 +192,7 @@
                                      Email Us
                                  </small>
                                  <strong>
-                                     info.lolipopkalol@gmail.com
+                                     firefashion313@gmail.com
                                  </strong>
                              </span>
                              <span class="wonder-contact-arrow">
@@ -163,8 +209,8 @@
                                      Visit Our Store
                                  </small>
                                  <strong>
-                                     Gold Plaza, F-1, Opp. HDFC Bank,
-                                     Navjivan Mill Compound, Memon Market,
+                                     F-1, Gold Plaza, Opp. HDFC Bank,
+                                     Navjivan Mill Compound,
                                      Kalol, Gujarat 382721.
                                  </strong>
                              </span>
@@ -176,13 +222,18 @@
              <div class="wonder-bottom">
                  <p>© 2026 Lolipop Kidswear. All rights reserved.</p>
                  <div class="wonder-policy">
-                     <a href="#">Privacy Policy</a>
+
+                     <li><a href="{{ route('privacypolicy') }}">Privacy Policy</a></li>
                      <span></span>
-                     <a href="terms&condition.html">Terms & Conditions</a>
+                     <li><a href="{{ route('CancellationandRefund') }}">Cancellation and Refund</a></li>
+                     <span></span>
+                     <li><a href="{{ route('termandcondition') }}">Terms & Conditions</a></li>
+                     <span></span>
+                     <li><a href="{{ route('ShippingandDelivery') }}">Shipping and Delivery</a></li>
+                     <span></span>
+                     <li><a href="{{ route('noReturnNoExchange') }}">No Return - No Exchange</a></li>
                  </div>
-                 <p class="wonder-made">
-                     Made with <b>♥</b> for little stars
-                 </p>
+
              </div>
          </div>
      </div>

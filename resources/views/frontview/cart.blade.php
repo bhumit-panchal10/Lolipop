@@ -34,15 +34,11 @@
 
         }
     </style>
-    <!-- =====================================================
-                                                                         CART PAGE
-                                                                    ====================================================== -->
+
     <main class="lcart-page">
         <section class="lcart-section">
             <div class="container">
-                <!-- =================================================
-                                                                                     PAGE TOP
-                                                                                ================================================== -->
+
                 <div class="lcart-page-head">
                     <div>
                         <span>
@@ -61,9 +57,7 @@
                         Continue Shopping
                     </a>
                 </div>
-                <!-- =================================================
-                                                                                     CART LAYOUT
-                                                                                ================================================== -->
+
                 <div class="lcart-layout">
 
                     <!-- LEFT -->
@@ -133,7 +127,7 @@
 
                                     <p>
                                         Size:
-                                        <strong>{{ $item->size }}</strong>
+                                        <strong>{{ $item->size_label ?? (optional(\App\Models\ProductAttributes::find($item->size))->product_attribute_size ?? $item->size) }}</strong>
                                     </p>
 
 
@@ -244,10 +238,6 @@
 
                     </div>
 
-
-                    <!-- =====================================================
-                                                     RIGHT ORDER SUMMARY
-                                ====================================================== -->
 
                     <aside class="lcart-summary">
 

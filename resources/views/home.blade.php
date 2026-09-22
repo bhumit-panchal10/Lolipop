@@ -146,17 +146,17 @@
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
                                         <a href="{{ route('product.index') }}" class="text-dark-50">
-                                            <div class="card card-animate" style="background: #9caf88;">
+                                            <div class="card card-animate" style="background: #AD5C71;">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-grow-1 overflow-hidden">
-                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                            <p class="text-uppercase fw-bold text-white text-truncate mb-0">
                                                                 Product</p>
                                                         </div>
                                                     </div>
                                                     <div class="d-flex align-items-end justify-content-between mt-4">
                                                         <div>
-                                                            <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                            <h4 class="fs-22 fw-bold ff-secondary text-white mb-4"><span
                                                                     class="">{{ $Product }}</span>
                                                             </h4>
                                                             <!--View-->
@@ -241,17 +241,17 @@
 
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                        <div class="card card-animate" style="background: #b6ae9f;height: 148px;">
+                                        <div class="card card-animate" style="background: #8B639B;height: 148px;">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                        <p class="text-uppercase fw-bold text-white text-truncate mb-0">
                                                             Today's Order</p>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex align-items-end justify-content-between mt-4">
                                                     <div>
-                                                        <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                        <h4 class="fs-22 fw-bold ff-secondary text-white mb-4"><span
                                                                 class="counter-value"
                                                                 data-target="{{ $TodaysOrder }}">0</span>
                                                         </h4>
@@ -272,17 +272,17 @@
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
                                         <a href="{{ route('order.pending') }}" class=" text-dark-50">
-                                            <div class="card card-animate" style="background: #9caf88;">
+                                            <div class="card card-animate" style="background: #AD5C71;">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-grow-1 overflow-hidden">
-                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                            <p class="text-uppercase fw-bold text-white text-truncate mb-0">
                                                                 Not Yet Dispatched</p>
                                                         </div>
                                                     </div>
                                                     <div class="d-flex align-items-end justify-content-between mt-4">
                                                         <div>
-                                                            <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                            <h4 class="fs-22 fw-bold ff-secondary text-white mb-4"><span
                                                                     class="counter-value"
                                                                     data-target="{{ $PendingOrder }}">0</span>
                                                             </h4>
@@ -364,17 +364,17 @@
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
                                         <a href="{{ route('order.dispatched') }}" class=" text-dark-50">
-                                            <div class="card card-animate" style="background: #b6ae9f;">
+                                            <div class="card card-animate" style="background: #8B639B;">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-grow-1 overflow-hidden">
-                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                            <p class="text-uppercase fw-bold text-white text-truncate mb-0">
                                                                 Dispatched Order</p>
                                                         </div>
                                                     </div>
                                                     <div class="d-flex align-items-end justify-content-between mt-4">
                                                         <div>
-                                                            <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                            <h4 class="fs-22 fw-bold ff-secondary text-white mb-4"><span
                                                                     class="counter-value"
                                                                     data-target="{{ $DispatchedOrder }}">0</span>
                                                             </h4>
@@ -394,17 +394,17 @@
 
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                        <div class="card card-animate" style="background: #9caf88;height: 148px;">
+                                        <div class="card card-animate" style="background: #AD5C71;height: 148px;">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                        <p class="text-uppercase fw-bold text-white text-truncate mb-0">
                                                             Today's Collection</p>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex align-items-end justify-content-between mt-4">
                                                     <div>
-                                                        <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                        <h4 class="fs-22 fw-bold ff-secondary text-white mb-4"><span
                                                                 class="counter-value"
                                                                 data-target="{{ $TodaysCollection }}">0</span>
                                                         </h4>
@@ -420,17 +420,17 @@
 
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                        <div class="card card-animate" style="background: #b6ae9f;height: 148px;">
+                                        <div class="card card-animate" style="background: #8B639B;height: 148px;">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                        <p class="text-uppercase fw-bold text-white text-truncate mb-0">
                                                             Stock Value</p>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex align-items-end justify-content-between mt-4">
                                                     <div>
-                                                        <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                        <h4 class="fs-22 fw-bold ff-secondary text-white mb-4"><span
                                                                 class="counter-value"
                                                                 data-target="{{ $amount }}">{{ $amount }}</span>
                                                         </h4>
@@ -444,17 +444,17 @@
 
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
-                                        <div class="card card-animate" style="background: #9caf88;height: 148px;">
+                                        <div class="card card-animate" style="background: #AD5C71;height: 148px;">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-grow-1 overflow-hidden">
-                                                        <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                        <p class="text-uppercase fw-bold text-white text-truncate mb-0">
                                                             Stock Quantity</p>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex align-items-end justify-content-between mt-4">
                                                     <div>
-                                                        <h4 class="fs-22 fw-bold ff-secondary text-dark mb-4"><span
+                                                        <h4 class="fs-22 fw-bold ff-secondary text-white mb-4"><span
                                                                 class="counter-value"
                                                                 data-target="{{ $stock }}">{{ $stock }}</span>
                                                         </h4>
@@ -470,11 +470,11 @@
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
                                         <a href="{{ route('report.orderTracking') }}" class=" text-dark-50">
-                                            <div class="card card-animate" style="background: #b6ae9f;height: 148px;">
+                                            <div class="card card-animate" style="background: #8B639B;height: 148px;">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-grow-1 overflow-hidden">
-                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                            <p class="text-uppercase fw-bold text-white text-truncate mb-0">
                                                                 Order Tracking</p>
                                                         </div>
                                                     </div>
@@ -497,11 +497,11 @@
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
                                         <a href="{{ route('report.searchCustomer') }}" class=" text-dark-50">
-                                            <div class="card card-animate" style="background: #9caf88;height: 148px;">
+                                            <div class="card card-animate" style="background: #AD5C71;height: 148px;">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-grow-1 overflow-hidden">
-                                                            <p class="text-uppercase fw-bold text-dark text-truncate mb-0">
+                                                            <p class="text-uppercase fw-bold text-white text-truncate mb-0">
                                                                 Customer Search</p>
                                                         </div>
                                                     </div>
@@ -523,7 +523,7 @@
 
                                         <a href="{{ route('shoowroom.index') }}"
                                                             class=" text-dark-50">
-                                        <div class="card card-animate" style="background: #b6ae9f;height: 148px;">
+                                        <div class="card card-animate" style="background: #8B639B;height: 148px;">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-grow-1 overflow-hidden">
@@ -544,7 +544,7 @@
 
                                          <a href="{{ route('shoowroom.create') }}"
                                                             class=" text-dark-50">
-                                        <div class="card card-animate" style="background: #9caf88;height: 148px;">
+                                        <div class="card card-animate" style="background: #AD5C71;height: 148px;">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-grow-1 overflow-hidden">
@@ -569,7 +569,7 @@
                                     <div class="col-xl-3 col-md-6">
                                         <!-- card -->
                                         <a href="{{ route('order.userpending') }}" class=" text-dark-50">
-                                            <div class="card card-animate" style="background: #b6ae9f;">
+                                            <div class="card card-animate" style="background: #8B639B;">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-grow-1 overflow-hidden">

@@ -8,7 +8,7 @@ use App\Http\Controllers\CourierController;
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\FaqController;
-use App\Http\Controllers\TestimonialController;
+
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\ProductDetailController;
@@ -31,6 +31,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\SmsTestController;
+use App\Http\Controllers\Admin\OurClientController;
+use App\Http\Controllers\Admin\TestimonialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +70,47 @@ Route::get('/clear-cache', function () {
     Artisan::call('config:clear');
     Artisan::call('optimize:clear');
     return 'Cache is cleared';
+});
+
+
+
+
+Route::prefix('admin')->group(function () {
+
+    Route::get('/our-clients', [OurClientController::class, 'index'])
+        ->name('our-client.index');
+
+    Route::post('/our-clients/store', [OurClientController::class, 'store'])
+        ->name('our-client.store');
+
+    Route::post('/our-clients/update/{id}', [OurClientController::class, 'update'])
+        ->name('our-client.update');
+
+    Route::delete('/our-clients/delete/{id}', [OurClientController::class, 'destroy'])
+        ->name('our-client.destroy');
+
+    Route::post('/our-clients/bulk-delete', [OurClientController::class, 'bulkDelete'])
+        ->name('our-client.bulk-delete');
+});
+
+
+
+Route::prefix('admin')->group(function () {
+
+    Route::get('/testimonials', [TestimonialController::class, 'index'])
+        ->name('testimonial.index');
+
+    Route::post('/testimonials/store', [TestimonialController::class, 'store'])
+        ->name('testimonial.store');
+
+    Route::post('/testimonials/update/{id}', [TestimonialController::class, 'update'])
+        ->name('testimonial.update');
+
+    Route::delete('/testimonials/delete/{id}', [TestimonialController::class, 'destroy'])
+        ->name('testimonial.destroy');
+
+    Route::post('/testimonials/bulk-delete', [TestimonialController::class, 'bulkDelete'])
+        ->name('testimonial.bulk-delete');
 });
 
 // Profile Routes
@@ -189,14 +232,7 @@ Route::prefix('admin')->name('faq.')->middleware('auth')->group(function () {
     Route::delete('/faq/delete', [FaqController::class, 'delete'])->name('delete');
 });
 
-//Testimonial Master
-Route::prefix('admin')->name('testimonial.')->middleware('auth')->group(function () {
-    Route::get('/testimonial/index', [TestimonialController::class, 'index'])->name('index');
-    Route::post('/testimonial/store', [TestimonialController::class, 'create'])->name('store');
-    Route::get('/testimonial/edit/{id?}', [TestimonialController::class, 'editview'])->name('edit');
-    Route::post('/testimonial/update', [TestimonialController::class, 'update'])->name('update');
-    Route::delete('/testimonial/delete', [TestimonialController::class, 'delete'])->name('delete');
-});
+
 
 //Shipping Master
 Route::prefix('admin')->name('shipping.')->middleware('auth')->group(function () {
@@ -353,7 +389,7 @@ Route::get('/loadMoreCategoryProducts', [FrontController::class, 'loadMoreCatego
 
 Route::get('/loadMoreSearchData', [FrontController::class, 'loadMoreSearchData'])->name('loadMoreSearchData');
 
-Route::get('/get-subcategories',[FrontController::class, 'getSubCategories'])->name('front.getSubCategories');
+Route::get('/get-subcategories', [FrontController::class, 'getSubCategories'])->name('front.getSubCategories');
 
 
 //===================================Cart routes start============================
@@ -368,6 +404,7 @@ Route::post('/coupon', [FrontController::class, 'couponcodeapply'])->name('coupo
 
 //===============================Check-Out start=============================
 Route::get('Check-Out', [FrontController::class, 'checkout'])->name('checkout');
+Route::get('checkout/customer', [FrontController::class, 'checkoutCustomer'])->name('checkout.customer');
 Route::post('checkout/store', [FrontController::class, 'checkoutstore'])->name('checkoutstore');
 //===============================Check-Out end=============================
 

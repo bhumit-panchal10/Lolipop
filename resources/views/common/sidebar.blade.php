@@ -1,11 +1,15 @@
 <!-- ========== App Menu ========== -->
 
 <style>
-    .nav-item:hover{
-        background:#9caf88!important;
-         /*background:#d6a99d!important;*/
+    .nav-item:hover {
+        background: #e7a4dfa7 !important;
+        /*background:#d6a99d!important;*/
     }
-    [data-layout=horizontal] .menu-dropdown, [data-layout=horizontal] .navbar-menu{background:#b6ae9f!important;}
+
+    [data-layout=horizontal] .menu-dropdown,
+    [data-layout=horizontal] .navbar-menu {
+        background: #ab4ca0 !important;
+    }
 </style>
 <div class="app-menu navbar-menu">
 
@@ -16,7 +20,7 @@
             <div id="two-column-menu"></div>
             <ul class="navbar-nav" id="navbar-nav">
 
-                @if(Auth::user()->role_id == 1)
+                @if (Auth::user()->role_id == 1)
                     <li class="menu-title"><span data-key="t-menu"></span></li>
 
                     <li class="nav-item">
@@ -84,6 +88,20 @@
                                         <span data-key="t-dashboards">Seo</span>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('our-client.index') }}"
+                                        class="nav-link {{ request()->is('admin/our-clients*') ? 'active' : '' }}">
+                                        <i class="nav-icon fas fa-handshake"></i>
+                                        <span data-key="t-dashboards">Our Clients</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('testimonial.index') }}"
+                                        class="nav-link {{ request()->is('admin/testimonials*') ? 'active' : '' }}">
+                                        <i class="nav-icon fas fa-comment-dots"></i>
+                                        <span data-key="t-dashboards">Testimonials</span>
+                                    </a>
+                                </li>
 
                             </ul>
                         </div>
@@ -99,8 +117,8 @@
                     <!--</li>-->
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('order.pending') }}" data-bs-toggle="collapse" role="button"
-                            aria-expanded="true" aria-controls="sidebarMore">
+                        <a class="nav-link" href="{{ route('order.pending') }}" data-bs-toggle="collapse"
+                            role="button" aria-expanded="true" aria-controls="sidebarMore">
                             <i class="ri-briefcase-2-line"></i> Order </a>
                         <div class="menu-dropdown collapse show" id="sidebarMore" style="">
                             <ul class="nav nav-sm flex-column">
@@ -232,7 +250,6 @@
                         </a>
                     </li>  --}}
                 @else
-
                     <li class="nav-item">
                         <a class="nav-link menu-link @if (request()->routeIs('order.userpending')) {{ 'active' }} @endif"
                             href="{{ route('order.userpending') }}">
@@ -240,7 +257,6 @@
                             <span data-key="t-dashboards">Order</span>
                         </a>
                     </li>
-
                 @endif
             </ul>
         </div>

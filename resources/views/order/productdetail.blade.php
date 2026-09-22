@@ -27,9 +27,8 @@
                                         title="Pdf Details">
                                         <i class="fa-solid fa-file-pdf fa-xl"></i>
                                     </a>
-                                    <a href="{{ route('order.pending') }}"
-                                        class="btn btn-sm btn-primary mx-2">
-                                          Back
+                                    <a href="{{ route('order.pending') }}" class="btn btn-sm btn-primary mx-2">
+                                        Back
                                     </a>
                                 </div>
                             </div>
@@ -53,7 +52,7 @@
                                             <td>{{ $data->shipping_mobile }}</td>
                                             <td>{{ $data->shipping_email }}</td>
                                             <td>{{ $data->shiiping_address1 . ',' . $data->shiiping_address2 }}</td>
-                                            <td>{{ $data->shipping_city ?? "-" }}</td>
+                                            <td>{{ $data->shipping_city ?? '-' }}</td>
                                             <td>{{ $data->shipping_pincode }}</td>
                                             <td>{{ $data->stateName }}</td>
                                             <td>{{ $data->country }}</td>
@@ -90,17 +89,18 @@
                                         <?php $i = 1;
                                         $iTotal = 0; ?>
                                         @foreach ($detail as $details)
-                                            <tr class="text-center" style="<?= $details->isRefund == 1 ? 'background: #f96767;color: white;' : '' ?>">
+                                            <tr class="text-center"
+                                                style="<?= $details->isRefund == 1 ? 'background: #f96767;color: white;' : '' ?>">
                                                 <td>{{ $i }}</td>
                                                 <td>{{ $details->productname }}</td>
-                                                 <td>
+                                                <td>
                                                     <a target="_blank"
                                                         href="{{ asset('Product/Thumbnail/') . '/' . $details->photo }}">
                                                         <img width="50" height="50"
                                                             src="{{ asset('Product/Thumbnail/') . '/' . $details->photo }}">
                                                     </a>
                                                 </td>
-                                                <td>{{ $details->product_attribute_size }}</td>
+                                                <td>{{ $details->size }}</td>
                                                 <td>{{ $details->quantity }}</td>
                                                 <td>{{ $details->rate }}</td>
                                                 <td class="text-end">Rs.{{ $details->amount }}</td>
@@ -115,7 +115,7 @@
                                         <?php
                                         $total = $iTotal * 1;
                                         ?>
-                                        
+
                                         <tr>
                                             <th></th>
                                             <th></th>
@@ -130,7 +130,7 @@
                                             <th></th>
                                             <th></th>
                                             <th class="text-end">Discount:- &nbsp;</th>
-                                            <th class="text-end">Rs.{{ $data->discount ?? 0}}</th>
+                                            <th class="text-end">Rs.{{ $data->discount ?? 0 }}</th>
                                         </tr>
                                         <tr>
                                             <th></th>

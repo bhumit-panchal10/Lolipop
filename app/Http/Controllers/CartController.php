@@ -29,102 +29,102 @@ class CartController extends Controller
 
     public function addToCart(Request $request)
     {
-        //dd($request);
-        if ($request->attributeid != "" || $request->product_attribute_size != "") {
-            //dd("if");
-            try {
-                $Ledger = Ledger::orderBy('ledgerId', 'desc')->where([
-                    'ledger.iStatus' => 1,
-                    'ledger.isDelete' => 0,
-                    'ledger.iProductId' => $request->productid,
-                    'iSize' => $request->attributeid
-                ])
-                    ->join('product_attributes', 'ledger.iSize', '=', 'product_attributes.id')
-                    ->first();
-                // dd($Ledger);
-                $cartItems = \Cart::getContent();
+        $attributeId = trim((string) ($request->input('attributeid') ?? ''));
+        $sizeLabel = trim((string) ($request->input('product_attribute_size') ?? ''));
+        $quantity = (int) ($request->input('quantity', $request->input('quant.1', 1)));
+        $quantity = $quantity > 0 ? $quantity : 1;
 
-                $specificId = $request->attributeid; // Change this to the id you want to count
-                $count = $cartItems->filter(function ($item) use ($specificId) {
-                    return $item->id === $specificId;
-                })->sum('quantity');
+        if ($attributeId === '' && $sizeLabel === '') {
+            session()->flash('error', 'Please select size!');
+            return back()->with('error', 'Please select size!');
+        }
 
-                $closingBalance = (int)($Ledger->closingBalance ?? 0);
+        try {
+            $ledgerQuery = Ledger::orderBy('ledgerId', 'desc')->where([
+                'ledger.iStatus' => 1,
+                'ledger.isDelete' => 0,
+                'ledger.iProductId' => $request->productid,
+            ]);
 
-                if ($request->buttonValue == "addtocart") {
+            if ($attributeId !== '') {
+                $ledgerQuery->where('ledger.iSize', $attributeId);
+            }
 
-                    if (isset($Ledger) &&  ($closingBalance * 1) > ($count * 1)) {
+            $Ledger = $ledgerQuery
+                ->join('product_attributes', 'ledger.iSize', '=', 'product_attributes.id')
+                ->first();
 
-                        \Cart::add([
-                            // 'id' => $request->productid,
-                            'id' => $request->attributeid,
-                            'productid' => $request->productid,
-                            'categoryId' => $request->categoryId,
-                            'subcategoryid' => $request->subcategoryid,
-                            'productslug' => $request->productslug,
-                            'categoryslug' => $request->categoryslug,
-                            'categoryname' => $request->categoryname,
-                            'name' => $request->productname,
-                            'price' => $request->price,
-                            'quantity' => $request->quant[1],
-                            'size' => $request->product_attribute_size,
-                            'info' => $request->info,
-                            'attributes' => array(
-                                'image' => $request->image,
-                            )
-                        ]);
-                        // session()->flash('success', 'Product is Added to Cart Successfully !');
-                        $sizeselect = $request->sizeselect ?? "";
-                        //dd($sizeselect);
-                        Session::put('sizeselect', $sizeselect);
-                        return redirect()->route('cart.list')
-                            ->with('success', 'Product is Added to Cart Successfully !')
-                            ->with(compact('sizeselect'));
-                    } else {
-                        $sizeselect = $request->sizeselect ?? "";
-                        Session::put('sizeselect', $sizeselect);
-                        session()->flash('error', 'Product is Out Of Stock!');
-                        // session()->flash('outofstock', 'Product is Out Of Stock!');
-                    }
+            $cartItems = \Cart::getContent();
+            $specificId = $attributeId !== '' ? $attributeId : ($Ledger->iSize ?? $sizeLabel);
+            $count = $cartItems->filter(function ($item) use ($specificId) {
+                return (string) $item->id === (string) $specificId;
+            })->sum('quantity');
+
+            $closingBalance = (int) ($Ledger->closingBalance ?? 0);
+
+            if ($request->buttonValue == "addtocart") {
+                if (isset($Ledger) && ($closingBalance * 1) > ($count * 1)) {
+                    \Cart::add([
+                        'id' => $attributeId !== '' ? $attributeId : ($Ledger->iSize ?? $sizeLabel),
+                        'productid' => $request->productid,
+                        'categoryId' => $request->categoryId,
+                        'subcategoryid' => $request->subcategoryid,
+                        'productslug' => $request->productslug,
+                        'categoryslug' => $request->categoryslug,
+                        'categoryname' => $request->categoryname,
+                        'name' => $request->productname,
+                        'price' => $request->price,
+                        'quantity' => $quantity,
+                        'size' => $attributeId !== '' ? $attributeId : ($Ledger->iSize ?? $sizeLabel),
+                        'size_label' => $sizeLabel !== '' ? $sizeLabel : ($Ledger->product_attribute_size ?? $sizeLabel),
+                        'info' => $request->info,
+                        'attributes' => [
+                            'image' => $request->image,
+                        ],
+                    ]);
+
                     $sizeselect = $request->sizeselect ?? "";
                     Session::put('sizeselect', $sizeselect);
 
-                    //dd($sizeselect);
-                    return back()->with(compact('sizeselect'));
-                } else {
-                    if (isset($Ledger) &&  ($closingBalance * 1) > ($count * 1)) {
-                        \Cart::add([
-                            // 'id' => $request->productid,
-                            'id' => $request->attributeid,
-                            'productid' => $request->productid,
-                            'categoryId' => $request->categoryId,
-                            'subcategoryid' => $request->subcategoryid,
-                            'productslug' => $request->productslug,
-                            'categoryslug' => $request->categoryslug,
-                            'categoryname' => $request->categoryname,
-                            'name' => $request->productname,
-                            'price' => $request->price,
-                            'quantity' => 1,
-                            'size' => $request->product_attribute_size,
-                            'info' => $request->info,
-                            'attributes' => array(
-                                'image' => $request->image,
-                            )
-                        ]);
-                        session()->flash('cartaddsuccess', 'Product is Added to Cart Successfully !');
-                    } else {
-                        session()->flash('outofstock', 'Product is Out Of Stock!');
-                    }
-                    return redirect()->route('checkout');
+                    return redirect()->route('cart.list')
+                        ->with('success', 'Product is Added to Cart Successfully !')
+                        ->with(compact('sizeselect'));
                 }
-            } catch (\Throwable $th) {
 
-                // Rollback & Return Error Message
-                return redirect()->back()->with('error', $th->getMessage());
+                $sizeselect = $request->sizeselect ?? "";
+                Session::put('sizeselect', $sizeselect);
+                session()->flash('error', 'Product is Out Of Stock!');
+
+                return back()->with(compact('sizeselect'));
             }
-        } else {
-            session()->flash('error', 'Please select size!');
-            return back()->with('error', 'Please select size!');
+
+            if (isset($Ledger) && ($closingBalance * 1) > ($count * 1)) {
+                \Cart::add([
+                    'id' => $attributeId !== '' ? $attributeId : ($Ledger->iSize ?? $sizeLabel),
+                    'productid' => $request->productid,
+                    'categoryId' => $request->categoryId,
+                    'subcategoryid' => $request->subcategoryid,
+                    'productslug' => $request->productslug,
+                    'categoryslug' => $request->categoryslug,
+                    'categoryname' => $request->categoryname,
+                    'name' => $request->productname,
+                    'price' => $request->price,
+                    'quantity' => 1,
+                    'size' => $attributeId !== '' ? $attributeId : ($Ledger->iSize ?? $sizeLabel),
+                    'size_label' => $sizeLabel !== '' ? $sizeLabel : ($Ledger->product_attribute_size ?? $sizeLabel),
+                    'info' => $request->info,
+                    'attributes' => [
+                        'image' => $request->image,
+                    ],
+                ]);
+                session()->flash('cartaddsuccess', 'Product is Added to Cart Successfully !');
+            } else {
+                session()->flash('outofstock', 'Product is Out Of Stock!');
+            }
+
+            return redirect()->route('checkout');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 

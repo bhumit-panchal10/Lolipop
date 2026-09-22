@@ -3,13 +3,13 @@
 @section('content')
     <main class="lshop-page" id="lshopPage">
         <!-- =================================================
-                                                                                                 PRODUCT LISTING
-                                                                                            ================================================== -->
+                                                                                                     PRODUCT LISTING
+                                                                                                ================================================== -->
         <section class="lshop-section">
             <div class="container">
                 <!-- =============================================
-                                                                                                         TOOLBAR
-                                                                                                    ============================================== -->
+                                                                                                             TOOLBAR
+                                                                                                        ============================================== -->
                 <div class="lshop-toolbar">
                     <div class="lshop-toolbar-left">
                         <button class="lshop-mobile-filter" id="lshopFilterOpen" type="button">
@@ -24,19 +24,19 @@
                                 <option value="featured" @selected(request('sort', 'featured') === 'featured')>Featured</option>
                                 <option value="low" @selected(request('sort') === 'low')>Price: Low to High</option>
                                 <option value="high" @selected(request('sort') === 'high')>Price: High to Low</option>
-                                <option value="discount" @selected(request('sort') === 'discount')>Highest Discount</option>
+                                <!--<option value="discount" @selected(request('sort') === 'discount')>Highest Discount</option>-->
                             </select>
                             <i class="fa fa-angle-down"></i>
                         </div>
                     </div>
                 </div>
                 <!-- =============================================
-                                                                                                         MAIN LAYOUT
-                                                                                                    ============================================== -->
+                                                                                                             MAIN LAYOUT
+                                                                                                        ============================================== -->
                 <div class="lshop-layout">
                     <!-- =========================================
-                                                                                             REDESIGNED LEFT FILTER
-                                                                                        ========================================== -->
+                                                                                                 REDESIGNED LEFT FILTER
+                                                                                            ========================================== -->
                     <aside class="lshop-filter" id="lshopFilter">
                         <!-- MOBILE HEADER -->
                         <div class="lshop-filter-mobile-head">
@@ -49,8 +49,8 @@
                             </button>
                         </div>
                         <!-- =====================================
-                                                                                                 FILTER TOP
-                                                                                            ====================================== -->
+                                                                                                     FILTER TOP
+                                                                                                ====================================== -->
                         <div class="lshop-filter-head">
                             <div class="lshop-filter-head-icon">
                                 <i class="fa fa-sliders"></i>
@@ -61,13 +61,13 @@
                                     Shop Filters
                                 </h2>
                             </div>
-                            <button type="button" id="lshopClear">
+                            <button type="button" id="lshopClear" style="background:var(--pink);color:#fff">
                                 Clear
                             </button>
                         </div>
                         <!-- =====================================
-                                                                                                 CATEGORY
-                                                                                            ====================================== -->
+                                                                                                     CATEGORY
+                                                                                                ====================================== -->
                         {{--  <div class="lshop-filter-group lshop-filter-category">
                             <button type="button" class="lshop-filter-title">
                                 <span class="lshop-filter-title-left">
@@ -138,8 +138,8 @@
                             </div>
                         </div>  --}}
                         <!-- =====================================
-                                                                                                 PRICE
-                                                                                            ====================================== -->
+                                                                                                     PRICE
+                                                                                                ====================================== -->
                         <div class="lshop-filter-group lshop-filter-price">
                             <button type="button" class="lshop-filter-title">
                                 <span class="lshop-filter-title-left">
@@ -190,8 +190,8 @@
                             </div>
                         </div>
                         <!-- =====================================
-                                                                                                 SIZE
-                                                                                            ====================================== -->
+                                                                                                     SIZE
+                                                                                                ====================================== -->
                         <div class="lshop-filter-group lshop-filter-size">
                             <button type="button" class="lshop-filter-title">
                                 <span class="lshop-filter-title-left">
@@ -242,22 +242,34 @@
                             </div>
                             <div class="lshop-filter-apply">
 
-                                <button type="button" class="lshop-filter-action" id="lshopApplyFilters">
-                                    Apply Filters
-                                </button>
+    <button
+        type="button"
+        class="lshop-apply-filter-btn"
+        id="lshopApplyFilters"
+    >
 
-                            </div>
+        <span class="lshop-apply-filter-icon">
+            <i class="fa fa-sliders"></i>
+        </span>
+
+        <strong>
+            Apply Filters
+        </strong>
+
+        <span class="lshop-apply-filter-arrow">
+            <i class="fa fa-long-arrow-right"></i>
+        </span>
+
+    </button>
+
+</div>
                         </div>
                     </aside>
-                    <!-- =========================================
-                                                                                                             RIGHT PRODUCTS
-                                                                                                        ========================================== -->
+
                     <div class="lshop-products-area">
                         <!-- ACTIVE FILTERS -->
                         <div class="lshop-active-filters" id="lshopActiveFilters"></div>
-                        <!-- =====================================
-                                                                                                                 PRODUCT GRID
-                                                                                                            ====================================== -->
+
 
                         <div class="lshop-product-grid" id="lshopProductGrid">
 
@@ -504,70 +516,277 @@
 
 @section('scripts')
     <script>
-        (() => {
-            const pageUrl = new URL(window.location.href);
-            let activeRequest;
+    (() => {
 
-            const getFilterUrl = () => {
-                const params = new URLSearchParams();
-                const sort = document.getElementById('lshopSort').value;
+        const pageUrl = new URL(window.location.href);
+        let activeRequest;
 
-                if (sort !== 'featured') params.set('sort', sort);
-                document.querySelectorAll('.lshop-category-filter:checked').forEach((input) => {
-                    params.append(input.name, input.value);
+
+        /* =====================================================
+           CREATE FILTER URL
+        ===================================================== */
+
+        const getFilterUrl = () => {
+
+            const params = new URLSearchParams();
+
+            const sort =
+                document.getElementById('lshopSort').value;
+
+
+            if (sort !== 'featured') {
+                params.set('sort', sort);
+            }
+
+
+            /* CATEGORY */
+
+            document
+                .querySelectorAll('.lshop-category-filter:checked')
+                .forEach((input) => {
+
+                    params.append(
+                        input.name,
+                        input.value
+                    );
+
                 });
-                document.querySelectorAll('.lshop-price-filter:checked').forEach((input) => {
-                    params.append(input.name, input.value);
+
+
+            /* PRICE */
+
+            document
+                .querySelectorAll('.lshop-price-filter:checked')
+                .forEach((input) => {
+
+                    params.append(
+                        input.name,
+                        input.value
+                    );
+
                 });
-                document.querySelectorAll('.lshop-size-btn.active').forEach((button) => {
-                    params.append('size[]', button.dataset.size);
+
+
+            /* SIZE */
+
+            document
+                .querySelectorAll('.lshop-size-btn.active')
+                .forEach((button) => {
+
+                    params.append(
+                        'size[]',
+                        button.dataset.size
+                    );
+
                 });
 
-                return `${pageUrl.pathname}?${params.toString()}`;
-            };
 
-            const applyFilters = async () => {
-                const filterUrl = getFilterUrl();
-                activeRequest?.abort();
-                activeRequest = new AbortController();
-                document.getElementById('lshopProductGrid')?.classList.add('is-loading');
+            return `${pageUrl.pathname}?${params.toString()}`;
 
-                try {
-                    const response = await fetch(filterUrl, {
+        };
+
+
+        /* =====================================================
+           APPLY FILTER
+        ===================================================== */
+
+        const applyFilters = async () => {
+
+
+            /* =================================================
+               NEW: CLOSE MOBILE FILTER DRAWER
+            ================================================= */
+
+            document
+                .getElementById('lshopFilter')
+                ?.classList.remove('open');
+
+
+            document
+                .getElementById('lshopOverlay')
+                ?.classList.remove('open');
+
+
+            document.body.classList.remove(
+                'lshop-filter-opened'
+            );
+
+
+            /* =================================================
+               YOUR EXISTING FILTER CODE
+            ================================================= */
+
+            const filterUrl = getFilterUrl();
+
+
+            activeRequest?.abort();
+
+
+            activeRequest =
+                new AbortController();
+
+
+            document
+                .getElementById('lshopProductGrid')
+                ?.classList.add('is-loading');
+
+
+            try {
+
+                const response =
+                    await fetch(filterUrl, {
+
                         headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With':
+                                'XMLHttpRequest'
                         },
-                        signal: activeRequest.signal
+
+                        signal:
+                            activeRequest.signal
+
                     });
 
-                    if (!response.ok) throw new Error('Unable to load products');
 
-                    const html = await response.text();
-                    const nextGrid = new DOMParser()
-                        .parseFromString(html, 'text/html')
-                        .querySelector('#lshopProductGrid');
+                if (!response.ok) {
 
-                    if (!nextGrid) throw new Error('Product grid not found');
+                    throw new Error(
+                        'Unable to load products'
+                    );
 
-                    document.getElementById('lshopProductGrid').replaceWith(nextGrid);
-                    window.history.pushState({}, '', filterUrl);
-                } catch (error) {
-                    if (error.name !== 'AbortError') window.location.href = filterUrl;
-                } finally {
-                    activeRequest = null;
                 }
-            };
 
-            document.querySelectorAll('.lshop-size-btn').forEach((button) => {
-                button.addEventListener('click', () => button.classList.toggle('active'));
+
+                const html =
+                    await response.text();
+
+
+                const nextGrid =
+                    new DOMParser()
+                        .parseFromString(
+                            html,
+                            'text/html'
+                        )
+                        .querySelector(
+                            '#lshopProductGrid'
+                        );
+
+
+                if (!nextGrid) {
+
+                    throw new Error(
+                        'Product grid not found'
+                    );
+
+                }
+
+
+                document
+                    .getElementById('lshopProductGrid')
+                    .replaceWith(nextGrid);
+
+
+                window.history.pushState(
+                    {},
+                    '',
+                    filterUrl
+                );
+
+            }
+            catch (error) {
+
+                if (
+                    error.name !==
+                    'AbortError'
+                ) {
+
+                    window.location.href =
+                        filterUrl;
+
+                }
+
+            }
+            finally {
+
+                activeRequest = null;
+
+            }
+
+        };
+
+
+        /* =====================================================
+           SIZE BUTTON CLICK
+        ===================================================== */
+
+        document
+            .querySelectorAll('.lshop-size-btn')
+            .forEach((button) => {
+
+                button.addEventListener(
+                    'click',
+                    () => {
+
+                        button.classList.toggle(
+                            'active'
+                        );
+
+                    }
+                );
+
             });
-            document.getElementById('lshopApplyFilters')?.addEventListener('click', applyFilters);
-            document.getElementById('lshopClear')?.addEventListener('click', () => {
-                window.location.href = pageUrl.pathname;
-            });
-            document.addEventListener('click', (event) => {
-                if (event.target.closest('#lshopEmptyClear')) window.location.href = pageUrl.pathname;
-            });
-        })();
-    </script>
+
+
+        /* =====================================================
+           APPLY FILTER BUTTON
+        ===================================================== */
+
+        document
+            .getElementById('lshopApplyFilters')
+            ?.addEventListener(
+                'click',
+                applyFilters
+            );
+
+
+        /* =====================================================
+           CLEAR FILTER
+        ===================================================== */
+
+        document
+            .getElementById('lshopClear')
+            ?.addEventListener(
+                'click',
+                () => {
+
+                    window.location.href =
+                        pageUrl.pathname;
+
+                }
+            );
+
+
+        /* =====================================================
+           EMPTY RESULT CLEAR
+        ===================================================== */
+
+        document.addEventListener(
+            'click',
+            (event) => {
+
+                if (
+                    event.target.closest(
+                        '#lshopEmptyClear'
+                    )
+                ) {
+
+                    window.location.href =
+                        pageUrl.pathname;
+
+                }
+
+            }
+        );
+
+    })();
+</script>
 @endsection

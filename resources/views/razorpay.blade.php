@@ -5,6 +5,90 @@
 
 
     <style>
+        .payment-page {
+            background: #fff8f5;
+            min-height: 70vh;
+            padding: 34px 15px 75px;
+        }
+
+        .payment-page .payment-heading {
+            color: #17283d;
+            font-size: 34px;
+            font-weight: 700;
+            margin: 0 auto 8px;
+            max-width: 680px;
+        }
+
+        .payment-page .payment-copy {
+            color: #778394;
+            margin: 0 auto 24px;
+            max-width: 680px;
+        }
+
+        .payment-page>.row {
+            margin: 0;
+        }
+
+        .payment-page>.row>.col-md-12 {
+            margin-top: 0 !important;
+        }
+
+        .payment-page #myForm {
+            background: #fff;
+            border: 1px solid #f0ded8;
+            border-radius: 20px;
+            box-shadow: 0 14px 35px rgba(23, 40, 61, .08);
+            margin: auto;
+            max-width: 680px;
+            padding: 22px;
+        }
+
+        .payment-page #myForm table {
+            border: 0;
+            height: auto;
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .payment-page .ship-head {
+            background: #17283d;
+            border-radius: 12px;
+            font-size: 13px;
+            letter-spacing: .08em;
+            padding: 14px;
+        }
+
+        .payment-page .ship-inp {
+            color: #526276;
+            line-height: 1.7;
+            padding: 12px 0;
+            white-space: normal;
+        }
+
+        .payment-page #myForm td {
+            color: #526276;
+            padding: 9px 6px;
+        }
+
+        .payment-page #myForm td:first-child {
+            color: #17283d;
+            font-weight: 600;
+        }
+
+        .payment-page #myForm tr:not(:first-child) td {
+            border-bottom: 1px solid #f2e9e5;
+        }
+
+        .payment-page .pay-note {
+            background: #fff3d6;
+            border-radius: 10px;
+            color: #77591d;
+            font-size: 13px;
+            margin-top: 18px;
+            padding: 12px;
+            text-align: center;
+        }
+
         .ship-head {
             padding: 6px;
             background: #9a7c6f;
@@ -93,6 +177,11 @@
     <!--            <img src="{{ asset('/assets/frontimages/icons/Kwality.png') }}" class="main-logo" width="128" alt="Kwality" title="Kwality">-->
     <!--        </div>-->
     <!--        <hr>-->
+    <section class="payment-page">
+        <h1 class="payment-heading text-center">Secure payment</h1>
+        <p class="payment-copy text-center">Review your delivery details, then complete your order securely with Razorpay.
+        </p>
+    </section>
     <section class="bg-img1 txt-center p-lr-15 p-tb-92"
         style="background-image: url({{ asset('assets/frontimages/catagory/SHOP.jpg') }});">
         <h2 class="ltext-105 cl0 txt-center">
@@ -142,7 +231,7 @@
                                         {{ $item->quantity }}&nbsp;&nbsp;&nbsp;
                                     </td>
                                     <td class=" text-center" data-title="Qty">
-                                        {{ $item->size }}
+                                        {{ $item->size_label ?? $item->size }}
                                     </td>
                                     <td class="price text-left" data-title="Price">
                                         <span> &#x20B9; {{ $item->price }}
@@ -177,123 +266,128 @@
             </div>
         </div>
     </section>
-    <div class="row">
+    <div class="payment-page">
+        <div class="row">
 
 
-        <!--<div class="col-md-4"></div>-->
-        <div class="col-md-12" style="margin-top: 15px;">
-            <form id="myForm">
-                <table width="40%" class="  text-center border-0 m-2" border="0" height="120" align="center">
+            <!--<div class="col-md-4"></div>-->
+            <div class="col-md-12" style="margin-top: 15px;">
+                <form id="myForm">
+                    <table width="40%" class="  text-center border-0 m-2" border="0" height="120" align="center">
 
-                    <input type="hidden" id="data-key" value="{{ env('RAZORPAY_KEY') }}">
-                    <input type="hidden" id="data-amount" value="{{ $Order['netAmount'] }}">
-                    <input type="hidden" id="data-mobile" value="{{ $Order['shipping_mobile'] }}">
-                    <input type="hidden" id="data-email" value="{{ $Order['shipping_email'] }}">
+                        <input type="hidden" id="data-key" value="{{ env('RAZORPAY_KEY') }}">
+                        <input type="hidden" id="data-amount" value="{{ $Order['netAmount'] }}">
+                        <input type="hidden" id="data-mobile" value="{{ $Order['shipping_mobile'] }}">
+                        <input type="hidden" id="data-email" value="{{ $Order['shipping_email'] }}">
 
-                    <input type="hidden" id="data-profile-id" value="{{ $Order['order_id'] }}">
-                    <input type="hidden" id="data-description" value="Rozerpay">
-                    <input type="hidden" id="data-order-id" value="{{ $orderId }}">
-
-
-                    <tr>
-                        <td class="ship-head " colspan="2">Shipping information </td>
-                    </tr>
-
-                    <tr class="mt-2 ">
-                        <!--<td style="width: 30%;"> Name </td>-->
-                        <td style="padding-top:20px"> {{ $Order['shipping_cutomerName'] }} </td>
-                    </tr>
-                    <tr>
-                        <!--<td> Address </td>-->
-                        <td>
-                            <?php
-                            $address1 = trim($Order['shiiping_address1']);
-                            $address2 = trim($Order['shiiping_address2']);
-                            $State = App\Models\State::where('stateId', $Order['shiiping_state'])->orWhere('stateName', $Order['shiiping_state'])->first();
-                            $stateName = $State->stateName ?? $Order['shiiping_state'];
-                            ?>
-                            <div class="ship-inp" name="full_address" id="full_address" cols="30" rows="7">
-                                {{ $address1 . ',' . $address2 . ',' . $Order['shipping_city'] . ' ' . $stateName }}
-                            </div>
-                        </td>
-                    </tr>
+                        <input type="hidden" id="data-profile-id" value="{{ $Order['order_id'] }}">
+                        <input type="hidden" id="data-description" value="Rozerpay">
+                        <input type="hidden" id="data-order-id" value="{{ $orderId }}">
 
 
-                    <tr>
-                        <!--<td>Pincode </td>-->
-                        <td>Pincode : {{ $Order['shipping_pincode'] }} &nbsp; Mobile : {{ $Order['shipping_mobile'] }}
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="ship-head " colspan="2">Shipping information </td>
+                        </tr>
 
-                    <!--<tr>-->
-                    <!--<td>Mobile </td>-->
-                    <!--    <td>Mobile : {{ $Order['shipping_mobile'] }}</td>-->
-                    <!--</tr>-->
-                    <tr class="mb-2" style="padding-top:10px">
-                        <!--<td> Email </td>-->
-                        <td> {{ $Order['shipping_email'] }} </td>
-                    </tr>
+                        <tr class="mt-2 ">
+                            <!--<td style="width: 30%;"> Name </td>-->
+                            <td style="padding-top:20px"> {{ $Order['shipping_cutomerName'] }} </td>
+                        </tr>
+                        <tr>
+                            <!--<td> Address </td>-->
+                            <td>
+                                <?php
+                                $address1 = trim($Order['shiiping_address1']);
+                                $address2 = trim($Order['shiiping_address2']);
+                                $State = App\Models\State::where('stateId', $Order['shiiping_state'])->orWhere('stateName', $Order['shiiping_state'])->first();
+                                $stateName = $State->stateName ?? $Order['shiiping_state'];
+                                ?>
+                                <div class="ship-inp" name="full_address" id="full_address" cols="30"
+                                    rows="7">
+                                    {{ $address1 . ',' . $address2 . ',' . $Order['shipping_city'] . ' ' . $stateName }}
+                                </div>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <!--<td>Pincode </td>-->
+                            <td>Pincode : {{ $Order['shipping_pincode'] }} &nbsp; Mobile : {{ $Order['shipping_mobile'] }}
+                            </td>
+                        </tr>
+
+                        <!--<tr>-->
+                        <!--<td>Mobile </td>-->
+                        <!--    <td>Mobile : {{ $Order['shipping_mobile'] }}</td>-->
+                        <!--</tr>-->
+                        <tr class="mb-2" style="padding-top:10px">
+                            <!--<td> Email </td>-->
+                            <td> {{ $Order['shipping_email'] }} </td>
+                        </tr>
 
 
 
 
-                </table>
-                <!--<table  width="100%" class="mx-auto   border-0" border="0" height="50" align="center">-->
-                <!--     <tr class="">-->
-                <!--        <td align="top"><a href="" class="pay_now flex-c-m stext-101 cl0 size-116 bg3  hov-btn3 p-lr-15 trans-04 pointer mb-0 btn  text-white text-center w-100" data-amount="{{ $Order['netAmount'] }}" data-mobile="{{ $Order['shipping_mobile'] }}" data-email="{{ $Order['shipping_email'] }}" data-profile-id="{{ $Order['order_id'] }}" data-order-id="{{ $orderId }}">Pay Now</a> &nbsp; -->
-                <!--        </td>-->
-                <!--    </tr>-->
-                <!--      <tr><td></td></tr>-->
-                <!--</table>-->
+                    </table>
+                    <!--<table  width="100%" class="mx-auto   border-0" border="0" height="50" align="center">-->
+                    <!--     <tr class="">-->
+                    <!--        <td align="top"><a href="" class="pay_now flex-c-m stext-101 cl0 size-116 bg3  hov-btn3 p-lr-15 trans-04 pointer mb-0 btn  text-white text-center w-100" data-amount="{{ $Order['netAmount'] }}" data-mobile="{{ $Order['shipping_mobile'] }}" data-email="{{ $Order['shipping_email'] }}" data-profile-id="{{ $Order['order_id'] }}" data-order-id="{{ $orderId }}">Pay Now</a> &nbsp; -->
+                    <!--        </td>-->
+                    <!--    </tr>-->
+                    <!--      <tr><td></td></tr>-->
+                    <!--</table>-->
 
-            </form>
+                    <div class="pay-note">Your payment is processed securely. Do not refresh this page while payment is in
+                        progress.</div>
+                </form>
+            </div>
+            <!-- <figure class="card card-product f_card">
+
+                                    <figcaption class="info-wrap">
+                                        <h4 class="title">{{ $Order->shipping_companyName }}</h4>
+                                        <div class="label_text_f">
+                                            <div class="label_text_f_left">
+                                                <span><i class="fa fa-user"></i></span>
+                                                <p>Name :</p>
+                                            </div>
+                                            <div class="label_text_f_right">
+                                                <p>{{ $Order['shipping_cutomerName'] }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="label_text_f">
+                                            <div class="label_text_f_left">
+                                            <span><i class="fa fa-phone"></i></span>
+                                                <p>Mobile :</p>
+                                            </div>
+                                            <div class="label_text_f_right">
+                                                <p>+91 {{ $Order['shipping_mobile'] }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="label_text_f">
+                                            <div class="label_text_f_left">
+                                            <span><i class="fa fa-envelope"></i></span>
+                                                <p>E-mail :</p>
+                                            </div>
+                                            <div class="label_text_f_right">
+                                                <p>{{ $Order['shipping_email'] }}</p>
+                                            </div>
+                                        </div>
+                                        <span class="price-new">₹ {{ $Order['netAmount'] }}</span>
+
+                                    </figcaption>
+                                    <div class="bottom-wrap">
+                                        <div class="f_btn_bottom">
+
+                                            <div class="f_btn_bottom_left">
+                                                <a href="{{ route('FrontIndex') }}">Back To Profile</a>
+                                            </div>
+                                            <div class="f_btn_bottom_right ">
+                                                <a href="" class="pay_now" data-amount="{{ $Order['netAmount'] }}" data-mobile="{{ $Order['shipping_mobile'] }}" data-email="{{ $Order['shipping_email'] }}" data-profile-id="{{ $Order['order_id'] }}" data-order-id="{{ $orderId }}">Pay Now</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </figure> -->
         </div>
-        <!-- <figure class="card card-product f_card">
-
-                            <figcaption class="info-wrap">
-                                <h4 class="title">{{ $Order->shipping_companyName }}</h4>
-                                <div class="label_text_f">
-                                    <div class="label_text_f_left">
-                                        <span><i class="fa fa-user"></i></span>
-                                        <p>Name :</p>
-                                    </div>
-                                    <div class="label_text_f_right">
-                                        <p>{{ $Order['shipping_cutomerName'] }}</p>
-                                    </div>
-                                </div>
-                                <div class="label_text_f">
-                                    <div class="label_text_f_left">
-                                    <span><i class="fa fa-phone"></i></span>
-                                        <p>Mobile :</p>
-                                    </div>
-                                    <div class="label_text_f_right">
-                                        <p>+91 {{ $Order['shipping_mobile'] }}</p>
-                                    </div>
-                                </div>
-                                <div class="label_text_f">
-                                    <div class="label_text_f_left">
-                                    <span><i class="fa fa-envelope"></i></span>
-                                        <p>E-mail :</p>
-                                    </div>
-                                    <div class="label_text_f_right">
-                                        <p>{{ $Order['shipping_email'] }}</p>
-                                    </div>
-                                </div>
-                                <span class="price-new">₹ {{ $Order['netAmount'] }}</span>
-
-                            </figcaption>
-                            <div class="bottom-wrap">
-                                <div class="f_btn_bottom">
-
-                                    <div class="f_btn_bottom_left">
-                                        <a href="{{ route('FrontIndex') }}">Back To Profile</a>
-                                    </div>
-                                    <div class="f_btn_bottom_right ">
-                                        <a href="" class="pay_now" data-amount="{{ $Order['netAmount'] }}" data-mobile="{{ $Order['shipping_mobile'] }}" data-email="{{ $Order['shipping_email'] }}" data-profile-id="{{ $Order['order_id'] }}" data-order-id="{{ $orderId }}">Pay Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </figure> -->
     </div>
     <!-- col // -->
     </div>
@@ -406,9 +500,17 @@
                 },
                 "theme": {
                     "color": "#528FF0"
+                },
+                "modal": {
+                    "ondismiss": function() {
+                        window.location.href = "{{ route('razorpay.RazorFail') }}";
+                    }
                 }
             };
             var rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', function() {
+                window.location.href = "{{ route('razorpay.RazorFail') }}";
+            });
             rzp1.open();
         });
         /*document.getElementsClass('buy_plan1').onclick = function(e){

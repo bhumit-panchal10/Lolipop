@@ -5,33 +5,33 @@
     @include('common.contactalert')
     <style>
         /* .captcha {
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 10px;
-                                }
+                                                                                display: flex;
+                                                                                align-items: center;
+                                                                                gap: 10px;
+                                                                            }
 
-                                .captcha span {
-                                    display: inline-flex;
-                                    align-items: center;
-                                }
+                                                                            .captcha span {
+                                                                                display: inline-flex;
+                                                                                align-items: center;
+                                                                            }
 
-                                .captcha span img {
-                                    display: block;
-                                    max-height: 45px;
-                                }
+                                                                            .captcha span img {
+                                                                                display: block;
+                                                                                max-height: 45px;
+                                                                            }
 
-                                .captcha #reload {
-                                    width: 45px;
-                                    height: 45px;
-                                    padding: 0;
-                                    display: inline-flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    font-size: 24px;
-                                    line-height: 1;
-                                    border-radius: 4px;
-                                    cursor: pointer;
-                                } */
+                                                                            .captcha #reload {
+                                                                                width: 45px;
+                                                                                height: 45px;
+                                                                                padding: 0;
+                                                                                display: inline-flex;
+                                                                                align-items: center;
+                                                                                justify-content: center;
+                                                                                font-size: 24px;
+                                                                                line-height: 1;
+                                                                                border-radius: 4px;
+                                                                                cursor: pointer;
+                                                                            } */
 
         #reload {
             background-color: #dc3545 !important;
@@ -66,8 +66,8 @@
                         </div>
                         <div class="lcx-heading">
                             <h2>
-                                We're Here To
-                                <em>Help You.</em>
+                                We're always happy to
+                                <em>assist You.</em>
                             </h2>
                             <p>
                                 Have questions about products, sizes,
@@ -75,8 +75,24 @@
                                 and our team will be happy to help.
                             </p>
                         </div>
-                        <form action="{{ route('contact_us') }}" class="lcx-form" id="lcxContactForm" method="POST"
-                            enctype="multipart/form-data">
+                        @if (session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                Please check the highlighted fields and try again.
+                            </div>
+                        @endif
+                        <form action="{{ route('contact_us') }}" class="lcx-form" id="lcxContactForm" method="POST">
                             @csrf
                             <!-- NAME ROW -->
                             <div class="lcx-form-row">
@@ -87,7 +103,7 @@
                                     <div class="lcx-input-wrap">
                                         <i class="fa fa-user-o"></i>
                                         <input type="text" name="first_name" placeholder="First Name" id="lcxFirstName"
-                                            required>
+                                            value="{{ old('first_name') }}" required>
                                     </div>
                                 </div>
                                 <div class="lcx-field">
@@ -97,7 +113,7 @@
                                     <div class="lcx-input-wrap">
                                         <i class="fa fa-user-o"></i>
                                         <input type="text" name="last_name" placeholder="Last Name" id="lcxLastName"
-                                            required>
+                                            value="{{ old('last_name') }}" required>
                                     </div>
                                 </div>
                             </div>
@@ -110,7 +126,7 @@
                                     <div class="lcx-input-wrap">
                                         <i class="fa fa-envelope-o"></i>
                                         <input type="email" name="email" placeholder="Email Address" id="lcxEmail"
-                                            required>
+                                            value="{{ old('email') }}" required>
                                     </div>
                                 </div>
                                 <div class="lcx-field">
@@ -120,8 +136,8 @@
                                     <div class="lcx-input-wrap">
                                         <i class="fa fa-phone"></i>
                                         <input type="text" name="phone_number" placeholder="Phone Number" id="lcxPhone"
-                                            maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                                            required>
+                                            value="{{ old('phone_number') }}" maxlength="10"
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                                     </div>
                                 </div>
                             </div>
@@ -133,27 +149,39 @@
                                 <div class="lcx-select-wrap">
                                     <i class="fa fa-comment-o"></i>
                                     <select id="lcxSubject" name="subject" required>
-                                        <option value="inquiry">
+
+                                        <option value="" disabled {{ old('subject') ? '' : 'selected' }}>
                                             Select Enquiry Type
-                                        </option value="product_inquiry">
-                                        <option>
+                                        </option>
+
+                                        <option value="product_inquiry"
+                                            {{ old('subject') == 'product_inquiry' ? 'selected' : '' }}>
                                             Product Enquiry
                                         </option>
-                                        <option value="size">
+
+                                        <option value="size" {{ old('subject') == 'size' ? 'selected' : '' }}>
                                             Size Help
                                         </option>
-                                        <option value="order_related">
+
+                                        <option value="order_related"
+                                            {{ old('subject') == 'order_related' ? 'selected' : '' }}>
                                             Order Related
                                         </option>
-                                        <option value="shipping_delivery">
+
+                                        <option value="shipping_delivery"
+                                            {{ old('subject') == 'shipping_delivery' ? 'selected' : '' }}>
                                             Shipping & Delivery
                                         </option>
-                                        <option value="Return_exchange">
+
+                                        <option value="Return_exchange"
+                                            {{ old('subject') == 'Return_exchange' ? 'selected' : '' }}>
                                             Return & Exchange
                                         </option>
-                                        <option value="other">
+
+                                        <option value="other" {{ old('subject') == 'other' ? 'selected' : '' }}>
                                             Other
                                         </option>
+
                                     </select>
                                     <i class="fa fa-angle-down"></i>
                                 </div>
@@ -165,7 +193,7 @@
                                 </label>
                                 <div class="lcx-textarea-wrap">
                                     <i class="fa fa-commenting-o"></i>
-                                    <textarea id="lcxMessage" name="message" placeholder="Tell us how we can help..." required></textarea>
+                                    <textarea id="lcxMessage" name="message" placeholder="Tell us how we can help..." required>{{ old('message') }}</textarea>
                                 </div>
                             </div>
 
@@ -180,10 +208,11 @@
                                         </button>
                                     </div>
                                 </div>
-
-                                <input id="captcha" type="text" class="form-control" placeholder="Enter Captcha"
-                                    name="captcha" value="{{ old('captcha') }}" required>
-
+                                <div class="lcx-input-wrap col-md-6">
+                                    <i class="fa fa-refresh"></i>
+                                    <input id="captcha" type="text" class="form-control" placeholder="Enter Captcha"
+                                        name="captcha" value="{{ old('captcha') }}" required>
+                                </div>
                                 @error('captcha')
                                     <span class="help-block text-danger">
                                         <strong>{{ $message }}</strong>
@@ -222,21 +251,36 @@
                                 </h3>
                                 <div class="lcx-info-line"></div>
                                 <!-- PHONE -->
-                                <a href="tel:+919773201361" class="lcx-info-item">
+
+                                <div class="lcx-info-item">
+
                                     <span class="lcx-info-icon blue">
                                         <i class="fa fa-phone"></i>
                                     </span>
+
                                     <div>
+
                                         <small>
                                             CALL US
                                         </small>
+
                                         <strong>
-                                            +91 97732 01361
+                                            <a href="tel:+919773201361">
+                                                +91 97732 01361
+                                            </a>
                                         </strong>
+
+                                        <strong>
+                                            <a href="tel:+919228195898">
+                                                +91 92281 95898
+                                            </a>
+                                        </strong>
+
                                     </div>
-                                </a>
+
+                                </div>
                                 <!-- EMAIL -->
-                                <a href="mailto:info.lolipopkalol@gmail.com" class="lcx-info-item">
+                                <a href="mailto:firefashion313@gmail.com" class="lcx-info-item">
                                     <span class="lcx-info-icon pink">
                                         <i class="fa fa-envelope-o"></i>
                                     </span>
@@ -245,12 +289,13 @@
                                             EMAIL US
                                         </small>
                                         <strong>
-                                            info.lolipopkalol@gmail.com
+                                            firefashion313@gmail.com
                                         </strong>
                                     </div>
                                 </a>
                                 <!-- ADDRESS -->
-                                <a href="https://maps.app.goo.gl/jyZdJJLpuaR6XrG88" target="_blank" class="lcx-info-item">
+                                <a href="https://maps.app.goo.gl/jyZdJJLpuaR6XrG88" target="_blank"
+                                    class="lcx-info-item">
                                     <span class="lcx-info-icon green">
                                         <i class="fa fa-map-marker"></i>
                                     </span>
@@ -259,8 +304,8 @@
                                             VISIT US
                                         </small>
                                         <strong>
-                                            Gold Plaza, F-1, Opp. HDFC Bank, Navjivan Mill Compound, Memon Market, Kalol,
-                                            Gujarat 382721.
+                                            F-1,Gold Plaza,Opp. HDFC Bank, Navjivan Mill Compound, Kalol,
+                                            <!--Gujarat 382721.-->
                                         </strong>
                                     </div>
                                 </a>
@@ -271,8 +316,8 @@
             </div>
         </section>
         <!-- =================================================
-                                                                                                                                                                            VISIT STORE SECTION
-                                                                                                                                                                        ================================================== -->
+                                                                                                                                                                                                                        VISIT STORE SECTION
+                                                                                                                                                                                                                    ================================================== -->
         <section class="lcx-store-section">
             <div class="container">
                 <div class="lcx-store-heading">

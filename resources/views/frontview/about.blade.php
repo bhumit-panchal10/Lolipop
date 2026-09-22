@@ -43,27 +43,22 @@
                                     ========================================== -->
                     <div class="labout-story-content">
                         <span class="labout-kicker">
-                            OUR LITTLE STORY
+                            ABOUT US
                         </span>
                         <h2>
-                            Big style for
-                            <em>little adventures.</em>
+                            Lollipop
+                            <em>Childrenwear</em>
                         </h2>
                         <p class="labout-lead">
-                            Lolipop Children Wear is created for childhood
-                            exactly as it is — colourful, playful, energetic
-                            and full of little moments worth remembering.
+                            Lollipop Childrenwear was launched in 2012. So, we have vast experience about children's clothing.
                         </p>
                         <p>
-                            We believe children should feel comfortable while
-                            looking their cheerful best. That's why our
-                            collections bring together easy fits, playful
-                            colours and styles made for everyday movement.
+                            Lollipop Childrenwear was created with a passion for fashion and commitment to quality. We understand that
+                            children's clothing needs to be comfortable, durable and stylish - without compromise.
                         </p>
                         <p>
-                            From everyday outfits to celebration-ready looks,
-                            our goal is simple: make getting dressed easier
-                            for parents and more fun for children.
+                            Our purchasing team carefully studies global fashion, trends and caters them into practical, kid-friendly designs.
+                            Every garment is crafted with attention to detail, ensuring a perfect fit, vibrant colors and superior comfort.
                         </p>
                         <div class="labout-signature">
                             <span class="labout-sign-icon">

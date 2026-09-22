@@ -205,7 +205,7 @@
                                         Free Delivery
                                     </strong>
                                     <small>
-                                        Above ₹999
+                                        All over india
                                     </small>
                                 </div>
                             </div>
@@ -215,7 +215,7 @@
                                 </span>
                                 <div>
                                     <strong>
-                                        Easy Returns
+                                        Only size exchange
                                     </strong>
                                     <small>
                                         Within 7 days

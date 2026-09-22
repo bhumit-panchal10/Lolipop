@@ -21,7 +21,10 @@ class OrderDetail extends Model
         'weight',
         'rate',
         'amount',
+        'size',
         'isPayment',
-        'isRefund'
+        'isRefund',
+        'iStatus',
+        'isDelete',
     ];
 }

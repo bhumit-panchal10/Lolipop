@@ -3,17 +3,31 @@
 @section('title', 'Login')
 
 @section('content')
-<style>
-    .card{background:transparent;
-        /*border:1px solid #fff;*/
-        margin:auto!important;
-        padding-top: 40%;
-        width:360px;
-    }
-    .form-control{background-color:#dd9099cc!important; color:#fff; border:1px solid #dd9099cc!important; color:#fff!important;}
-    .form-control::placeholder {color:#fff!important;}
-    .form-label{color:    rgb(174 35 134) !important;
-</style>
+    <style>
+        .card {
+            background: transparent;
+            /*border:1px solid #fff;*/
+            margin: auto !important;
+            /*padding-top: 40%;*/
+            width: 360px;
+        }
+
+        .form-control {
+            background-color: #dd9099cc !important;
+            color: #fff;
+            border: 1px solid #dd9099cc !important;
+            color: #fff !important;
+        }
+
+        .form-control::placeholder {
+            color: #fff !important;
+        }
+
+        .form-label {
+            color: rgb(174 35 134) !important;
+            padding-left: 120px;
+        }
+    </style>
     <div class="row justify-content-center">
 
         <div class="auth-page-wrapper">
@@ -32,18 +46,19 @@
             <!-- auth page content -->
             <div class="auth-page-content">
                 <div class="container">
-                    <!--<div class="row">-->
-                    <!--    <div class="col-lg-12">-->
-                    <!--        <div class="text-center mt-sm-5 mb-4 text-white-50">-->
-                    <!--            <div>-->
-                    <!--                <img src="{{ asset('assets/front/images/logo-2_admin.png') }}" alt="" height="190">-->
-                    <!--            </div>-->
-                    <!--        </div>-->
-                    <!--    </div>-->
-                    <!--</div>-->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="text-center mt-sm-5  text-white-50">
+                                <div>
+                                    <img src="{{ asset('Front/assets/images/lolipop-logo-new.png') }}" alt=""
+                                        height="150">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- end row -->
 
-                    <div class="row justify-content-center">
+                    <div class="row justify-content-center ">
                         <div class="col-md-8 col-lg-6 col-xl-5">
                             <div class="card mt-4">
 
@@ -87,7 +102,8 @@
                                                 </div>
                                             </div>
                                             <div class="mt-4">
-                                                <button class="btn btn-success w-100" type="submit" style="background-color:#ae2386!important;">Sign In</button>
+                                                <button class="btn btn-success w-100" type="submit"
+                                                    style="background-color:#ae2386!important;">Sign In</button>
                                             </div>
 
 

@@ -3,14 +3,14 @@
 @section('content')
 
     <!-- =====================================================
-                         CHECKOUT PAGE
-                    ====================================================== -->
+                                         CHECKOUT PAGE
+                                    ====================================================== -->
     <main class="lcheckout-page">
         <section class="lcheckout-section">
             <div class="container">
                 <!-- =================================================
-                                     CHECKOUT TOP
-                                ================================================== -->
+                                                     CHECKOUT TOP
+                                                ================================================== -->
                 <div class="lcheckout-top">
                     <div>
                         <span class="lcheckout-kicker">
@@ -30,18 +30,18 @@
                     </a>
                 </div>
                 <!-- =================================================
-                                     MAIN LAYOUT
-                                ================================================== -->
+                                                     MAIN LAYOUT
+                                                ================================================== -->
                 <form action="{{ route('checkoutstore') }}" method="POST" id="checkoutForm">
                     @csrf
                     <div class="lcheckout-layout">
                         <!-- =========================================
-                                         LEFT
-                                    ========================================== -->
+                                                         LEFT
+                                                    ========================================== -->
                         <div class="lcheckout-left">
                             <!-- =====================================
-                                             CONTACT DETAILS
-                                        ====================================== -->
+                                                             CONTACT DETAILS
+                                                        ====================================== -->
                             <div class="lcheckout-card">
                                 <div class="lcheckout-card-head">
                                     <span class="lcheckout-card-icon pink">
@@ -104,8 +104,8 @@
                                 </div>
                             </div>
                             <!-- =====================================
-                                             DELIVERY ADDRESS
-                                        ====================================== -->
+                                                             DELIVERY ADDRESS
+                                                        ====================================== -->
                             <div class="lcheckout-card">
                                 <div class="lcheckout-card-head">
                                     <span class="lcheckout-card-icon blue">
@@ -144,7 +144,7 @@
                                     </div>
                                 </div>
                                 <div class="lcheckout-form-grid">
-                                    <div class="lcheckout-field">
+                                    <div class="lcheckout-field ">
                                         <label>
                                             City
                                             <span>*</span>
@@ -204,64 +204,64 @@
                                 </div>
                             </div>
                             <!-- =====================================
-                                             PAYMENT
-                                        ====================================== -->
+                                                             PAYMENT
+                                                        ====================================== -->
                             <!-- <div class="lcheckout-card">
-                                            <div class="lcheckout-card-head">
-                                                <span class="lcheckout-card-icon green">
-                                                    <i class="fa fa-credit-card"></i>
-                                                </span>
-                                                <div>
-                                                    <small>PAY SECURELY</small>
-                                                    <h3>Payment Method</h3>
-                                                </div>
-                                            </div>
-                                            <div class="lcheckout-payment-list">
-                                                <label class="lcheckout-payment active">
-                                                    <input
-                                                        type="radio"
-                                                        name="payment"
-                                                        value="upi"
-                                                        checked
-                                                    >
-                                                    <span class="lcheckout-payment-radio"></span>
-                                                    <span class="lcheckout-payment-icon">
-                                                        <i class="fa fa-mobile"></i>
-                                                    </span>
-                                                    <span class="lcheckout-payment-copy">
-                                                        <strong>
-                                                            Online Payment
-                                                        </strong>
-                                                        <small>
-                                                            Google Pay, PhonePe, Paytm & more
-                                                        </small>
-                                                    </span>
-                                                </label>
-                                                <label class="lcheckout-payment">
-                                                    <input
-                                                        type="radio"
-                                                        name="payment"
-                                                        value="cod"
-                                                    >
-                                                    <span class="lcheckout-payment-radio"></span>
-                                                    <span class="lcheckout-payment-icon">
-                                                        <i class="fa fa-money"></i>
-                                                    </span>
-                                                    <span class="lcheckout-payment-copy">
-                                                        <strong>
-                                                            Cash On Delivery
-                                                        </strong>
-                                                        <small>
-                                                            Pay when your order arrives
-                                                        </small>
-                                                    </span>
-                                                </label>
-                                            </div>
-                                        </div> -->
+                                                            <div class="lcheckout-card-head">
+                                                                <span class="lcheckout-card-icon green">
+                                                                    <i class="fa fa-credit-card"></i>
+                                                                </span>
+                                                                <div>
+                                                                    <small>PAY SECURELY</small>
+                                                                    <h3>Payment Method</h3>
+                                                                </div>
+                                                            </div>
+                                                            <div class="lcheckout-payment-list">
+                                                                <label class="lcheckout-payment active">
+                                                                    <input
+                                                                        type="radio"
+                                                                        name="payment"
+                                                                        value="upi"
+                                                                        checked
+                                                                    >
+                                                                    <span class="lcheckout-payment-radio"></span>
+                                                                    <span class="lcheckout-payment-icon">
+                                                                        <i class="fa fa-mobile"></i>
+                                                                    </span>
+                                                                    <span class="lcheckout-payment-copy">
+                                                                        <strong>
+                                                                            Online Payment
+                                                                        </strong>
+                                                                        <small>
+                                                                            Google Pay, PhonePe, Paytm & more
+                                                                        </small>
+                                                                    </span>
+                                                                </label>
+                                                                <label class="lcheckout-payment">
+                                                                    <input
+                                                                        type="radio"
+                                                                        name="payment"
+                                                                        value="cod"
+                                                                    >
+                                                                    <span class="lcheckout-payment-radio"></span>
+                                                                    <span class="lcheckout-payment-icon">
+                                                                        <i class="fa fa-money"></i>
+                                                                    </span>
+                                                                    <span class="lcheckout-payment-copy">
+                                                                        <strong>
+                                                                            Cash On Delivery
+                                                                        </strong>
+                                                                        <small>
+                                                                            Pay when your order arrives
+                                                                        </small>
+                                                                    </span>
+                                                                </label>
+                                                            </div>
+                                                        </div> -->
                         </div>
                         <!-- =========================================
-                                         RIGHT ORDER SUMMARY
-                                    ========================================== -->
+                                                         RIGHT ORDER SUMMARY
+                                                    ========================================== -->
                         <aside class="lcheckout-summary">
                             <div class="lcheckout-summary-head">
                                 <span>
@@ -289,7 +289,8 @@
                                                 {{ $item->name }}
                                             </strong>
                                             <p>
-                                                Size: {{ $item->size }}
+                                                Size:
+                                                {{ $item->size_label ?? (optional(\App\Models\ProductAttributes::find($item->size))->product_attribute_size ?? $item->size) }}
                                             </p>
                                         </div>
                                         <strong class="lcheckout-product-price">
@@ -360,7 +361,55 @@
 @endsection
 
 @section('scripts')
+    <script>
+        (() => {
+            const mobile = document.getElementById('checkoutMobile');
+            if (!mobile) return;
 
+            const fields = {
+                firstName: document.getElementById('checkoutName'),
+                lastName: document.querySelector('[name="billLastName"]'),
+                email: document.getElementById('checkoutEmail'),
+                address1: document.getElementById('checkoutAddress'),
+                address2: document.getElementById('checkoutLandmark'),
+                city: document.getElementById('checkoutCity'),
+                state: document.getElementById('checkoutState'),
+                pincode: document.getElementById('checkoutPincode'),
+                country: document.querySelector('[name="strCountry"]')
+            };
+            let lastLookup = '';
 
+            const lookupCustomer = async () => {
+                const number = mobile.value.replace(/\D/g, '').slice(0, 10);
+                mobile.value = number;
+                if (number.length !== 10 || number === lastLookup) return;
 
+                lastLookup = number;
+                try {
+                    const response = await fetch(
+                        `{{ route('checkout.customer') }}?mobile=${encodeURIComponent(number)}`, {
+                            headers: {
+                                Accept: 'application/json'
+                            }
+                        }
+                    );
+                    const result = await response.json();
+
+                    if (result.found) {
+                        Object.entries(result.data).forEach(([field, value]) => {
+                            if (fields[field] && value !== null && value !== '') {
+                                fields[field].value = value;
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Customer lookup failed.', error);
+                }
+            };
+
+            mobile.addEventListener('input', lookupCustomer);
+            mobile.addEventListener('change', lookupCustomer);
+            mobile.addEventListener('blur', lookupCustomer);
+        })();
+    </script>
 @endsection

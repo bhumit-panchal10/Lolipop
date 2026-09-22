@@ -76,10 +76,52 @@ class FrontController extends Controller
                 ->get();
         }
 
+        $latestProducts = Product::select(
+            'product.productId',
+            'product.categoryId',
+            'product.subcategoryid',
+            'product.productname',
+            'product.rate',
+            'product.slugname',
+            'category.categoryname as categoryname',
+            'category.slugname as categoryslug',
+            DB::raw('(SELECT categoryname FROM category WHERE categoryId = product.subcategoryid LIMIT 1) as subcategoryname'),
+            DB::raw('(SELECT slugname FROM category WHERE categoryId = product.subcategoryid LIMIT 1) as subcategoryslug'),
+            DB::raw('(SELECT strphoto FROM productphotos WHERE productphotos.productid = product.productId LIMIT 1) as photo'),
+            DB::raw('(SELECT strphoto FROM productphotos WHERE productphotos.productid = product.productId LIMIT 1 OFFSET 1) as hoverphoto'),
+            DB::raw('(SELECT product_attribute_price FROM product_attributes WHERE product_attributes.product_id = product.productId ORDER BY product_attribute_price ASC, id ASC LIMIT 1) as product_attribute_price'),
+            DB::raw('(SELECT id FROM product_attributes WHERE product_attributes.product_id = product.productId ORDER BY product_attribute_price ASC, id ASC LIMIT 1) as lowest_attribute_id'),
+            DB::raw('(SELECT product_attribute_size FROM product_attributes WHERE product_attributes.product_id = product.productId ORDER BY product_attribute_price ASC, id ASC LIMIT 1) as lowest_attribute_size')
+        )
+            ->join('category', 'category.categoryId', '=', 'product.categoryId')
+            ->where('product.iStatus', 1)
+            ->where('product.isDelete', 0)
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('product_attributes')
+                    ->whereColumn('product_attributes.product_id', 'product.productId')
+                    ->whereNotNull('product_attributes.product_attribute_size')
+                    ->where('product_attributes.product_attribute_size', '<>', '');
+            })
+            ->orderByDesc('product.productId')
+            ->limit(8)
+            ->get();
+
+        $ourClients = DB::table('our_client')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $testimonials = DB::table('testimonials')
+            ->orderBy('id', 'asc')
+            ->get();
+
         return view('frontview.index', compact(
             'categories',
             'subCategories',
-            'firstCategory'
+            'firstCategory',
+            'latestProducts',
+            'ourClients',
+            'testimonials'
         ));
     }
 
@@ -174,27 +216,128 @@ class FrontController extends Controller
 
     public function trackorder(Request $request)
     {
-        DB::beginTransaction();
-        try {
-            return view('frontview.trackorder');
-            DB::commit();
-        } catch (\Throwable $th) {
-            // Rollback and return with Error
-            DB::rollBack();
-            return redirect()->back()->withInput()->with('error', $th->getMessage());
+        // try {
+
+        // Get only digits from mobile number
+        $phone = preg_replace('/\D+/', '', (string) $request->input('phone'));
+
+        $customer = null;
+        $orders = collect();
+        $itemsByOrder = [];
+
+        if ($phone !== '' && strlen($phone) === 10) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | GET CUSTOMER
+            |--------------------------------------------------------------------------
+            */
+            $customer = Customer::where('customermobile', $phone)
+                ->where('iStatus', 1)
+                ->where('isDelete', 0)
+                ->first();
+
+            /*
+            |--------------------------------------------------------------------------
+            | GET ORDERS USING CUSTOMER ID
+            |--------------------------------------------------------------------------
+            */
+            if ($customer) {
+
+                $orders = Order::where('customerid', $customer->customerid)
+                    ->where('iStatus', 1)
+                    ->where('isDelete', 0)
+                    ->orderByDesc('order_id')
+                    ->get();
+
+                /*
+                |--------------------------------------------------------------------------
+                | GET PRODUCTS FOR EACH ORDER
+                |--------------------------------------------------------------------------
+                */
+                foreach ($orders as $order) {
+
+                    $itemsByOrder[$order->order_id] = OrderDetail::select(
+                        'orderdetail.*',
+                        'product.productname',
+                        'product.productId',
+
+                        DB::raw("
+                            (
+                                SELECT strphoto
+                                FROM productphotos
+                                WHERE productphotos.productid = product.productId
+                                AND productphotos.iStatus = 1
+                                AND productphotos.isDelete = 0
+                                ORDER BY productphotos.productphotosid ASC
+                                LIMIT 1
+                            ) AS photo
+                        "),
+
+                        DB::raw("
+                            (
+                                SELECT product_attribute_size
+                                FROM product_attributes
+                                WHERE product_attributes.id = orderdetail.size
+                                LIMIT 1
+                            ) AS size_label
+                        ")
+                    )
+                        ->join(
+                            'product',
+                            'product.productId',
+                            '=',
+                            'orderdetail.productId'
+                        )
+                        ->where('orderdetail.orderID', $order->order_id)
+                        ->where('orderdetail.customerid', $customer->customerid)
+                        ->where('orderdetail.iStatus', 1)
+                        ->where('orderdetail.isDelete', 0)
+                        ->get();
+                }
+            }
         }
+
+        return view(
+            'frontview.trackorder',
+            compact(
+                'phone',
+                'customer',
+                'orders',
+                'itemsByOrder'
+            )
+        );
+        // } catch (\Throwable $th) {
+
+        //     return redirect()
+        //         ->back()
+        //         ->withInput()
+        //         ->with('error', $th->getMessage());
+        // }
     }
 
-    public function contactus(Request $request)
+    // public function contactus(Request $request)
+    // {
+    //     DB::beginTransaction();
+    //     try {
+    //         return view('frontview.contact');
+    //         DB::commit();
+    //     } catch (\Throwable $th) {
+    //         // Rollback and return with Error
+    //         DB::rollBack();
+    //         return redirect()->back()->withInput()->with('error', $th->getMessage());
+    //     }
+    // }
+
+    public function contactus()
     {
-        DB::beginTransaction();
         try {
             return view('frontview.contact');
-            DB::commit();
         } catch (\Throwable $th) {
-            // Rollback and return with Error
-            DB::rollBack();
-            return redirect()->back()->withInput()->with('error', $th->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', $th->getMessage());
         }
     }
 
@@ -203,32 +346,44 @@ class FrontController extends Controller
         try {
 
             $request->validate([
-                'first_name'   => 'required|string',
-                'last_name'    => 'required|string',
-                'email'        => 'required|email',
+                'first_name'   => 'required|string|max:100',
+                'last_name'    => 'required|string|max:100',
+                'email'        => 'required|email|max:150',
                 'phone_number' => 'required|digits:10',
                 'subject'      => 'required',
-                'message'      => 'required',
+                'message'      => 'required|string',
                 'captcha'      => 'required|captcha',
             ], [
                 'captcha.required' => 'Captcha is required.',
                 'captcha.captcha'  => 'Invalid captcha code.',
             ]);
 
+            // Combine first name + last name
+            $fullName = trim(
+                $request->first_name . ' ' . $request->last_name
+            );
 
-            // Captcha is already validated above
+            // Insert inquiry
             $data = [
-                'first_name'   => $request->first_name,
-                'last_name'    => $request->last_name,
-                'subject'      => $request->subject,
-                'email'        => $request->email,
+                'name'        => $fullName,
+                'subject'     => $request->subject,
+                'email'       => $request->email,
                 'mobileNumber' => $request->phone_number,
-                'message'      => $request->message,
-                'strIp'        => $request->ip(),
-                'created_at'   => now(),
+                'message'     => $request->message,
+                'strIp'       => $request->ip(),
+                'iStatus'     => 1,
+                'isDelete'    => 0,
+                'created_at'  => now(),
+                'updated_at'  => now(),
             ];
 
             DB::table('inquiry')->insert($data);
+
+            /*
+        |--------------------------------------------------------------------------
+        | Email Settings
+        |--------------------------------------------------------------------------
+        */
 
             $sendEmail = DB::table('sendemaildetails')
                 ->where('id', 4)
@@ -238,15 +393,29 @@ class FrontController extends Controller
                 ->select('email')
                 ->first();
 
-            // Contact name
-            $fullName = trim($request->first_name . ' ' . $request->last_name);
+            if (!$setting || empty($setting->email)) {
+                throw new \Exception(
+                    'No recipient email configured in setting.email'
+                );
+            }
 
-            // Email HTML template
+            /*
+        |--------------------------------------------------------------------------
+        | Email Template
+        |--------------------------------------------------------------------------
+        */
+
             $root = $_SERVER['DOCUMENT_ROOT'];
 
-            $htmlBody = file_get_contents(
-                $root . '/mailers/contactemail.html'
-            );
+            $templatePath = $root . '/mailers/contactemail.html';
+
+            if (!file_exists($templatePath)) {
+                throw new \Exception(
+                    'Contact email template not found.'
+                );
+            }
+
+            $htmlBody = file_get_contents($templatePath);
 
             $htmlBody = str_replace(
                 [
@@ -257,37 +426,37 @@ class FrontController extends Controller
                     '#message'
                 ],
                 [
-                    $fullName,
-                    $data['email'],
-                    $data['subject'],
-                    $data['mobileNumber'],
-                    nl2br(e($data['message']))
+                    e($fullName),
+                    e($request->email),
+                    e($request->subject),
+                    e($request->phone_number),
+                    nl2br(e($request->message))
                 ],
                 $htmlBody
             );
 
+            $toMail = $setting->email;
 
-            $toMail  = $setting->email ?? null;
-            $subject = $sendEmail->strSubject ?? 'New Contact Inquiry';
+            $mailSubject = $sendEmail->strSubject
+                ?? 'New Contact Inquiry';
 
-
-            if (!$toMail) {
-                throw new \Exception(
-                    'No recipient email configured in setting.email'
-                );
-            }
-
+            /*
+        |--------------------------------------------------------------------------
+        | Send Email
+        |--------------------------------------------------------------------------
+        */
 
             Mail::html($htmlBody, function ($m) use (
                 $toMail,
-                $subject,
+                $mailSubject,
                 $sendEmail
             ) {
 
                 $m->to($toMail)
-                    ->subject($subject);
+                    ->subject($mailSubject);
 
                 if (!empty($sendEmail->strFromMail)) {
+
                     $m->from(
                         $sendEmail->strFromMail,
                         $sendEmail->strTitle ?? ''
@@ -295,12 +464,14 @@ class FrontController extends Controller
                 }
             });
 
-
-            Log::info("Contact mail sent to {$toMail}");
+            Log::info("Contact inquiry mail sent to {$toMail}");
 
             return redirect()
                 ->route('contactthankyou')
-                ->with('success', 'Your inquiry has been submitted successfully.');
+                ->with(
+                    'success',
+                    'Your inquiry has been submitted successfully.'
+                );
         } catch (\Illuminate\Validation\ValidationException $e) {
 
             return redirect()
@@ -316,9 +487,134 @@ class FrontController extends Controller
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', $th->getMessage());
+                ->with(
+                    'error',
+                    'Something went wrong. Please try again.'
+                );
         }
     }
+
+    // public function contact_us(Request $request)
+    // {
+    //     try {
+
+    //         $request->validate([
+    //             'first_name'   => 'required|string',
+    //             'last_name'    => 'required|string',
+    //             'email'        => 'required|email',
+    //             'phone_number' => 'required|digits:10',
+    //             'subject'      => 'required',
+    //             'message'      => 'required',
+    //             'captcha'      => 'required|captcha',
+    //         ], [
+    //             'captcha.required' => 'Captcha is required.',
+    //             'captcha.captcha'  => 'Invalid captcha code.',
+    //         ]);
+
+
+    //         // Captcha is already validated above
+    //         $data = [
+    //             'first_name'   => $request->first_name,
+    //             'last_name'    => $request->last_name,
+    //             'subject'      => $request->subject,
+    //             'email'        => $request->email,
+    //             'mobileNumber' => $request->phone_number,
+    //             'message'      => $request->message,
+    //             'strIp'        => $request->ip(),
+    //             'created_at'   => now(),
+    //         ];
+
+    //         DB::table('inquiry')->insert($data);
+
+    //         $sendEmail = DB::table('sendemaildetails')
+    //             ->where('id', 4)
+    //             ->first();
+
+    //         $setting = DB::table('setting')
+    //             ->select('email')
+    //             ->first();
+
+    //         // Contact name
+    //         $fullName = trim($request->first_name . ' ' . $request->last_name);
+
+    //         // Email HTML template
+    //         $root = $_SERVER['DOCUMENT_ROOT'];
+
+    //         $htmlBody = file_get_contents(
+    //             $root . '/mailers/contactemail.html'
+    //         );
+
+    //         $htmlBody = str_replace(
+    //             [
+    //                 '#name',
+    //                 '#email',
+    //                 '#subject',
+    //                 '#mobile',
+    //                 '#message'
+    //             ],
+    //             [
+    //                 $fullName,
+    //                 $data['email'],
+    //                 $data['subject'],
+    //                 $data['mobileNumber'],
+    //                 nl2br(e($data['message']))
+    //             ],
+    //             $htmlBody
+    //         );
+
+
+    //         $toMail  = $setting->email ?? null;
+    //         $subject = $sendEmail->strSubject ?? 'New Contact Inquiry';
+
+
+    //         if (!$toMail) {
+    //             throw new \Exception(
+    //                 'No recipient email configured in setting.email'
+    //             );
+    //         }
+
+
+    //         Mail::html($htmlBody, function ($m) use (
+    //             $toMail,
+    //             $subject,
+    //             $sendEmail
+    //         ) {
+
+    //             $m->to($toMail)
+    //                 ->subject($subject);
+
+    //             if (!empty($sendEmail->strFromMail)) {
+    //                 $m->from(
+    //                     $sendEmail->strFromMail,
+    //                     $sendEmail->strTitle ?? ''
+    //                 );
+    //             }
+    //         });
+
+
+    //         Log::info("Contact mail sent to {$toMail}");
+
+    //         return redirect()
+    //             ->route('contactthankyou')
+    //             ->with('success', 'Your inquiry has been submitted successfully.');
+    //     } catch (\Illuminate\Validation\ValidationException $e) {
+
+    //         return redirect()
+    //             ->back()
+    //             ->withErrors($e->validator)
+    //             ->withInput();
+    //     } catch (\Throwable $th) {
+
+    //         Log::error('Contact inquiry error', [
+    //             'error' => $th->getMessage()
+    //         ]);
+
+    //         return redirect()
+    //             ->back()
+    //             ->withInput()
+    //             ->with('error', $th->getMessage());
+    //     }
+    // }
 
     public function contactthankyou()
     {
@@ -873,6 +1169,51 @@ class FrontController extends Controller
         }
     }
 
+    public function checkoutCustomer(Request $request)
+    {
+        $mobile = preg_replace('/\D+/', '', (string) $request->input('mobile'));
+
+        if (strlen($mobile) !== 10) {
+            return response()->json(['found' => false]);
+        }
+
+        $order = DB::table('order')
+            ->where('shipping_mobile', $mobile)
+            ->orderByDesc('order_id')
+            ->first();
+
+        $customer = Customer::where('customermobile', $mobile)
+            ->orderByDesc('customerid')
+            ->first();
+
+        if (!$order && !$customer) {
+            return response()->json(['found' => false]);
+        }
+
+        $fullName = trim(
+            ($customer->firstname ?? '') . ' ' . ($customer->lastname ?? '')
+        );
+        if ($fullName === '') {
+            $fullName = trim($customer->customername ?? $order->shipping_cutomerName ?? '');
+        }
+        $nameParts = preg_split('/\s+/', $fullName, 2);
+
+        return response()->json([
+            'found' => true,
+            'data' => [
+                'firstName' => $nameParts[0] ?? '',
+                'lastName' => $nameParts[1] ?? '',
+                'email' => $customer->customeremail ?? $order->shipping_email ?? '',
+                'address1' => $customer->address ?? $order->shiiping_address1 ?? '',
+                'address2' => $customer->address1 ?? $order->shiiping_address2 ?? '',
+                'city' => $customer->city ?? $order->shipping_city ?? '',
+                'state' => $customer->state ?? $order->shiiping_state ?? '',
+                'pincode' => $customer->pincode ?? $order->shipping_pincode ?? '',
+                'country' => $customer->country ?? $order->country ?? 'India',
+            ],
+        ]);
+    }
+
     public function checkoutstore(Request $request)
     {
 
@@ -1084,7 +1425,7 @@ class FrontController extends Controller
                 $MobileNumber = $request->customermobile;
                 $Setting = Setting::where(["id" => 1])->first();
                 $key = $Setting->api_key;
-                $msg = "Your OTP for login to https://TheWardrobeFashion.in is " . $otp . ". Do not share this code with anyone. – The Wardrobe Fashion.";
+                $msg = "Your OTP for login to http://127.0.0.1:8000/ is " . $otp . ". Do not share this code with anyone. – The Wardrobe Fashion.";
 
                 $customer = new Customer();
                 //$status = $customer->WhatsappMessage($MobileNumber, $msg);
@@ -1544,8 +1885,7 @@ class FrontController extends Controller
     public function termandcondition()
     {
         $datas = OtherPages::where(['iStatus' => 1, 'isDelete' => 0, 'id' => 1])->first();
-        //return view('frontview.termandcondition', compact('datas'));
-        return view('frontview.termandcondition');
+        return view('frontview.termandcondition', compact('datas'));
     }
 
     public function privacypolicy()
@@ -1556,13 +1896,8 @@ class FrontController extends Controller
 
     public function noReturnNoExchange()
     {
-        try {
-            $datas = OtherPages::where(['iStatus' => 1, 'isDelete' => 0, 'id' => 5])->first();
-            return view('frontview.noReturnNoExchange', compact('datas'));
-        } catch (\Throwable $th) {
-            // Rollback & Return Error Message
-            return redirect()->back()->with('error', $th->getMessage());
-        }
+        $datas = OtherPages::where(['iStatus' => 1, 'isDelete' => 0, 'id' => 5])->first();
+        return view('frontview.noReturnNoExchange', compact('datas'));
     }
 
     public function Frontlogout(Request $request)

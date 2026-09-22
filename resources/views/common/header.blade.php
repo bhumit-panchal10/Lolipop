@@ -16,7 +16,7 @@
                 <div class="navbar-brand-box horizontal-logo">
                     <a href="{{ route('home') }}" class="logo logo-dark">
                         <span class="logo-lg">
-                            <img src="{{ asset('assets/front/images/logo-2_admin.png') }}" alt=""
+                            <img src="{{ asset('Front/assets/images/lolipop-logo-new.png') }}" alt=""
                                 height="90">
                         </span>
                     </a>
